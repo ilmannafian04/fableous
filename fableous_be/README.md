@@ -21,6 +21,11 @@ python -m venv venv
 source ./env/bin/activate
 ```
 
+Install dependency
+```shell script
+pip install -r requirements.txt
+```
+
 Crete `.env` file. See `.example.env` for reference. There is a [tool](https://miniwebtool.com/django-secret-key-generator/) to generate secrek key
 ```.env
 SECRET_KEY=secretsecretsecretsecretsecretsecretsecret

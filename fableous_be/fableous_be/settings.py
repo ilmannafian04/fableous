@@ -13,20 +13,29 @@ import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+from environ import environ
+
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 
+env = environ.Env(
+    SECRET_KEY=str,
+    ENV=(str, 'DEVELOPMENT')
+)
+env.read_env(str(BASE_DIR / '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '!$=%%t*g%hu^+#cwh$%lg%zb@_@c51vsbmc&^1ger^$rr8srsy'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('ENV') == 'DEVELOPMENT'
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['127.0.0.1',
+                 'localhost',
+                 'deco3801-todo-team-name.uqcloud.net',
+                 'deco3801-todo-team-name.zones.eait.uq.edu.au']
 
 # Application definition
 
@@ -70,7 +79,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'fableous_be.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
@@ -80,7 +88,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -100,7 +107,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
@@ -113,7 +119,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/

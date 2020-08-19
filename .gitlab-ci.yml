@@ -1,0 +1,39 @@
+stages:
+  - build
+  - deploy
+
+build:frontend:
+  stage: build
+  image: node:alpine
+  before_script:
+    - cd fableous_fe
+  script:
+    - npm install
+    - npm run build
+  cache:
+    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+    paths:
+      - fableous_fe/node_modules/
+  artifacts:
+    expire_in: 1 hour
+    paths:
+      - fableous_fe/build/
+
+deploy-dev:frontend:
+  stage: deploy
+  image: docker
+  services:
+    - docker:dind
+  variables:
+    CI_IMAGE_NAME: $CI_REGISTRY/todo-teamname/fableous/$FE_IMAGE_NAME
+  before_script:
+    - cd fableous_fe
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker pull $CI_IMAGE_NAME:dev-latest || true
+    - docker build --cache-from $CI_IMAGE_NAME:dev-latest --tag $CI_IMAGE_NAME:$CI_COMMIT_SHA --tag $CI_IMAGE_NAME:dev-latest .
+    - docker push $CI_IMAGE_NAME:$CI_COMMIT_SHA
+    - docker push $CI_IMAGE_NAME:dev-latest
+  except:
+    - master
+  when: manual

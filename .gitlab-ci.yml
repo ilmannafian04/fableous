@@ -24,6 +24,7 @@ build:frontend:
 
 .deploy-template: &docker-base
   image: docker
+  stage: deploy
   services:
     - docker:dind
   script:
@@ -51,7 +52,6 @@ deploy-dev:frontend:
     - master
     - staging
   when: manual
-  stage: deploy
   <<: *docker-frontend
 
 deploy-staging:frontend:

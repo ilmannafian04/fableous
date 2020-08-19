@@ -5,6 +5,8 @@ stages:
 build:frontend:
   stage: build
   image: node:alpine
+  before_script:
+    - cd fableous_fe
   script:
     - npm install
     - npm run build
@@ -25,7 +27,7 @@ deploy-dev:frontend:
   variables:
     CI_IMAGE_NAME: $CI_REGISTRY/todo-teamname/$FE_IMAGE_NAME
   before_script:
-    - cd fableous_fe/
+    - cd fableous_fe
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
     - docker pull $CI_IMAGE_NAME:dev-latest || true

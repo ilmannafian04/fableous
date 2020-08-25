@@ -33,7 +33,7 @@ function CanvasDraw() {
     useEffect(() => {
         detachLineStageCanvasEvent()
         console.log(color," after")
-        drawLine()
+        addLine()
     }, [color]);
 
 

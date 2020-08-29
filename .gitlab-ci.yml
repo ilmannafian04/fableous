@@ -64,7 +64,10 @@ deploy-staging:frontend:
     CI_IMAGE_NAME: $CI_REGISTRY/todo-teamname/fableous/$FE_IMAGE_NAME
     BRANCH_TAG: staging
   only:
-    - staging
+    changes:
+      - fableous_fe/**
+    refs:
+      - staging
   <<: *docker-frontend
 
 deploy-master:frontend:
@@ -72,7 +75,10 @@ deploy-master:frontend:
     CI_IMAGE_NAME: $CI_REGISTRY/todo-teamname/fableous/$FE_IMAGE_NAME
     BRANCH_TAG: latest
   only:
-    - master
+    changes:
+      - fableous_fe/**
+    refs:
+      - master
   <<: *docker-frontend
 
 .deploy-template:backend: &docker-backend
@@ -107,7 +113,10 @@ deploy-staging:backend:wsgi:
     BRANCH_TAG: staging
     DOCKERFILE_NAME: wsgi.Dockerfile
   only:
-    - staging
+    changes:
+      - fableous_be/**
+    refs:
+      - staging
   <<: *docker-backend
 
 deploy-master:backend:wsgi:
@@ -116,7 +125,10 @@ deploy-master:backend:wsgi:
     BRANCH_TAG: latest
     DOCKERFILE_NAME: wsgi.Dockerfile
   only:
-    - master
+    changes:
+      - fableous_be/**
+    refs:
+      - master
   <<: *docker-backend
 
 deploy-dev:backend:asgi:
@@ -136,7 +148,10 @@ deploy-staging:backend:asgi:
     BRANCH_TAG: staging
     DOCKERFILE_NAME: asgi.Dockerfile
   only:
-    - staging
+    changes:
+      - fableous_be/**
+    refs:
+      - staging
   <<: *docker-backend
 
 deploy-master:backend:asgi:
@@ -145,6 +160,9 @@ deploy-master:backend:asgi:
     BRANCH_TAG: latest
     DOCKERFILE_NAME: asgi.Dockerfile
   only:
-    - master
+    changes:
+      - fableous_be/**
+    refs:
+      - master
   <<: *docker-backend
   

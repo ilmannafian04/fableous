@@ -17,7 +17,7 @@ build:frontend:
     - npm run build
   only:
     changes:
-      - fableous_fe/**
+      - fableous_fe/**/*
   cache:
     key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
     paths:
@@ -52,7 +52,7 @@ deploy-dev:frontend:
     BRANCH_TAG: dev-latest
   only:
     changes:
-      - fableous_fe/**
+      - fableous_fe/**/*
   except:
     - master
     - staging
@@ -65,7 +65,7 @@ deploy-staging:frontend:
     BRANCH_TAG: staging
   only:
     changes:
-      - fableous_fe/**
+      - fableous_fe/**/*
     refs:
       - staging
   <<: *docker-frontend
@@ -76,7 +76,7 @@ deploy-master:frontend:
     BRANCH_TAG: latest
   only:
     changes:
-      - fableous_fe/**
+      - fableous_fe/**/*
     refs:
       - master
   <<: *docker-frontend
@@ -115,7 +115,7 @@ deploy-staging:backend:wsgi:
     DOCKERFILE_NAME: wsgi.Dockerfile
   only:
     changes:
-      - fableous_be/**
+      - fableous_be/**/*
     refs:
       - staging
   <<: *docker-backend
@@ -127,7 +127,7 @@ deploy-master:backend:wsgi:
     DOCKERFILE_NAME: wsgi.Dockerfile
   only:
     changes:
-      - fableous_be/**
+      - fableous_be/**/*
     refs:
       - master
   <<: *docker-backend
@@ -154,7 +154,7 @@ deploy-staging:backend:asgi:
     DOCKERFILE_NAME: asgi.Dockerfile
   only:
     changes:
-      - fableous_be/**
+      - fableous_be/**/*
     refs:
       - staging
   <<: *docker-backend
@@ -166,7 +166,7 @@ deploy-master:backend:asgi:
     DOCKERFILE_NAME: asgi.Dockerfile
   only:
     changes:
-      - fableous_be/**
+      - fableous_be/**/*
     refs:
       - master
   <<: *docker-backend

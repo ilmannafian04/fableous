@@ -26,7 +26,9 @@ env = environ.Env(
     REDIS_PORT=(int, 6379),
     DATABASE_URL=(str, None)
 )
-env.read_env(str(BASE_DIR / '.env'))
+
+if os.path.isfile(BASE_DIR / '.env'):
+    env.read_env(str(BASE_DIR / '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/

@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import os
 from pathlib import Path
 
+import dj_database_url
 # noinspection PyPackageRequirements
 from environ import environ
 
@@ -20,7 +21,10 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 
 env = environ.Env(
     SECRET_KEY=str,
-    ENV=(str, 'DEVELOPMENT')
+    ENV=(str, 'DEVELOPMENT'),
+    REDIS_HOST=(str, '127.0.0.1'),
+    REDIS_PORT=(int, 6379),
+    DATABASE_URL=(str, None)
 )
 env.read_env(str(BASE_DIR / '.env'))
 
@@ -86,10 +90,19 @@ ASGI_APPLICATION = 'fableous_be.routing.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
+    'default': dj_database_url.config() if env('DATABASE_URL') is not None else {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
+}
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [(env('REDIS_HOST'), env('REDIS_PORT'))],
+        },
+    },
 }
 
 # Password validation

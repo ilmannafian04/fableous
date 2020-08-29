@@ -26,6 +26,7 @@ env = environ.Env(
     REDIS_PORT=(int, 6379),
     DATABASE_URL=(str, None)
 )
+
 if os.path.isfile(BASE_DIR / '.env'):
     env.read_env(str(BASE_DIR / '.env'))
 

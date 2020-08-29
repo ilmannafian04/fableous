@@ -100,10 +100,11 @@ deploy-dev:backend:wsgi:
     DOCKERFILE_NAME: wsgi.Dockerfile
   only:
     changes:
-      - fableous_be/**
+      - fableous_be/**/*
   except:
-    - master
-    - staging
+    refs:
+      - master
+      - staging
   when: manual
   <<: *docker-backend
 
@@ -138,10 +139,11 @@ deploy-dev:backend:asgi:
     DOCKERFILE_NAME: asgi.Dockerfile
   only:
     changes:
-      - fableous_be/**
+      - fableous_be/**/*
   except:
-    - master
-    - staging
+    refs:
+      - master
+      - staging
   when: manual
   <<: *docker-backend
 

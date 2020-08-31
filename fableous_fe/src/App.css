@@ -7,6 +7,14 @@
     pointer-events: none;
 }
 
+.Audio-recorder {
+    width: 100px;
+
+}
+#img_voice {
+    padding-bottom: 20px;
+}
+
 @media (prefers-reduced-motion: no-preference) {
     .App-logo {
         animation: App-logo-spin infinite 20s linear;
@@ -36,3 +44,4 @@
         transform: rotate(360deg);
     }
 }
+

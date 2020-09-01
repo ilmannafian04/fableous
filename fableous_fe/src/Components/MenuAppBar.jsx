@@ -13,13 +13,19 @@ import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
 const useStyles = makeStyles((theme) => ({
     root: {
         flexGrow: 1,
-        height: '1000px',
     },
     menuButton: {
         marginRight: theme.spacing(2),
     },
     title: {
         flexGrow: 1,
+    },
+    appbar: {
+        height: '100px',
+        justifyContent: 'center',
+    },
+    icon: {
+        fontSize: 'inherit',
     },
 }));
 
@@ -43,23 +49,23 @@ export default function MenuAppBar() {
 
     return (
         <div className={classes.root}>
-            <AppBar position="static" style={{ backgroundColor: '#2F3138' }}>
+            <AppBar position="static" className={classes.appbar} style={{ backgroundColor: '#2F3138' }}>
                 <Toolbar>
                     <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
                         <MenuIcon />
                     </IconButton>
-                    <Typography variant="h5" className={classes.title} align={'left'}>
+                    <Typography variant="h4" className={classes.title} align={'left'}>
                         Crabbing In the Disco
                     </Typography>
                     {auth && (
                         <div>
-                            <IconButton style={{ color: '#FFFFFF' }}>
+                            <IconButton className={classes.icon} style={{ color: '#FFFFFF' }}>
                                 <QuestionAnswerIcon />
                             </IconButton>
-                            <IconButton style={{ color: '#FFFFFF' }}>
+                            <IconButton className={classes.icon} style={{ color: '#FFFFFF' }}>
                                 <SettingsIcon />
                             </IconButton>
-                            <IconButton style={{ color: '#FFFFFF' }}>
+                            <IconButton className={classes.icon} style={{ color: '#FFFFFF' }}>
                                 <HomeIcon />
                             </IconButton>
                         </div>

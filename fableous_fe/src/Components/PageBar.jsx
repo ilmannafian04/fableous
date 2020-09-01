@@ -5,11 +5,11 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
-import Fab from '@material-ui/core/Fab';
-import MenuIcon from '@material-ui/icons/Menu';
-import AddIcon from '@material-ui/icons/Add';
+import Button from '@material-ui/core/Button';
 import SearchIcon from '@material-ui/icons/Search';
 import MoreIcon from '@material-ui/icons/MoreVert';
+import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
+import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 
 const useStyles = makeStyles((theme) => ({
     text: {
@@ -28,6 +28,7 @@ const useStyles = makeStyles((theme) => ({
         top: 'auto',
         bottom: 0,
         height: '100px',
+        justifyContent: 'center',
     },
     grow: {
         flexGrow: 1,
@@ -40,6 +41,13 @@ const useStyles = makeStyles((theme) => ({
         right: 0,
         margin: '0 auto',
     },
+    button: {
+        backgroundColor: '#CACACA',
+        '&:hover': {
+            backgroundColor: '#FFFFFF',
+        },
+        width: 150,
+    },
 }));
 
 export default function BottomAppBar() {
@@ -50,19 +58,19 @@ export default function BottomAppBar() {
             <CssBaseline />
             <AppBar position="fixed" color="primary" className={classes.appBar} style={{ backgroundColor: '#2F3138' }}>
                 <Toolbar>
-                    <IconButton edge="start" color="inherit" aria-label="open drawer">
-                        <MenuIcon />
-                    </IconButton>
-                    <Fab color="secondary" aria-label="add" className={classes.fabButton}>
-                        <AddIcon />
-                    </Fab>
+                    <Button className={classes.button}>
+                        <IconButton color="inherit">
+                            <ArrowBackIosIcon />
+                        </IconButton>
+                        Previous Page
+                    </Button>
                     <div className={classes.grow} />
-                    <IconButton color="inherit">
-                        <SearchIcon />
-                    </IconButton>
-                    <IconButton edge="end" color="inherit">
-                        <MoreIcon />
-                    </IconButton>
+                    <Button className={classes.button}>
+                        Next Page
+                        <IconButton color="inherit">
+                            <ArrowForwardIosIcon />
+                        </IconButton>
+                    </Button>
                 </Toolbar>
             </AppBar>
         </React.Fragment>

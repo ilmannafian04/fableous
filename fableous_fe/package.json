@@ -8,6 +8,7 @@
         "react-audio-recorder": "^2.2.0",
         "react-dom": "^16.13.1",
         "react-mic": "^12.4.6",
+        "react-router-dom": "^5.2.0",
         "react-voice-recorder": "^2.0.1"
     },
     "devDependencies": {

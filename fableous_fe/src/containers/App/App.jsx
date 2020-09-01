@@ -1,12 +1,13 @@
 import React from 'react';
-import logo from '../../logo.svg';
 import './App.css';
-import CanvasDraw from "../CanvasDraw";
+import CanvasDraw from "../CanvasDraw"
 
 function App() {
     return (
         <div className="App">
-            <CanvasDraw />
+            <div className="container">
+                <CanvasDraw/>
+            </div>
         </div>
     );
 }

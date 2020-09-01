@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import useWindowSize from '../../utils/hooks/useWindowSize';
-import { Stage, Layer, Image } from 'react-konva';
 import Konva from 'konva';
+import { Stage, Layer, Image } from 'react-konva';
+
+import useWindowSize from '../../utils/hooks/useWindowSize';
 
 const DEFAULT_WIDTH_CANVAS = 1280;
 const DEFAULT_HEIGHT_CANVAS = 720;
@@ -28,6 +29,9 @@ function CanvasDraw() {
     const imageRef = useRef();
     const stageRef = useRef();
     const headerRef = useRef();
+
+    const [socket, setSocket] = useState(null);
+    // const [socketIsOpen, setSocketIsOpen] = useState(false);
 
     useEffect(() => {
         if (headerRef.current) {
@@ -63,6 +67,23 @@ function CanvasDraw() {
         }
     }, [canvasIsReady, canvas]);
 
+    useEffect(() => {
+        const socket = new WebSocket('ws://127.0.0.1:8000/ws/drawing/lol/');
+        socket.onopen = () => {
+            setSocketIsOpen(true);
+        };
+        socket.onclose = () => setSocketIsOpen(false);
+        socket.onerror = () => setSocketIsOpen(false);
+        setSocket(socket);
+    }, []);
+
+    if (socket) {
+        socket.onmessage = (ev) => {
+            const message = JSON.parse(ev.data);
+            draw(message.start, message.stop);
+        };
+    }
+
     const calculateHeightBasedOnRatio = (width) => {
         return { width: width, height: (width / WIDTH_RATIO) * HEIGHT_RATIO };
     };
@@ -93,27 +114,40 @@ function CanvasDraw() {
         }
     };
 
-    const onMoveHandler = () => {
-        const image = imageRef.current;
-        let localPos;
-        if (isPainting) {
+    const draw = (prevPointer, nextPointer) => {
+        if (context) {
+            const image = imageRef.current;
+            let localPos;
             context.beginPath();
 
-            localPos = normalizePoint(lastPointerPosition, scale);
+            localPos = normalizePoint(prevPointer, scale);
 
             context.moveTo(localPos.x, localPos.y);
 
-            let nextPointerPosition = image.getStage().getPointerPosition();
-
-            localPos = normalizePoint(nextPointerPosition, scale);
+            localPos = normalizePoint(nextPointer, scale);
 
             context.lineTo(localPos.x, localPos.y);
             context.closePath();
             context.stroke();
 
-            setLastPointerPosition(nextPointerPosition);
             image.getLayer().batchDraw();
         }
+    };
+
+    const onMoveHandler = () => {
+        if (isPainting) {
+            const image = imageRef.current;
+            const { x, y } = image.getStage().getPointerPosition();
+            draw(lastPointerPosition, { x: x, y: y });
+            setLastPointerPosition({ x: x, y: y });
+            if (socket) {
+                socket.send(JSON.stringify({ start: lastPointerPosition, stop: { x: x, y: y }, color: '', size: 10 }));
+            }
+        }
+    };
+
+    const endDrawing = () => {
+        setIsPainting(false);
     };
 
     return (
@@ -133,9 +167,9 @@ function CanvasDraw() {
                             setIsPainting(true);
                         }}
                         onTouchMove={onMoveHandler}
-                        onTouchEnd={() => setIsPainting(false)}
-                        onMouseUp={() => setIsPainting(false)}
-                        onMouseLeave={() => setIsPainting(false)}
+                        onTouchEnd={endDrawing}
+                        onMouseUp={endDrawing}
+                        onMouseLeave={endDrawing}
                         listening={true}
                     />
                 </Layer>
@@ -143,4 +177,5 @@ function CanvasDraw() {
         </div>
     );
 }
+
 export default CanvasDraw;

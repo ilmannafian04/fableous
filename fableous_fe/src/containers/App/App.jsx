@@ -9,7 +9,6 @@ function App() {
             <div className="container">
                 <CanvasDraw />
                 <div className={'Audio-recorder'}>
-                    <br />
                     <AudioRecorder />
                 </div>
             </div>

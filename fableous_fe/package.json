@@ -4,11 +4,14 @@
     "private": true,
     "dependencies": {
         "@cleandersonlobo/react-mic": "^1.2.0",
+        "konva": "^7.0.6",
         "react": "^16.13.1",
         "react-audio-recorder": "^2.2.0",
         "react-dom": "^16.13.1",
+        "react-konva": "^16.13.0-6",
         "react-mic": "^12.4.6",
-        "react-voice-recorder": "^2.0.1"
+        "react-voice-recorder": "^2.0.1",
+        "styled-components": "^5.1.1"
     },
     "devDependencies": {
         "@testing-library/jest-dom": "^5.11.3",

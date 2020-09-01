@@ -2,7 +2,7 @@ import React from 'react';
 import { ReactMic } from 'react-mic';
 
 export class AudioRecorder extends React.Component {
-    blobUrl = '123';
+    // blobUrl = '123';
 
     constructor(props) {
         super(props);
@@ -37,6 +37,7 @@ export class AudioRecorder extends React.Component {
                         id="img_voice"
                         width="50"
                         height="50"
+                        alt="record button"
                     />
                 </div>
                 <button onClick={this.startRecording} type="button">

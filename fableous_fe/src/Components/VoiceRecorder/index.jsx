@@ -30,10 +30,16 @@ export class AudioRecorder extends React.Component {
     render() {
         return (
             <div>
-                <ReactMic record={this.state.record} className="sound-wave" onStop={this.onStop} onData={this.onData} />
+                <ReactMic
+                    record={this.state.record}
+                    className="sound-wave"
+                    onStop={this.onStop}
+                    onData={this.onData}
+                    strokeColor={'#FFFFFF'}
+                />
                 <div>
                     <img
-                        src="https://www.iconsdb.com/icons/preview/gray/volume-up-4-xxl.png"
+                        src="https://cdn.icon-icons.com/icons2/916/PNG/512/Audio_icon-icons.com_71845.png"
                         id="img_voice"
                         width="50"
                         height="50"

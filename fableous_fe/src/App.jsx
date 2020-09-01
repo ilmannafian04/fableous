@@ -1,10 +1,10 @@
 import React from 'react';
 import { Button } from '@material-ui/core';
 import './App.css';
-import AudioRecorder from './Components/VoiceRecorder';
-import MenuAppBar from './Components/MenuAppBar';
-import PageBar from './Components/PageBar';
-import SideBar from './Components/SideBar';
+import AudioRecorder from './components/VoiceRecorder';
+import MenuAppBar from './components/MenuAppBar';
+import PageBar from './components/PageBar';
+import SideBar from './components/SideBar';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({

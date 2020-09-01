@@ -4,10 +4,21 @@ import './App.css';
 import AudioRecorder from './Components/VoiceRecorder';
 import MenuAppBar from './Components/MenuAppBar';
 import PageBar from './Components/PageBar';
+import SideBar from './Components/SideBar';
+import { makeStyles } from '@material-ui/core/styles';
 
-function App() {
+const useStyles = makeStyles((theme) => ({
+    app: {},
+}));
+
+export default function App() {
+    const classes = useStyles();
+
     return (
-        <div className="App">
+        <div className={classes.app}>
+            <div>
+                <SideBar />
+            </div>
             <div>
                 <MenuAppBar />
             </div>
@@ -17,5 +28,3 @@ function App() {
         </div>
     );
 }
-
-export default App;

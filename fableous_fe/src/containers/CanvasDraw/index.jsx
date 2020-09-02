@@ -3,6 +3,8 @@ import Konva from 'konva';
 import { Stage, Layer, Image } from 'react-konva';
 
 import useWindowSize from '../../utils/hooks/useWindowSize';
+import produce from 'immer';
+import Heartbeat from 'react-heartbeat';
 
 const DEFAULT_WIDTH_CANVAS = 1280;
 const DEFAULT_HEIGHT_CANVAS = 720;
@@ -31,7 +33,8 @@ function CanvasDraw() {
     const headerRef = useRef();
 
     const [socket, setSocket] = useState(null);
-    // const [socketIsOpen, setSocketIsOpen] = useState(false);
+    const [socketIsOpen, setSocketIsOpen] = useState(false);
+    const [messages, setMessages] = useState([]);
 
     useEffect(() => {
         if (headerRef.current) {
@@ -75,12 +78,13 @@ function CanvasDraw() {
         socket.onclose = () => setSocketIsOpen(false);
         socket.onerror = () => setSocketIsOpen(false);
         setSocket(socket);
+        return () => socket.close();
     }, []);
 
     if (socket) {
         socket.onmessage = (ev) => {
-            const message = JSON.parse(ev.data);
-            draw(message.start, message.stop);
+            const drawings = JSON.parse(ev.data);
+            drawings.forEach((drawing) => draw(drawing.start, drawing.stop));
         };
     }
 
@@ -140,16 +144,19 @@ function CanvasDraw() {
             const { x, y } = image.getStage().getPointerPosition();
             draw(lastPointerPosition, { x: x, y: y });
             setLastPointerPosition({ x: x, y: y });
-            if (socket) {
-                socket.send(JSON.stringify({ start: lastPointerPosition, stop: { x: x, y: y }, color: '', size: 10 }));
-            }
+            setMessages(
+                produce(messages, (draft) => {
+                    draft.push({ start: lastPointerPosition, stop: { x: x, y: y }, color: '', size: 10 });
+                })
+            );
         }
     };
 
     const endDrawing = () => {
-        setIsPainting(false);
+        if (isPainting) {
+            setIsPainting(false);
+        }
     };
-
     return (
         <div ref={headerRef} style={{ width: '100%', height: '100%' }}>
             <Stage width={availSpace.width} height={availSpace.height} ref={stageRef}>
@@ -174,6 +181,15 @@ function CanvasDraw() {
                     />
                 </Layer>
             </Stage>
+            <Heartbeat
+                heartbeatInterval={200}
+                heartbeatFunction={() => {
+                    if (socketIsOpen && messages.length > 0) {
+                        socket.send(JSON.stringify(messages));
+                        setMessages([]);
+                    }
+                }}
+            />
         </div>
     );
 }

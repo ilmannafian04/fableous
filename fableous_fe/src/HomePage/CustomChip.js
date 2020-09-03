@@ -23,7 +23,7 @@ const styles = {
 
 class CustomChipInput extends React.Component {
     render() {
-        const { classes, ...other } = this.props;
+        const { classes } = this.props;
 
         return (
             <ChipInput

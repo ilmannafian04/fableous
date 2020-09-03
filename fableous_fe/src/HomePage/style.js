@@ -1,4 +1,3 @@
-import React from 'react';
 import style from 'styled-components';
 
 export const BoxWrapper = style.div`

@@ -1,34 +1,32 @@
-import json
+from asgiref.sync import async_to_sync
+from channels.generic.websocket import JsonWebsocketConsumer
 
-from channels.generic.websocket import AsyncWebsocketConsumer
 
-
-class DrawingConsumer(AsyncWebsocketConsumer):
+class DrawingConsumer(JsonWebsocketConsumer):
     # noinspection PyAttributeOutsideInit
-    async def connect(self):
+    def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room']
         self.room_group_name = f'drawing_{self.room_name}'
-        await self.channel_layer.group_add(
+        async_to_sync(self.channel_layer.group_add)(
             self.room_group_name,
             self.channel_name
         )
-        await self.accept()
+        self.accept()
 
-    async def disconnect(self, close_code):
-        await self.channel_layer.group_discard(
+    def disconnect(self, close_code):
+        async_to_sync(self.channel_layer.group_discard)(
             self.room_group_name,
             self.channel_name
         )
 
-    async def receive(self, text_data=None, bytes_data=None):
-        message = json.loads(text_data)
-        await self.channel_layer.group_send(
+    def receive_json(self, content, **kwargs):
+        async_to_sync(self.channel_layer.group_send)(
             self.room_group_name, {
                 'type': 'drawing',
-                'message': message
+                'message': content
             }
         )
 
-    async def drawing(self, event):
+    def drawing(self, event):
         message = event['message']
-        await self.send(text_data=json.dumps(message))
+        self.send_json(content=message)

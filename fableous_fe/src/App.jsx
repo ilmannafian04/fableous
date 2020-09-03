@@ -1,14 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './App.css';
-import AudioRecorder from './VoiceRecorder';
+import HomePage from '../src/HomePage/HomePage';
 
 function App() {
     return (
         <div className="App">
-            <div className={'Audio-recorder'}>
-                <AudioRecorder />
-            </div>
+            <HomePage />
         </div>
     );
 }

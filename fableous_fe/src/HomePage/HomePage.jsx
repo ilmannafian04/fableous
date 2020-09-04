@@ -1,30 +1,40 @@
 import React from 'react';
-import withStyles from '@material-ui/core/styles/withStyles';
 import { BoxWrapper } from './style';
 import CustomChip from './CustomChip';
-
-const styles = {
-    chipInputRoot: {
-        color: '#f6f1d3',
-        borderRadius: 29,
-    },
-    chip: {
-        background: '#7030A2',
-    },
-};
+import { Button } from '@material-ui/core';
 
 const Home = () => {
     return (
         <BoxWrapper>
             <div className="bigBox">
                 <div className="smallBox">
-                    <h1 className="title">Fabelous</h1>
-                    <p className="tag">Tag your theme/emotions here </p>
+                    <h1 className="title">Fableous</h1>
+                    <p className="tag">Tag your theme/emotions here: </p>
                     <CustomChip />
+                    <div className="buttonsLayout">
+                        <Button size="large" className="insideButton">
+                            {' '}
+                            New Story
+                        </Button>
+                        <Button size="large" className="insideButton">
+                            {' '}
+                            Join Story
+                        </Button>
+                    </div>
                 </div>
             </div>
+            <div className="padding-layout" />
+            <Button size="large" className="menuButton">
+                {' '}
+                📚 CLASS LIBRARY
+            </Button>
+            <div className="padding-layout" />
+            <Button size="large" className="menuButton">
+                {' '}
+                📓 MY BOOKSHELF
+            </Button>
         </BoxWrapper>
     );
 };
 
-export default withStyles(styles)(Home);
+export default Home;

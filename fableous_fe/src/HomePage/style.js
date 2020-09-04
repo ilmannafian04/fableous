@@ -41,4 +41,23 @@ export const BoxWrapper = style.div`
         color: #F6F1D3;
         font-weight: 500;
     }
+    .buttonsLayout{
+        justify-content: 'space-between';
+        padding-top: 2rem;
+    }
+    .insideButton{
+        background-color: #2F3138;
+        color: white;
+        border-radius: 50px;
+    }
+    .menuButton{
+        background-color: #7030A2;
+        color: white;
+        border-radius: 50px;
+    }
+    .padding-layout{
+        padding-top:2rem;
+    }
+
+    
 `;

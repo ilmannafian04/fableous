@@ -13,7 +13,8 @@
         "react-konva": "^16.13.0-6",
         "react-mic": "^12.4.6",
         "react-voice-recorder": "^2.0.1",
-        "styled-components": "^5.1.1"
+        "styled-components": "^5.1.1",
+        "uuid": "^8.3.0"
     },
     "devDependencies": {
         "@testing-library/jest-dom": "^5.11.3",

@@ -5,11 +5,11 @@ import { Stage, Layer, Image } from 'react-konva';
 import useWindowSize from '../../utils/hooks/useWindowSize';
 import produce from 'immer';
 import Heartbeat from 'react-heartbeat';
+import {calculateScale} from "../../helper/CanvasHelperFunction/calculateScale";
+import {calculateHeightBasedOnRatio} from "../../helper/CanvasHelperFunction/calculateHeightBasedOnRatio";
+import {DEFAULT_HEIGHT_CANVAS, DEFAULT_WIDTH_CANVAS} from "../../constants/ScreenRatio";
+import {normalizePoint} from "../../helper/CanvasHelperFunction/normalizePoint";
 
-const DEFAULT_WIDTH_CANVAS = 1280;
-const DEFAULT_HEIGHT_CANVAS = 720;
-const WIDTH_RATIO = 16;
-const HEIGHT_RATIO = 9;
 
 function CanvasDraw() {
     // Window Size
@@ -38,18 +38,12 @@ function CanvasDraw() {
 
     useEffect(() => {
         if (headerRef.current) {
-            const calculateScale = () => {
-                let parentWidth = headerRef.current.offsetWidth;
-                const numerator = parentWidth > DEFAULT_WIDTH_CANVAS ? parentWidth : DEFAULT_WIDTH_CANVAS;
-                const denominator = parentWidth > DEFAULT_WIDTH_CANVAS ? DEFAULT_WIDTH_CANVAS : parentWidth;
-                const totalScale = numerator / denominator;
-                const availableSpaceBasedOnRatio = calculateHeightBasedOnRatio(parentWidth);
-                setScale(totalScale);
-                setAvailSpace(availableSpaceBasedOnRatio);
-            };
-
-            calculateScale();
+            const totalScale = calculateScale(headerRef.current)
+            const availableSpaceBasedOnRatio = calculateHeightBasedOnRatio(headerRef.current);
+            setScale(totalScale)
+            setAvailSpace(availableSpaceBasedOnRatio)
         }
+        stageRef.current.batchDraw();
     }, [width, height, scale]);
 
     useEffect(() => {
@@ -88,9 +82,6 @@ function CanvasDraw() {
         };
     }
 
-    const calculateHeightBasedOnRatio = (width) => {
-        return { width: width, height: (width / WIDTH_RATIO) * HEIGHT_RATIO };
-    };
 
     const onPressDownHandler = () => {
         const currentPosition = imageRef.current.getStage().getPointerPosition();
@@ -104,19 +95,6 @@ function CanvasDraw() {
         setLastPointerPosition(currentPosition);
     };
 
-    const normalizePoint = (mousePosition, scale) => {
-        if (headerRef.current.offsetWidth < DEFAULT_WIDTH_CANVAS) {
-            return {
-                x: mousePosition.x * scale,
-                y: mousePosition.y * scale,
-            };
-        } else {
-            return {
-                x: mousePosition.x / scale,
-                y: mousePosition.y / scale,
-            };
-        }
-    };
 
     const draw = (prevPointer, nextPointer) => {
         if (context) {
@@ -124,11 +102,11 @@ function CanvasDraw() {
             let localPos;
             context.beginPath();
 
-            localPos = normalizePoint(prevPointer, scale);
+            localPos = normalizePoint(prevPointer, scale, headerRef.current);
 
             context.moveTo(localPos.x, localPos.y);
 
-            localPos = normalizePoint(nextPointer, scale);
+            localPos = normalizePoint(nextPointer, scale,headerRef.current);
 
             context.lineTo(localPos.x, localPos.y);
             context.closePath();

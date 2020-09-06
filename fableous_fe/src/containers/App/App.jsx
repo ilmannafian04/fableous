@@ -1,17 +1,23 @@
 import React from 'react';
+import { Switch, Route } from 'react-router-dom';
 
 import './App.css';
-import DrawingSession from '../CanvasDraw/DrawingSession';
-import AudioRecorder from '../VoiceRecorder';
+import Story from '../CanvasDraw/Story';
+import Landing from '../../Landing';
 
 function App() {
     return (
-        <div>
-            <DrawingSession />
-            <div className={'Audio-recorder'}>
-                <AudioRecorder />
-            </div>
-        </div>
+        <Switch>
+            <Route path="/story/:joinCode">
+                <Story />
+            </Route>
+            <Route path="/story">
+                <Story />
+            </Route>
+            <Route path="/">
+                <Landing />
+            </Route>
+        </Switch>
     );
 }
 

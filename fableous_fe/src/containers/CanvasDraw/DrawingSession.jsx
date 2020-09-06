@@ -23,7 +23,7 @@ const DrawingSession = () => {
     }, []);
     useEffect(() => {
         if (roomCode) {
-            const sock = new WebSocket(`ws://deco3801-todo-team-name.uqcloud.net/ws/drawing/${roomCode}/`);
+            const sock = new WebSocket(`wss://deco3801-todo-team-name.uqcloud.net/ws/drawing/${roomCode}/`);
             sock.onopen = () => {
                 setSocket(sock);
             };

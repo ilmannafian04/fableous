@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Konva from 'konva';
-import { Stage, Layer, Text } from 'react-konva';
+import { Stage, Layer, Text,Transformer } from 'react-konva';
 import {v1 as uuid} from "uuid";
 
 import useWindowSize from '../../utils/hooks/useWindowSize';
-import {calculateHeightBasedOnRatio} from "../../helper/CanvasHelperFunction/calculateHeightBasedOnRatio";
+import {calculateHeightBasedOnRatio} from "../../helper/CanvasHelperFunctions/calculateHeightBasedOnRatio";
 import {DEFAULT_HEIGHT_CANVAS, DEFAULT_WIDTH_CANVAS} from "../../constants/ScreenRatio";
+import TransformerComponent from "../../components/TransformerComponent/TransformerComponent";
 
 
 
@@ -22,6 +23,7 @@ function CanvasText() {
     // Dynamic Sizing States
     const [lastPointerPosition, setLastPointerPosition] = useState(null);
     const [availSpace, setAvailSpace] = useState({ width: 0, height: 0 });
+    const [selectedShape, setSelectedShape] = useState(null);
     const [shapes, setShapes] = useState([]);
 
     // Context States
@@ -33,6 +35,7 @@ function CanvasText() {
     const headerRef = useRef();
 
 
+
     useEffect(() => {
         if (headerRef.current) {
             const totalScale = headerRef.current.offsetWidth / DEFAULT_WIDTH_CANVAS;
@@ -42,17 +45,14 @@ function CanvasText() {
         }
 
 
-        console.log(shapes)
-        console.log(layerRef.current.children)
+
         stageRef.current.batchDraw()
     }, [width, height, scale]);
 
     useEffect( () => {
         if(shapes) {
             let tempTextArray = [...shapes]
-            console.log(scale)
             tempTextArray.forEach((textNode) => {
-                console.log(textNode.x,"PAPPA")
                 textNode.x = textNode.default_x * (scale/textNode.textScale)
                 textNode.y = textNode.default_y * (scale/textNode.textScale)
                 textNode.fontSize = textNode.default_fontSize * (scale/textNode.textScale)
@@ -61,11 +61,11 @@ function CanvasText() {
 
             setShapes(tempTextArray)
         }
+
         stageRef.current.batchDraw()
     },[width,height , scale])
 
     useEffect( () => {
-        console.log("DADADA")
         stageRef.current.batchDraw()
     },[shapes])
 
@@ -98,16 +98,16 @@ function CanvasText() {
     const createTextNode = () => {
         const text_id = uuid()
         const textNode = {
-            text: "type here" + Math.random(),
+            text: "Temporary text",
             x: 160 ,
             y: 90,
-            fontSize: 20,
+            fontSize: 40,
             draggable: true,
             width: 200,
             text_id,
             default_x:160,
             default_y: 90,
-            default_fontSize: 20,
+            default_fontSize: 40,
             default_width: 200,
             textScale: scale,
 
@@ -115,25 +115,38 @@ function CanvasText() {
         setShapes(shapes.concat(textNode))
     }
 
+    const outsideTextPress = () => {
+        setSelectedShape(null)
+    }
+
 
     return (
         <div ref={headerRef} style={{ width: '100%', height: '100%' }}>
             <h1> {scale}</h1>
             <button onClick={drawText}> TEXT </button>
-            <Stage width={availSpace.width} height={availSpace.height} ref={stageRef} >
-                <Layer ref={layerRef} >
+            <Stage
+                width={availSpace.width}
+                height={availSpace.height}
+                ref={stageRef}
+                onTap={()=> outsideTextPress()}
+                onClick={()=> outsideTextPress()}
+            >
+                <Layer ref={layerRef}>
                     {shapes.map((textAttr, i) => (
-                        <Text key={i}
-                              text={textAttr.text}
-                                x= {textAttr.x}
-                                y={textAttr.y}
-                                fontSize={textAttr.fontSize}
-                                draggable={true}
-                                width={textAttr.width}
-                                keepRatio={true}
-                                onDragStart={() => {
+                            <Text key={i}
+                                  id={textAttr.text_id}
+                                  text={textAttr.text}
+                                  x= {textAttr.x}
+                                  y={textAttr.y}
+                                  fontSize={textAttr.fontSize}
+                                  draggable={true}
+                                  width={textAttr.width}
+                                  keepRatio={true}
+
+                                  onDragStart={() => {
                                       setIsDragging(true);
-                                }}
+                                  }}
+
                                   onDragEnd={(e) => {
                                       let tempShapes = [...shapes]
                                       let textNode = {...tempShapes[i]};
@@ -141,13 +154,29 @@ function CanvasText() {
                                       textNode.y = e.target.y()
                                       textNode.default_x = e.target.x()
                                       textNode.default_y = e.target.y()
-                                      console.log(textNode.default_x,textNode.default_y, "PEO")
                                       tempShapes[i] = textNode
                                       setShapes(tempShapes);
                                       setIsDragging(false)
                                   }}
-                        />
+
+                                  onDoubleClick={() => {
+                                      console.log(selectedShape,"HERE")
+                                      setSelectedShape(textAttr.text_id)
+                                  }}
+
+                                  onDblTap={()=>{
+                                      console.log(selectedShape,"MOB")
+                                      setSelectedShape(textAttr.text_id)
+                                  }}
+                            />
                     ))}
+                    {selectedShape && stageRef ?
+                        <TransformerComponent
+                            selectedShapeID={selectedShape}
+                            stage={stageRef.current}
+                        /> :
+                        null
+                    }
                 </Layer>
             </Stage>
         </div>

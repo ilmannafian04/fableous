@@ -8,10 +8,7 @@ function App() {
     return (
         <div className="App">
             <div className="container">
-                <CanvasText />
-                {/*<div className={'Audio-recorder'}>*/}
-                {/*    <AudioRecorder />*/}
-                {/*</div>*/}
+                <CanvasText/>
             </div>
         </div>
     );

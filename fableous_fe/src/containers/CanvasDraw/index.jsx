@@ -5,10 +5,10 @@ import { Stage, Layer, Image } from 'react-konva';
 import useWindowSize from '../../utils/hooks/useWindowSize';
 import produce from 'immer';
 import Heartbeat from 'react-heartbeat';
-import {calculateScale} from "../../helper/CanvasHelperFunction/calculateScale";
-import {calculateHeightBasedOnRatio} from "../../helper/CanvasHelperFunction/calculateHeightBasedOnRatio";
+import {calculateScale} from "../../helper/CanvasHelperFunctions/calculateScale";
+import {calculateHeightBasedOnRatio} from "../../helper/CanvasHelperFunctions/calculateHeightBasedOnRatio";
 import {DEFAULT_HEIGHT_CANVAS, DEFAULT_WIDTH_CANVAS} from "../../constants/ScreenRatio";
-import {normalizePoint} from "../../helper/CanvasHelperFunction/normalizePoint";
+import {normalizePoint} from "../../helper/CanvasHelperFunctions/normalizePoint";
 
 
 function CanvasDraw() {

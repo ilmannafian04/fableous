@@ -22,8 +22,7 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 env = environ.Env(
     SECRET_KEY=str,
     ENV=(str, 'DEVELOPMENT'),
-    REDIS_HOST=(str, '127.0.0.1'),
-    REDIS_PORT=(int, 6379),
+    REDIS_URL=str,
     DATABASE_URL=(str, None)
 )
 
@@ -109,7 +108,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [(env('REDIS_HOST'), env('REDIS_PORT'))],
+            "hosts": [(env('REDIS_URL'))],
         },
     },
 }
@@ -117,7 +116,7 @@ CHANNEL_LAYERS = {
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': f'redis://{env("REDIS_HOST")}:{env("REDIS_PORT")}/1',
+        'LOCATION': f'{env("REDIS_URL")}/1',
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
         }

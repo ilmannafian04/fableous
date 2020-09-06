@@ -35,8 +35,7 @@ field is not filled, Django will use sqlite instead.
 ```.env
 SECRET_KEY=secretsecretsecretsecretsecretsecretsecret
 ENV=PRODUCTION|DEVELOPMENT
-REDIS_HOST=127.0.0.1
-REDIS_PORT=6379
+REDIS_URL=redis://127.0.0.1:6379/
 DATABASE_URL=postgres://user:pass@127.0.0.1:5432/postgres
 ```
 

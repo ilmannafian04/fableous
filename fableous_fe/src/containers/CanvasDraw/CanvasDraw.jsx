@@ -11,7 +11,7 @@ const DEFAULT_HEIGHT_CANVAS = 720;
 const WIDTH_RATIO = 16;
 const HEIGHT_RATIO = 9;
 
-function CanvasDraw() {
+function CanvasDraw({ socket }) {
     // Window Size
     const { width, height } = useWindowSize();
 
@@ -32,8 +32,6 @@ function CanvasDraw() {
     const stageRef = useRef();
     const headerRef = useRef();
 
-    const [socket, setSocket] = useState(null);
-    const [socketIsOpen, setSocketIsOpen] = useState(false);
     const [messages, setMessages] = useState([]);
 
     useEffect(() => {
@@ -70,21 +68,10 @@ function CanvasDraw() {
         }
     }, [canvasIsReady, canvas]);
 
-    useEffect(() => {
-        const socket = new WebSocket('ws://127.0.0.1:8000/ws/drawing/lol/');
-        socket.onopen = () => {
-            setSocketIsOpen(true);
-        };
-        socket.onclose = () => setSocketIsOpen(false);
-        socket.onerror = () => setSocketIsOpen(false);
-        setSocket(socket);
-        return () => socket.close();
-    }, []);
-
     if (socket) {
-        socket.onmessage = (ev) => {
-            const drawings = JSON.parse(ev.data);
-            drawings.forEach((drawing) => draw(drawing.start, drawing.stop));
+        socket.onmessage = (event) => {
+            const message = JSON.parse(event.data);
+            message['strokes'].forEach((drawing) => draw(drawing.start, drawing.stop));
         };
     }
 
@@ -184,8 +171,8 @@ function CanvasDraw() {
             <Heartbeat
                 heartbeatInterval={200}
                 heartbeatFunction={() => {
-                    if (socketIsOpen && messages.length > 0) {
-                        socket.send(JSON.stringify(messages));
+                    if (socket && messages.length > 0) {
+                        socket.send(JSON.stringify({ command: 'draw.story.stroke', data: messages }));
                         setMessages([]);
                     }
                 }}

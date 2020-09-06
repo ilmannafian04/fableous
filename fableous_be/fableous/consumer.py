@@ -50,6 +50,8 @@ class DrawingConsumer(JsonWebsocketConsumer):
             self.change_role(content['role'])
         elif content['command'] == 'draw.lobby.isReady':
             self.change_is_ready(content['isReady'])
+        elif content['command'] == 'draw.story.stroke':
+            self.new_stroke(content['data'])
 
     def change_name(self, name):
         r = get_redis_connection()
@@ -68,13 +70,22 @@ class DrawingConsumer(JsonWebsocketConsumer):
         r.set(self.keys['isReady'], str(is_ready))
         self.validate_state()
 
+    def new_stroke(self, data):
+        # TODO: persist the stroke data
+        r = get_redis_connection()
+        async_to_sync(self.channel_layer.group_send)(self.room_group_name, {
+            'type': 'draw.new_stroke',
+            'data': data,
+            'layer': int(r.get(f'{self.room_name}.{self.channel_name}.role').decode('utf-8'))
+        })
+
     def validate_state(self):
         r = get_redis_connection()
         current_state = int(r.get(f'{self.room_name}.state'))
         players = r.smembers(f'{self.room_name}.players')
         if current_state == 0:
             advance_state = True
-            for role in [1, 2, 3]:
+            for role in [1, 2, 3, 4]:
                 if r.scard(f'{self.room_name}.role.{role}') == 0:
                     advance_state = False
             if advance_state:
@@ -111,6 +122,7 @@ class DrawingConsumer(JsonWebsocketConsumer):
                                 'state': int(r.get(f'{self.room_name}.state').decode('utf-8')),
                                 'self': current_player})
 
-    def drawing(self, event):
-        message = event['message']
-        self.send_json(content=message)
+    def draw_new_stroke(self, event):
+        r = get_redis_connection()
+        if int(r.get(f'{self.room_name}.{self.channel_name}.role').decode('utf-8')) == 4:
+            self.send_json(content={'strokes': event['data'], 'layer': event['layer']})

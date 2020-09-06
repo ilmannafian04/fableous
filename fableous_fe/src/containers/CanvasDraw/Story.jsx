@@ -14,7 +14,6 @@ const Story = () => {
     const [roomCode, setRoomCode] = useState(null);
     const [socket, setSocket] = useState(null);
     const { joinCode } = useParams();
-    console.log(joinCode);
     useEffect(() => {
         if (joinCode) {
             setRoomCode(joinCode);
@@ -44,7 +43,7 @@ const Story = () => {
             displayedComponent = <Lobby socket={socket} changeState={(state) => setSessionState(state)} />;
             break;
         case 1:
-            displayedComponent = <CanvasDraw />;
+            displayedComponent = <CanvasDraw socket={socket} />;
             break;
         default:
             displayedComponent = <Lobby />;

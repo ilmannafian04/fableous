@@ -46,6 +46,7 @@ const RoleSelect = ({ socket, isReady, selectedRole }) => {
                 { text: 'Background', value: 1 },
                 { text: 'Character', value: 2 },
                 { text: 'Story', value: 3 },
+                { text: 'Hub', value: 4 },
             ].map((button, index) => (
                 <button
                     onClick={clickHandler}

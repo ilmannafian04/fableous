@@ -61,7 +61,7 @@ const RoleSelect = ({ socket, isReady, selectedRole }) => {
     );
 };
 
-const Lobby = ({ socket, roomCode, changeState }) => {
+const Lobby = ({ socket, roomCode, changeState, changePlayerData }) => {
     const [lobbyState, setLobbyState] = useState({ players: [], self: { name: 'Fableous', role: 0, isReady: false } });
     if (socket) {
         socket.onmessage = (event) => {
@@ -69,6 +69,7 @@ const Lobby = ({ socket, roomCode, changeState }) => {
             if (message['state'] === 0) {
                 delete message['state'];
                 setLobbyState(message);
+                changePlayerData({ name: message.self.name, role: Role[message.self.role] });
             } else {
                 changeState(message['state']);
             }

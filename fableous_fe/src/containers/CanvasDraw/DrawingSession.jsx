@@ -1,9 +1,10 @@
+import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 
 import CanvasDraw from './CanvasDraw';
 import './DrawingSession.css';
 import Lobby from './Lobby';
-import axios from 'axios';
+import { baseUrl, wsProtocol } from '../../constant/url';
 
 // Session state
 // 0 = Lobby
@@ -23,7 +24,7 @@ const DrawingSession = () => {
     }, []);
     useEffect(() => {
         if (roomCode) {
-            const sock = new WebSocket(`wss://deco3801-todo-team-name.uqcloud.net/ws/drawing/${roomCode}/`);
+            const sock = new WebSocket(`${baseUrl(wsProtocol)}/ws/drawing/${roomCode}/`);
             sock.onopen = () => {
                 setSocket(sock);
             };

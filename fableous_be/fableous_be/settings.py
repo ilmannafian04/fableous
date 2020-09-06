@@ -40,13 +40,15 @@ DEBUG = env('ENV') == 'DEVELOPMENT'
 
 ALLOWED_HOSTS = ['127.0.0.1',
                  'localhost',
+                 'todo-team-name.uqcloud.net',
                  'deco3801-todo-team-name.uqcloud.net',
                  'deco3801-todo-team-name.zones.eait.uq.edu.au']
 
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',
-    'http://127.0.0.1:3000'
-]
+CORS_ALLOWED_ORIGINS = ['http://localhost:3000',
+                        'http://127.0.0.1:3000',
+                        'todo-team-name.uqcloud.net',
+                        'deco3801-todo-team-name.uqcloud.net',
+                        'deco3801-todo-team-name.zones.eait.uq.edu.au']
 
 # Application definition
 

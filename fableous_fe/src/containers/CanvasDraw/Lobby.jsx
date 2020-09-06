@@ -26,7 +26,7 @@ const ArtistForm = ({ socket, isReady, name }) => {
                 onChange={(event) => setNewName(event.target.value)}
                 disabled={isReady}
             />
-            <button type="submit" disabled={(!nameValidator(newName) && socket) || isReady}>
+            <button type="submit" disabled={(!nameValidator(newName) && socket) || isReady || name === newName}>
                 Set
             </button>
         </form>

@@ -1,10 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import produce from 'immer';
 import Konva from 'konva';
+import React, { useState, useRef, useEffect } from 'react';
+import Heartbeat from 'react-heartbeat';
 import { Stage, Layer, Image } from 'react-konva';
 
 import useWindowSize from '../../utils/hooks/useWindowSize';
-import produce from 'immer';
-import Heartbeat from 'react-heartbeat';
 
 const DEFAULT_WIDTH_CANVAS = 1280;
 const DEFAULT_HEIGHT_CANVAS = 720;

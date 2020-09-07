@@ -2,7 +2,7 @@ import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
 import './App.css';
-import Story from '../CanvasDraw/Story';
+import Story from '../story/Story';
 import HomePage from '../HomePage/HomePage';
 
 function App() {

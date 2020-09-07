@@ -4,6 +4,7 @@ import React from 'react';
 
 import CustomChip from './CustomChip';
 import CustomModal from './CustomModal';
+import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -92,9 +93,11 @@ const Home = () => {
                     <p className={classes.tag}>Tag your theme/emotions here: </p>
                     <CustomChip />
                     <div className={classes.buttonsLayout}>
-                        <Button size="large" className={classes.insideButton}>
-                            New Story
-                        </Button>
+                        <Link to={`/story`}>
+                            <Button size="large" className={classes.insideButton}>
+                                New Story
+                            </Button>
+                        </Link>
                         <CustomModal parentClasses={classes} />
                     </div>
                 </div>

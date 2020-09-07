@@ -1,7 +1,8 @@
 import { Button, TextField } from '@material-ui/core';
 import Modal from '@material-ui/core/Modal';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import React from 'react';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -61,6 +62,12 @@ const useStyles = makeStyles(() =>
 const SimpleModal = ({ parentClasses }) => {
     const classes = useStyles();
     const [open, setOpen] = React.useState(false);
+    const [roomCode, setRoomCode] = useState('');
+    const changeHandler = (event) => {
+        if (/^[a-zA-Z]*$/.test(event.target.value) && event.target.value.length <= 5) {
+            setRoomCode(event.target.value.toUpperCase());
+        }
+    };
     const handleOpen = () => {
         setOpen(true);
     };
@@ -71,7 +78,7 @@ const SimpleModal = ({ parentClasses }) => {
         <div className={classes.paper}>
             <div className={classes.paperInside}>
                 <h1 className={classes.title}>Join Story</h1>
-                <p className={classes.details}>Enter your six digit code</p>
+                <p className={classes.details}>Enter your five digit code</p>
                 <TextField
                     InputProps={{
                         disableUnderline: true,
@@ -79,15 +86,19 @@ const SimpleModal = ({ parentClasses }) => {
                             input: classes.resize,
                         },
                     }}
+                    onChange={changeHandler}
+                    value={roomCode}
                     className={classes.input}
                     autoFocus
                     margin="dense"
                     id="name"
                     label="Code"
                 />
-                <Button size="large" className={parentClasses.insideButton}>
-                    GO
-                </Button>
+                <Link to={`/story/${roomCode}`}>
+                    <Button size="large" className={parentClasses.insideButton} disabled={roomCode.length !== 5}>
+                        GO
+                    </Button>
+                </Link>
             </div>
         </div>
     );

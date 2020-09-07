@@ -2,6 +2,7 @@ import React from 'react';
 import { BoxWrapper } from './style';
 import CustomChip from './CustomChip';
 import { Button } from '@material-ui/core';
+import CustomModal from './CustomModal';
 
 const Home = () => {
     return (
@@ -16,10 +17,7 @@ const Home = () => {
                             {' '}
                             New Story
                         </Button>
-                        <Button size="large" className="insideButton">
-                            {' '}
-                            Join Story
-                        </Button>
+                        <CustomModal />
                     </div>
                 </div>
             </div>

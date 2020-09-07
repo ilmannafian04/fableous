@@ -4,7 +4,11 @@ export const BoxWrapper = style.div`
     width: 100vw;
     height: 100vh;
     background-color: #2E3138;
-
+    display:flex;
+    align-items: center;
+    justify-content:center;
+    flex-direction:column;
+    
     .bigBox{
         display: flex;
         width: 930px;
@@ -13,6 +17,7 @@ export const BoxWrapper = style.div`
         background:#F6F1D3;
         align-items: center;
         justify-content:center;
+        
     }
     .smallBox{
         background:#7030A2;
@@ -58,6 +63,8 @@ export const BoxWrapper = style.div`
     .padding-layout{
         padding-top:2rem;
     }
-
-    
+    .join-story-dialog{
+        display:flex;
+        background-color: black;
+    }
 `;

@@ -9,6 +9,7 @@ const styles = {
         height: 50,
         alignItems: 'center',
         justifyContent: 'center',
+        disableUnderline: true,
     },
     chipInputInput: {
         marginLeft: 10,
@@ -24,7 +25,6 @@ const styles = {
 class CustomChipInput extends React.Component {
     render() {
         const { classes } = this.props;
-
         return (
             <ChipInput
                 classes={{

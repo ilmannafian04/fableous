@@ -3,7 +3,7 @@ import { Switch, Route } from 'react-router-dom';
 
 import './App.css';
 import Story from '../CanvasDraw/Story';
-import Landing from '../../Landing';
+import HomePage from '../HomePage/HomePage';
 
 function App() {
     return (
@@ -15,7 +15,7 @@ function App() {
                 <Story />
             </Route>
             <Route path="/">
-                <Landing />
+                <HomePage />
             </Route>
         </Switch>
     );

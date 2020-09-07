@@ -1,14 +1,17 @@
-import React, { useState, useRef, useEffect } from 'react';
-import useWindowSize from '../../utils/hooks/useWindowSize';
-import { Stage, Layer, Image } from 'react-konva';
+import produce from 'immer';
 import Konva from 'konva';
+import React, { useState, useRef, useEffect } from 'react';
+import Heartbeat from 'react-heartbeat';
+import { Stage, Layer, Image } from 'react-konva';
+
+import useWindowSize from '../../utils/hooks/useWindowSize';
 
 const DEFAULT_WIDTH_CANVAS = 1280;
 const DEFAULT_HEIGHT_CANVAS = 720;
 const WIDTH_RATIO = 16;
 const HEIGHT_RATIO = 9;
 
-function CanvasDraw() {
+function CanvasDraw({ socket }) {
     // Window Size
     const { width, height } = useWindowSize();
 
@@ -28,6 +31,8 @@ function CanvasDraw() {
     const imageRef = useRef();
     const stageRef = useRef();
     const headerRef = useRef();
+
+    const [messages, setMessages] = useState([]);
 
     useEffect(() => {
         if (headerRef.current) {
@@ -63,6 +68,13 @@ function CanvasDraw() {
         }
     }, [canvasIsReady, canvas]);
 
+    if (socket) {
+        socket.onmessage = (event) => {
+            const message = JSON.parse(event.data);
+            message['strokes'].forEach((drawing) => draw(drawing.start, drawing.stop));
+        };
+    }
+
     const calculateHeightBasedOnRatio = (width) => {
         return { width: width, height: (width / WIDTH_RATIO) * HEIGHT_RATIO };
     };
@@ -93,29 +105,45 @@ function CanvasDraw() {
         }
     };
 
-    const onMoveHandler = () => {
-        const image = imageRef.current;
-        let localPos;
-        if (isPainting) {
+    const draw = (prevPointer, nextPointer) => {
+        if (context) {
+            const image = imageRef.current;
+            let localPos;
             context.beginPath();
 
-            localPos = normalizePoint(lastPointerPosition, scale);
+            localPos = normalizePoint(prevPointer, scale);
 
             context.moveTo(localPos.x, localPos.y);
 
-            let nextPointerPosition = image.getStage().getPointerPosition();
-
-            localPos = normalizePoint(nextPointerPosition, scale);
+            localPos = normalizePoint(nextPointer, scale);
 
             context.lineTo(localPos.x, localPos.y);
             context.closePath();
             context.stroke();
 
-            setLastPointerPosition(nextPointerPosition);
             image.getLayer().batchDraw();
         }
     };
 
+    const onMoveHandler = () => {
+        if (isPainting) {
+            const image = imageRef.current;
+            const { x, y } = image.getStage().getPointerPosition();
+            draw(lastPointerPosition, { x: x, y: y });
+            setLastPointerPosition({ x: x, y: y });
+            setMessages(
+                produce(messages, (draft) => {
+                    draft.push({ start: lastPointerPosition, stop: { x: x, y: y }, color: '', size: 10 });
+                })
+            );
+        }
+    };
+
+    const endDrawing = () => {
+        if (isPainting) {
+            setIsPainting(false);
+        }
+    };
     return (
         <div ref={headerRef} style={{ width: '100%', height: '100%' }}>
             <Stage width={availSpace.width} height={availSpace.height} ref={stageRef}>
@@ -133,14 +161,24 @@ function CanvasDraw() {
                             setIsPainting(true);
                         }}
                         onTouchMove={onMoveHandler}
-                        onTouchEnd={() => setIsPainting(false)}
-                        onMouseUp={() => setIsPainting(false)}
-                        onMouseLeave={() => setIsPainting(false)}
+                        onTouchEnd={endDrawing}
+                        onMouseUp={endDrawing}
+                        onMouseLeave={endDrawing}
                         listening={true}
                     />
                 </Layer>
             </Stage>
+            <Heartbeat
+                heartbeatInterval={200}
+                heartbeatFunction={() => {
+                    if (socket && messages.length > 0) {
+                        socket.send(JSON.stringify({ command: 'draw.story.stroke', data: messages }));
+                        setMessages([]);
+                    }
+                }}
+            />
         </div>
     );
 }
+
 export default CanvasDraw;

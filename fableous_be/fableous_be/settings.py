@@ -22,8 +22,7 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 env = environ.Env(
     SECRET_KEY=str,
     ENV=(str, 'DEVELOPMENT'),
-    REDIS_HOST=(str, '127.0.0.1'),
-    REDIS_PORT=(int, 6379),
+    REDIS_URL=str,
     DATABASE_URL=(str, None)
 )
 
@@ -41,8 +40,16 @@ DEBUG = env('ENV') == 'DEVELOPMENT'
 
 ALLOWED_HOSTS = ['127.0.0.1',
                  'localhost',
+                 'todo-team-name.uqcloud.net',
                  'deco3801-todo-team-name.uqcloud.net',
                  'deco3801-todo-team-name.zones.eait.uq.edu.au']
+
+CORS_ALLOWED_ORIGINS = ['http://localhost:3000',
+                        'http://127.0.0.1:3000',
+                        'https://api.uqcloud.net',
+                        'https://todo-team-name.uqcloud.net',
+                        'https://deco3801-todo-team-name.uqcloud.net',
+                        'https://deco3801-todo-team-name.zones.eait.uq.edu.au']
 
 # Application definition
 
@@ -54,12 +61,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'fableous.apps.FableousConfig',
-    'channels'
+    'channels',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -102,10 +111,22 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [(env('REDIS_HOST'), env('REDIS_PORT'))],
+            "hosts": [(env('REDIS_URL'))],
         },
     },
 }
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': f'{env("REDIS_URL")}/1',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators

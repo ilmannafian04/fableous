@@ -5,13 +5,23 @@ import Heartbeat from 'react-heartbeat';
 import { Stage, Layer, Image } from 'react-konva';
 
 import useWindowSize from '../../utils/hooks/useWindowSize';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 const DEFAULT_WIDTH_CANVAS = 1280;
 const DEFAULT_HEIGHT_CANVAS = 720;
 const WIDTH_RATIO = 16;
 const HEIGHT_RATIO = 9;
 
+const useStyles = makeStyles(() =>
+    createStyles({
+        canvasStyle: {
+            background: 'purple',
+        },
+    })
+);
+
 function CanvasDraw({ socket }) {
+    const classes = useStyles();
     // Window Size
     const { width, height } = useWindowSize();
 
@@ -146,7 +156,8 @@ function CanvasDraw({ socket }) {
     };
     return (
         <div ref={headerRef} style={{ width: '100%', height: '100%' }}>
-            <Stage width={availSpace.width} height={availSpace.height} ref={stageRef}>
+            <h1>Draw</h1>
+            <Stage width={availSpace.width} height={availSpace.height} ref={stageRef} className={classes.canvasStyle}>
                 <Layer>
                     <Image
                         image={canvas}
@@ -168,6 +179,10 @@ function CanvasDraw({ socket }) {
                     />
                 </Layer>
             </Stage>
+            <span>
+                Some notes: combined story only appears on the hub, this is to encourage interaction between team
+                members, according to proposal
+            </span>
             <Heartbeat
                 heartbeatInterval={200}
                 heartbeatFunction={() => {

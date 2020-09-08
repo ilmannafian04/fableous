@@ -35,9 +35,9 @@ const useStyles = makeStyles(() =>
             '&:hover': {
                 backgroundColor: '#f6f1d3',
             },
-            '&$focused': {
-                backgroundColor: '#f6f1d3',
-            },
+            // '&$focused': {
+            //     backgroundColor: '#f6f1d3',
+            // },
             width: '80%',
             height: '3rem',
         },

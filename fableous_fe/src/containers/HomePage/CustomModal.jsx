@@ -46,7 +46,7 @@ const useStyles = makeStyles(() =>
             textAlign: 'center',
         },
         title: {
-            fontSize: '100px',
+            fontSize: '70px',
             marginBlockEnd: '0',
             marginBlockStart: '0',
             color: 'white',

@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import Role from '../../constant/role';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
 import { Box, Container, List, ListItem } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import { makeStyles } from '@material-ui/core/styles';
 import ListItemText from '@material-ui/core/ListItemText';
-import Divider from '@material-ui/core/Divider';
+import TextField from '@material-ui/core/TextField';
+import React, { useEffect, useState } from 'react';
+
+import Role from '../../constant/role';
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -185,7 +185,6 @@ const Lobby = ({ socket, changeState, roomCode }) => {
                                             primary={player.name}
                                             secondary={player.role ? Role[player.role] : 'Selecting role'}
                                         />
-                                        {/*{player.name} - {player.role ? Role[player.role] : 'Selecting role'} -{' '}*/}
                                         {player.isReady ? 'Ready' : 'Not ready'}
                                     </ListItem>
                                 ))}

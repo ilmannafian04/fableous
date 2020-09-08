@@ -1,11 +1,19 @@
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import CanvasDraw from './CanvasDraw';
-import './DrawingSession.css';
 import Lobby from './Lobby';
 import { baseUrl, wsProtocol } from '../../constant/url';
+
+const useStyles = makeStyles(() =>
+    createStyles({
+        drawingSessionContainer: {
+            width: '720p',
+        },
+    })
+);
 
 // Session state
 // 0 = Lobby
@@ -14,6 +22,7 @@ const Story = () => {
     const [roomCode, setRoomCode] = useState(null);
     const [socket, setSocket] = useState(null);
     const { joinCode } = useParams();
+    const classes = useStyles();
     useEffect(() => {
         if (joinCode) {
             setRoomCode(joinCode);
@@ -49,7 +58,7 @@ const Story = () => {
         default:
             displayedComponent = <Lobby />;
     }
-    return <div className="drawing-session-container">{displayedComponent}</div>;
+    return <div className={classes.drawingSessionContainer}>{displayedComponent}</div>;
 };
 
 export default Story;

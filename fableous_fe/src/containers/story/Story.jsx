@@ -10,7 +10,7 @@ import { baseUrl, wsProtocol } from '../../constant/url';
 const useStyles = makeStyles(() =>
     createStyles({
         drawingSessionContainer: {
-            // width: '720px',
+            width: '720px',
         },
     })
 );

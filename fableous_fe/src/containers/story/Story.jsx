@@ -1,12 +1,19 @@
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import CanvasDraw from './CanvasDraw';
-import './DrawingSession.css';
 import Lobby from './Lobby';
 import { baseUrl, wsProtocol } from '../../constant/url';
-import Role from '../../constant/role';
+
+const useStyles = makeStyles(() =>
+    createStyles({
+        drawingSessionContainer: {
+            width: '720p',
+        },
+    })
+);
 
 // Session state
 // 0 = Lobby
@@ -14,8 +21,8 @@ const Story = () => {
     const [sessionState, setSessionState] = useState(0);
     const [roomCode, setRoomCode] = useState(null);
     const [socket, setSocket] = useState(null);
-    const [playerData, setPlayerData] = useState({ name: 'Fableous', role: Role[0] });
     const { joinCode } = useParams();
+    const classes = useStyles();
     useEffect(() => {
         if (joinCode) {
             setRoomCode(joinCode);
@@ -40,13 +47,10 @@ const Story = () => {
         }
     }, [roomCode]);
     const changeState = (state) => setSessionState(state);
-    const changePlayerData = (data) => setPlayerData(data);
     let displayedComponent;
     switch (sessionState) {
         case 0:
-            displayedComponent = (
-                <Lobby socket={socket} changeState={changeState} changePlayerData={changePlayerData} />
-            );
+            displayedComponent = <Lobby socket={socket} roomCode={roomCode} changeState={changeState} />;
             break;
         case 1:
             displayedComponent = <CanvasDraw socket={socket} />;
@@ -54,14 +58,7 @@ const Story = () => {
         default:
             displayedComponent = <Lobby />;
     }
-    return (
-        <div className="drawing-session-container">
-            <h1>Room code: {roomCode}</h1>
-            <h2>Name: {playerData.name}</h2>
-            <h2>Role: {playerData.role}</h2>
-            {displayedComponent}
-        </div>
-    );
+    return <div className={classes.drawingSessionContainer}>{displayedComponent}</div>;
 };
 
 export default Story;

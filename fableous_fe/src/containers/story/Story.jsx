@@ -10,7 +10,7 @@ import { baseUrl, wsProtocol } from '../../constant/url';
 const useStyles = makeStyles(() =>
     createStyles({
         drawingSessionContainer: {
-            width: '720p',
+            // width: '720px',
         },
     })
 );
@@ -58,7 +58,7 @@ const Story = () => {
         default:
             displayedComponent = <Lobby />;
     }
-    return <div className={classes.drawingSessionContainer}>{displayedComponent}</div>;
+    return <div className={classes.drawingSessionContainer}>{displayedComponent} </div>;
 };
 
 export default Story;

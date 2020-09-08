@@ -377,3 +377,5 @@ sketch
 # Sonarlint plugin
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,pycharm+all,python,react,django,webstorm+all
+
+fableous_be/data/*

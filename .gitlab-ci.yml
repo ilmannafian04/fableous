@@ -2,6 +2,11 @@ stages:
   - build
   - deploy
 
+variables:
+  FE_IMAGE_NAME: fableous_fe
+  WSGI_IMAGE_NAME: fableous_wsgi
+  ASGI_IMAGE_NAME: fableous_asgi
+
 build:frontend:
   stage: build
   image: node:alpine
@@ -10,6 +15,9 @@ build:frontend:
   script:
     - npm install
     - npm run build
+  only:
+    changes:
+      - fableous_fe/**/*
   cache:
     key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
     paths:
@@ -19,21 +27,147 @@ build:frontend:
     paths:
       - fableous_fe/build/
 
-deploy-dev:frontend:
-  stage: deploy
+.deploy-template: &docker-base
   image: docker
+  stage: deploy
   services:
     - docker:dind
+  
+.deploy-template:frontend: &docker-frontend
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - cd fableous_fe
+  script:
+    - docker pull $CI_IMAGE_NAME:$BRANCH_TAG || true
+    - docker build --cache-from $CI_IMAGE_NAME:$BRANCH_TAG --tag $CI_IMAGE_NAME:$CI_COMMIT_SHA --tag $CI_IMAGE_NAME:$BRANCH_TAG .
+    - docker push $CI_IMAGE_NAME:$CI_COMMIT_SHA
+    - docker push $CI_IMAGE_NAME:$BRANCH_TAG
+  dependencies:
+    - build:frontend
+  <<: *docker-base
+  
+deploy-dev:frontend:
   variables:
     CI_IMAGE_NAME: $CI_REGISTRY/todo-teamname/fableous/$FE_IMAGE_NAME
-  before_script:
-    - cd fableous_fe
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-  script:
-    - docker pull $CI_IMAGE_NAME:dev-latest || true
-    - docker build --cache-from $CI_IMAGE_NAME:dev-latest --tag $CI_IMAGE_NAME:$CI_COMMIT_SHA --tag $CI_IMAGE_NAME:dev-latest .
-    - docker push $CI_IMAGE_NAME:$CI_COMMIT_SHA
-    - docker push $CI_IMAGE_NAME:dev-latest
+    BRANCH_TAG: dev-latest
+  only:
+    changes:
+      - fableous_fe/**/*
   except:
     - master
+    - staging
   when: manual
+  <<: *docker-frontend
+
+deploy-staging:frontend:
+  variables:
+    CI_IMAGE_NAME: $CI_REGISTRY/todo-teamname/fableous/$FE_IMAGE_NAME
+    BRANCH_TAG: staging
+  only:
+    changes:
+      - fableous_fe/**/*
+    refs:
+      - staging
+  <<: *docker-frontend
+
+deploy-master:frontend:
+  variables:
+    CI_IMAGE_NAME: $CI_REGISTRY/todo-teamname/fableous/$FE_IMAGE_NAME
+    BRANCH_TAG: latest
+  only:
+    changes:
+      - fableous_fe/**/*
+    refs:
+      - master
+  <<: *docker-frontend
+
+.deploy-template:backend: &docker-backend
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - cd fableous_be
+  script:
+    - docker pull $CI_IMAGE_NAME:$BRANCH_TAG || true
+    - docker build -f $DOCKERFILE_NAME --cache-from $CI_IMAGE_NAME:$BRANCH_TAG --tag $CI_IMAGE_NAME:$CI_COMMIT_SHA --tag $CI_IMAGE_NAME:$BRANCH_TAG .
+    - docker push $CI_IMAGE_NAME:$CI_COMMIT_SHA
+    - docker push $CI_IMAGE_NAME:$BRANCH_TAG
+  dependencies: []
+  <<: *docker-base
+
+deploy-dev:backend:wsgi:
+  variables:
+    CI_IMAGE_NAME: $CI_REGISTRY/todo-teamname/fableous/$WSGI_IMAGE_NAME
+    BRANCH_TAG: dev-latest
+    DOCKERFILE_NAME: wsgi.Dockerfile
+  only:
+    changes:
+      - fableous_be/**/*
+  except:
+    refs:
+      - master
+      - staging
+  when: manual
+  <<: *docker-backend
+
+deploy-staging:backend:wsgi:
+  variables:
+    CI_IMAGE_NAME: $CI_REGISTRY/todo-teamname/fableous/$WSGI_IMAGE_NAME
+    BRANCH_TAG: staging
+    DOCKERFILE_NAME: wsgi.Dockerfile
+  only:
+    changes:
+      - fableous_be/**/*
+    refs:
+      - staging
+  <<: *docker-backend
+
+deploy-master:backend:wsgi:
+  variables:
+    CI_IMAGE_NAME: $CI_REGISTRY/todo-teamname/fableous/$WSGI_IMAGE_NAME
+    BRANCH_TAG: latest
+    DOCKERFILE_NAME: wsgi.Dockerfile
+  only:
+    changes:
+      - fableous_be/**/*
+    refs:
+      - master
+  <<: *docker-backend
+
+deploy-dev:backend:asgi:
+  variables:
+    CI_IMAGE_NAME: $CI_REGISTRY/todo-teamname/fableous/$ASGI_IMAGE_NAME
+    BRANCH_TAG: dev-latest
+    DOCKERFILE_NAME: asgi.Dockerfile
+  only:
+    changes:
+      - fableous_be/**/*
+  except:
+    refs:
+      - master
+      - staging
+  when: manual
+  <<: *docker-backend
+
+deploy-staging:backend:asgi:
+  variables:
+    CI_IMAGE_NAME: $CI_REGISTRY/todo-teamname/fableous/$ASGI_IMAGE_NAME
+    BRANCH_TAG: staging
+    DOCKERFILE_NAME: asgi.Dockerfile
+  only:
+    changes:
+      - fableous_be/**/*
+    refs:
+      - staging
+  <<: *docker-backend
+
+deploy-master:backend:asgi:
+  variables:
+    CI_IMAGE_NAME: $CI_REGISTRY/todo-teamname/fableous/$ASGI_IMAGE_NAME
+    BRANCH_TAG: latest
+    DOCKERFILE_NAME: asgi.Dockerfile
+  only:
+    changes:
+      - fableous_be/**/*
+    refs:
+      - master
+  <<: *docker-backend
+  

@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import os
 from pathlib import Path
 
+import dj_database_url
 # noinspection PyPackageRequirements
 from environ import environ
 
@@ -20,9 +21,13 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 
 env = environ.Env(
     SECRET_KEY=str,
-    ENV=(str, 'DEVELOPMENT')
+    ENV=(str, 'DEVELOPMENT'),
+    REDIS_URL=str,
+    DATABASE_URL=(str, None)
 )
-env.read_env(str(BASE_DIR / '.env'))
+
+if os.path.isfile(BASE_DIR / '.env'):
+    env.read_env(str(BASE_DIR / '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
@@ -35,8 +40,16 @@ DEBUG = env('ENV') == 'DEVELOPMENT'
 
 ALLOWED_HOSTS = ['127.0.0.1',
                  'localhost',
+                 'todo-team-name.uqcloud.net',
                  'deco3801-todo-team-name.uqcloud.net',
                  'deco3801-todo-team-name.zones.eait.uq.edu.au']
+
+CORS_ALLOWED_ORIGINS = ['http://localhost:3000',
+                        'http://127.0.0.1:3000',
+                        'https://api.uqcloud.net',
+                        'https://todo-team-name.uqcloud.net',
+                        'https://deco3801-todo-team-name.uqcloud.net',
+                        'https://deco3801-todo-team-name.zones.eait.uq.edu.au']
 
 # Application definition
 
@@ -48,11 +61,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'fableous.apps.FableousConfig',
+    'channels',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -79,16 +95,38 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'fableous_be.wsgi.application'
+ASGI_APPLICATION = 'fableous_be.routing.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
+    'default': dj_database_url.config() if env('DATABASE_URL') is not None else {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [(env('REDIS_URL'))],
+        },
+    },
+}
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': f'{env("REDIS_URL")}/1',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators

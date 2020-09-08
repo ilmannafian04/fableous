@@ -1,7 +1,8 @@
 from django.urls import path
 
-from fableous.views import ping
+from fableous import views
 
 urlpatterns = [
-    path('ping', ping),
+    path('ping', views.ping),
+    path('createsession', views.create_drawing_session)
 ]

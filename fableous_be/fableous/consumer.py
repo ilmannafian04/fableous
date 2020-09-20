@@ -15,15 +15,19 @@ class DrawingConsumer(AsyncJsonWebsocketConsumer):
                      'role': f'{self.room_name}.{self.channel_name}.role',
                      'isReady': f'{self.room_name}.{self.channel_name}.isReady'}
         r = get_redis_connection()
-        state = int(r.get(f'{self.room_name}.state').decode('utf-8'))
-        if state == 0:
-            r.sadd(f'{self.room_name}.players', self.channel_name)
-            r.set(self.keys['name'], f'Fableous #{"".join(random.choice(string.digits) for _ in range(4))}')
-            r.set(self.keys['role'], 0)
-            r.set(self.keys['isReady'], str(False))
-            await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-            await self.accept()
-            await self.channel_layer.group_send(self.room_group_name, {'type': 'draw.lobby_state'})
+        raw_state = r.get(f'{self.room_name}.state').decode('utf-8')
+        if raw_state is not None:
+            state = int(raw_state)
+            if state == 0:
+                r.sadd(f'{self.room_name}.players', self.channel_name)
+                r.set(self.keys['name'], f'Fableous #{"".join(random.choice(string.digits) for _ in range(4))}')
+                r.set(self.keys['role'], 0)
+                r.set(self.keys['isReady'], str(False))
+                await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+                await self.accept()
+                await self.channel_layer.group_send(self.room_group_name, {'type': 'draw.lobby_state'})
+            else:
+                await self.close()
         else:
             await self.close()
 

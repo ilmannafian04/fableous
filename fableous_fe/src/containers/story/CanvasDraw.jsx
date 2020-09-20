@@ -6,6 +6,7 @@ import { Stage, Layer, Image } from 'react-konva';
 
 import useWindowSize from '../../utils/hooks/useWindowSize';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { secondsToMMSS } from '../../utils/formatting';
 
 const DEFAULT_WIDTH_CANVAS = 1280;
 const DEFAULT_HEIGHT_CANVAS = 720;
@@ -43,6 +44,7 @@ function CanvasDraw({ socket }) {
     const headerRef = useRef();
 
     const [messages, setMessages] = useState([]);
+    const [timeLeft, setTimeLeft] = useState(3 * 60);
 
     useEffect(() => {
         if (headerRef.current) {
@@ -81,7 +83,17 @@ function CanvasDraw({ socket }) {
     if (socket) {
         socket.onmessage = (event) => {
             const message = JSON.parse(event.data);
-            message['strokes'].forEach((drawing) => draw(drawing.start, drawing.stop));
+            switch (message['type']) {
+                case 'draw':
+                    message['data']['strokes'].forEach((drawing) => draw(drawing.start, drawing.stop));
+                    break;
+                case 'state':
+                    console.log(message['data']);
+                    setTimeLeft(message['data']['timeLeft']);
+                    break;
+                default:
+                    console.error('Unknown WS message');
+            }
         };
     }
 
@@ -157,6 +169,9 @@ function CanvasDraw({ socket }) {
     return (
         <div ref={headerRef} style={{ width: '100%', height: '100%' }}>
             <h1>Draw</h1>
+            <span>
+                <b>Time left:</b> {secondsToMMSS(timeLeft)}
+            </span>
             <Stage width={availSpace.width} height={availSpace.height} ref={stageRef} className={classes.canvasStyle}>
                 <Layer>
                     <Image

@@ -1,3 +1,4 @@
+import asyncio
 import random
 import string
 
@@ -93,7 +94,14 @@ class DrawingConsumer(AsyncJsonWebsocketConsumer):
                 await self.channel_layer.group_send(self.room_group_name, {'type': 'draw.lobby_state'})
             else:
                 r.set(f'{self.room_name}.state', 1)
+                asyncio.create_task(self.story_loop())
                 await self.channel_layer.group_send(self.room_group_name, {'type': 'draw.change_state'})
+
+    async def story_loop(self):
+        for time_left in range(3 * 60, -1, -1):
+            await self.channel_layer.group_send(self.room_group_name, {'type': 'draw.draw_state',
+                                                                       'time_left': time_left})
+            await asyncio.sleep(1.0)
 
     async def draw_change_state(self, _):
         r = get_redis_connection()
@@ -120,7 +128,13 @@ class DrawingConsumer(AsyncJsonWebsocketConsumer):
                                       'state': int(r.get(f'{self.room_name}.state').decode('utf-8')),
                                       'self': current_player})
 
+    async def draw_draw_state(self, event):
+        await self.send_json({'type': 'state',
+                              'data': {'timeLeft': event['time_left']}})
+
     async def draw_new_stroke(self, event):
         r = get_redis_connection()
         if int(r.get(f'{self.room_name}.{self.channel_name}.role').decode('utf-8')) == 4:
-            await self.send_json(content={'strokes': event['data'], 'layer': event['layer']})
+            await self.send_json(content={'type': 'draw',
+                                          'data': {'strokes': event['data'],
+                                                   'layer': event['layer']}})

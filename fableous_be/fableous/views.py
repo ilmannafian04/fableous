@@ -1,3 +1,4 @@
+import json
 import random
 import string
 
@@ -12,5 +13,8 @@ def ping(request):
 def create_drawing_session(request):
     room_code = ''.join(random.choice(string.ascii_uppercase) for _ in range(5))
     r = get_redis_connection()
-    r.set(f'{room_code}.state', 0)
+    story_state = {'state': 0,
+                   'players': [],
+                   'role': {'0': [], '1': [], '2': [], '3': [], '4': []}}
+    r.set(room_code, json.dumps(story_state, separators=(',', ':')))
     return JsonResponse({'roomCode': room_code})

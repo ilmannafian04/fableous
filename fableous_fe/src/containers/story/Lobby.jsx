@@ -96,7 +96,7 @@ const ArtistForm = ({ socket, isReady, name }) => {
     const submitHandler = (event) => {
         event.preventDefault();
         if (socket) {
-            socket.send(JSON.stringify({ command: 'draw.lobby.name', name: newName }));
+            socket.send(JSON.stringify({ command: 'draw.lobby.playerState', key: 'name', value: newName }));
         }
     };
     return (
@@ -116,7 +116,9 @@ const ArtistForm = ({ socket, isReady, name }) => {
 const RoleSelect = ({ socket, isReady, selectedRole }) => {
     const clickHandler = (event) => {
         if (socket) {
-            socket.send(JSON.stringify({ command: 'draw.lobby.role', role: event.target.value }));
+            socket.send(
+                JSON.stringify({ command: 'draw.lobby.playerState', key: 'role', value: parseInt(event.target.value) })
+            );
         }
     };
     return (
@@ -199,8 +201,9 @@ const Lobby = ({ socket, changeState, roomCode }) => {
                             onClick={() =>
                                 socket.send(
                                     JSON.stringify({
-                                        command: 'draw.lobby.isReady',
-                                        isReady: !lobbyState.self.isReady,
+                                        command: 'draw.lobby.playerState',
+                                        key: 'isReady',
+                                        value: !lobbyState.self.isReady,
                                     })
                                 )
                             }

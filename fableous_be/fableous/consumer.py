@@ -1,4 +1,5 @@
 import asyncio
+import json
 import random
 import string
 
@@ -11,18 +12,17 @@ class DrawingConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room']
         self.room_group_name = f'drawing_{self.room_name}'
-        self.keys = {'name': f'{self.room_name}.{self.channel_name}.name',
-                     'role': f'{self.room_name}.{self.channel_name}.role',
-                     'isReady': f'{self.room_name}.{self.channel_name}.isReady'}
         r = get_redis_connection()
-        raw_state = r.get(f'{self.room_name}.state').decode('utf-8')
-        if raw_state is not None:
-            state = int(raw_state)
-            if state == 0:
-                r.sadd(f'{self.room_name}.players', self.channel_name)
-                r.set(self.keys['name'], f'Fableous #{"".join(random.choice(string.digits) for _ in range(4))}')
-                r.set(self.keys['role'], 0)
-                r.set(self.keys['isReady'], str(False))
+        story_state = await self.get_story_state()
+        if story_state is not None:
+            if story_state['state'] == 0:
+                story_state['players'].append(self.channel_name)
+                story_state['role']['0'].append(self.channel_name)
+                self_state = {'name': f'Fableous #{"".join(random.choice(string.digits) for _ in range(4))}',
+                              'role': 0,
+                              'isReady': False}
+                r.set(f'{self.room_name}.{self.channel_name}', json.dumps(self_state, separators=(",", ":")))
+                r.set(self.room_name, json.dumps(story_state, separators=(",", ":")))
                 await self.channel_layer.group_add(self.room_group_name, self.channel_name)
                 await self.accept()
                 await self.channel_layer.group_send(self.room_group_name, {'type': 'draw.lobby_state'})
@@ -33,71 +33,63 @@ class DrawingConsumer(AsyncJsonWebsocketConsumer):
 
     async def disconnect(self, close_code):
         r = get_redis_connection()
-        r.srem(f'{self.room_name}.role.{int(r.get(self.keys["role"]))}', self.channel_name)
-        for key in self.keys.keys():
-            r.delete(self.keys[key])
-        players_key = f'{self.room_name}.players'
-        r.srem(players_key, self.channel_name)
-        if r.scard(players_key) == 0:
-            r.delete(players_key)
-            r.delete(f'{self.room_name}.state')
+        player_state = await self.get_self_state()
+        story_state = await self.get_story_state()
+        if story_state is not None:
+            if player_state is not None:
+                story_state['role'][str(player_state['role'])].remove(self.channel_name)
+                r.delete(f'{self.room_name}.{self.channel_name}')
+            story_state['players'].remove(self.channel_name)
+            if len(story_state['players']) == 0:
+                r.delete(self.room_name)
+            else:
+                await self.save_story_state(story_state)
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
     async def receive_json(self, content, **kwargs):
         content['sender_channel_name'] = self.channel_name
-        if content['command'] == 'draw.lobby.name':
-            await self.change_name(content['name'])
-        elif content['command'] == 'draw.lobby.role':
-            await self.change_role(content['role'])
-        elif content['command'] == 'draw.lobby.isReady':
-            await self.change_is_ready(content['isReady'])
+        if content['command'] == 'draw.lobby.playerState':
+            await self.change_player_state(content['key'], content['value'])
         elif content['command'] == 'draw.story.stroke':
             await self.new_stroke(content['data'])
 
-    async def change_name(self, name):
-        r = get_redis_connection()
-        r.set(self.keys['name'], name)
-        await self.validate_state()
-
-    async def change_role(self, role):
-        r = get_redis_connection()
-        r.srem(f'{self.room_name}.role.{int(r.get(self.keys["role"]))}', self.channel_name)
-        r.set(self.keys['role'], role)
-        r.sadd(f'{self.room_name}.role.{role}', self.channel_name)
-        await self.validate_state()
-
-    async def change_is_ready(self, is_ready):
-        r = get_redis_connection()
-        r.set(self.keys['isReady'], str(is_ready))
+    async def change_player_state(self, key, value):
+        player_state = await self.get_self_state()
+        if key == 'role':
+            story_state = await self.get_story_state()
+            story_state['role'][f'{player_state["role"]}'].remove(self.channel_name)
+            story_state['role'][f'{value}'].append(self.channel_name)
+            await self.save_story_state(story_state)
+        player_state[key] = value
+        await self.save_self_state(player_state)
         await self.validate_state()
 
     async def new_stroke(self, data):
         # TODO: persist the stroke data
-        r = get_redis_connection()
+        player_state = await self.get_self_state()
         await self.channel_layer.group_send(self.room_group_name, {
             'type': 'draw.new_stroke',
             'data': data,
-            'layer': int(r.get(f'{self.room_name}.{self.channel_name}.role').decode('utf-8'))
+            'layer': player_state['role']
         })
 
     async def validate_state(self):
-        r = get_redis_connection()
-        current_state = int(r.get(f'{self.room_name}.state'))
-        players = r.smembers(f'{self.room_name}.players')
-        if current_state == 0:
+        story_state = await self.get_story_state()
+        if story_state['state'] == 0:
             advance_state = True
             for role in [1, 2, 3, 4]:
-                if r.scard(f'{self.room_name}.role.{role}') == 0:
+                if len(story_state['role'][f'{role}']) == 0:
                     advance_state = False
             if advance_state:
-                for player in players:
-                    player = player.decode('utf-8')
-                    if r.get(f'{self.room_name}.{player}.isReady') == b'False':
+                for player in story_state['players']:
+                    other_player_state = await self.get_json_state(f'{self.room_name}.{player}')
+                    if not other_player_state['isReady']:
                         advance_state = False
             if not advance_state:
                 await self.channel_layer.group_send(self.room_group_name, {'type': 'draw.lobby_state'})
             else:
-                r.set(f'{self.room_name}.state', 1)
+                story_state['state'] = 1
+                await self.save_json_state(self.room_name, story_state)
                 asyncio.create_task(self.story_loop())
                 await self.channel_layer.group_send(self.room_group_name, {'type': 'draw.change_state'})
 
@@ -108,37 +100,49 @@ class DrawingConsumer(AsyncJsonWebsocketConsumer):
             await asyncio.sleep(1.0)
 
     async def draw_change_state(self, _):
-        r = get_redis_connection()
-        await self.send_json(content={'state': int(r.get(f'{self.room_name}.state').decode('utf-8'))})
+        story_state = await self.get_story_state()
+        await self.send_json(content={'state': story_state['state']})
 
     async def draw_lobby_state(self, _):
-        r = get_redis_connection()
-        players_channel_name = r.smembers(f'{self.room_name}.players')
+        story_state = await self.get_story_state()
+        player_state = await self.get_self_state()
         players = []
-        current_player = None
-        for channel_name in players_channel_name:
-            channel_name = channel_name.decode('utf-8')
-            key_prefix = f'{self.room_name}.{channel_name}'
-            if channel_name == self.channel_name:
-                current_player = {'name': r.get(self.keys['name']).decode('utf-8'),
-                                  'role': int(r.get(self.keys['role']).decode('utf-8')),
-                                  'isReady': r.get(self.keys['isReady']).decode('utf-8') == 'True'}
-                players.append(current_player)
-            else:
-                players.append({'name': r.get(f'{key_prefix}.name').decode('utf-8'),
-                                'role': int(r.get(f'{key_prefix}.role').decode('utf-8')),
-                                'isReady': r.get(f'{key_prefix}.isReady').decode('utf-8') == 'True'})
+        for player_name in story_state['players']:
+            players.append(await self.get_json_state(f'{self.room_name}.{player_name}'))
         await self.send_json(content={'players': players,
-                                      'state': int(r.get(f'{self.room_name}.state').decode('utf-8')),
-                                      'self': current_player})
+                                      'state': story_state['state'],
+                                      'self': player_state})
 
     async def draw_draw_state(self, event):
         await self.send_json({'type': 'state',
                               'data': {'timeLeft': event['time_left']}})
 
     async def draw_new_stroke(self, event):
-        r = get_redis_connection()
-        if int(r.get(f'{self.room_name}.{self.channel_name}.role').decode('utf-8')) == 4:
+        player_state = await self.get_self_state()
+        if player_state['role'] == 4:
             await self.send_json(content={'type': 'draw',
                                           'data': {'strokes': event['data'],
                                                    'layer': event['layer']}})
+
+    @staticmethod
+    async def get_json_state(key):
+        r = get_redis_connection()
+        raw_state = r.get(key)
+        return json.loads(raw_state.decode('utf-8')) if raw_state is not None else None
+
+    async def get_self_state(self):
+        return await self.get_json_state(f'{self.room_name}.{self.channel_name}')
+
+    async def get_story_state(self):
+        return await self.get_json_state(f'{self.room_name}')
+
+    @staticmethod
+    async def save_json_state(key, value):
+        r = get_redis_connection()
+        r.set(key, json.dumps(value, separators=(",", ":")))
+
+    async def save_self_state(self, value):
+        return await self.save_json_state(f'{self.room_name}.{self.channel_name}', value)
+
+    async def save_story_state(self, value):
+        return await self.save_json_state(self.room_name, value)

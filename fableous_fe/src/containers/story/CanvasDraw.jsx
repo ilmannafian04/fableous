@@ -88,7 +88,6 @@ function CanvasDraw({ socket }) {
                     message['data']['strokes'].forEach((drawing) => draw(drawing.start, drawing.stop));
                     break;
                 case 'state':
-                    console.log(message['data']);
                     setTimeLeft(message['data']['timeLeft']);
                     break;
                 default:

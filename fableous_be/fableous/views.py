@@ -15,6 +15,7 @@ def create_drawing_session(request):
     r = get_redis_connection()
     story_state = {'state': 0,
                    'players': [],
-                   'role': {'0': [], '1': [], '2': [], '3': [], '4': []}}
+                   'role': {'0': [], '1': [], '2': [], '3': [], '4': []},
+                   'page': []}
     r.set(room_code, json.dumps(story_state, separators=(',', ':')))
     return JsonResponse({'roomCode': room_code})

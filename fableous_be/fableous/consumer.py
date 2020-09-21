@@ -12,7 +12,6 @@ class DrawingConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room']
         self.room_group_name = f'drawing_{self.room_name}'
-        r = get_redis_connection()
         story_state = await self.get_story_state()
         if story_state is not None:
             if story_state['state'] == 0:
@@ -21,10 +20,10 @@ class DrawingConsumer(AsyncJsonWebsocketConsumer):
                 self_state = {'name': f'Fableous #{"".join(random.choice(string.digits) for _ in range(4))}',
                               'role': 0,
                               'isReady': False}
-                r.set(f'{self.room_name}.{self.channel_name}', json.dumps(self_state, separators=(",", ":")))
-                r.set(self.room_name, json.dumps(story_state, separators=(",", ":")))
-                await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+                await self.save_story_state(story_state)
+                await self.save_self_state(self_state)
                 await self.accept()
+                await self.channel_layer.group_add(self.room_group_name, self.channel_name)
                 await self.channel_layer.group_send(self.room_group_name, {'type': 'draw.lobby_state'})
             else:
                 await self.close()

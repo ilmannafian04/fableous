@@ -2,12 +2,13 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Transformer } from 'react-konva';
 
 
-function TransformerComponent({selectedShapeID, stage}) {
+function TransformerComponent({selectedShapeID, stage, setValueOfText}) {
     const transformerRef = useRef()
 
     useEffect(() => {
         if(stage){
             checkNode()
+            setTextAreaSpace()
         }
     },[])
 
@@ -15,21 +16,37 @@ function TransformerComponent({selectedShapeID, stage}) {
         const stage = transformerRef.current.getStage();
         const selectedNode = stage.findOne('#' + selectedShapeID);
         console.log(selectedNode)
-        if (selectedNode === transformerRef.current.node()) {
-            return;
-        }
+        // if (selectedNode === transformerRef.current.node()) {
+        //     return;
+        // }
         if (selectedNode) {
             transformerRef.current.attachTo(selectedNode);
+            console.log("ATTACHED")
         } else {
+            console.log(transformerRef.current.anchorStrokeWidth(), " PEPEGA")
+            selectedNode.show()
+            stage.batchDraw()
             transformerRef.current.detach();
+
         }
         transformerRef.current.getLayer().batchDraw();
     }
 
+    const setTextAreaSpace = () => {
+        console.log(transformerRef.current.anchorStrokeWidth())
+    }
+
     return (
-        <Transformer
-            ref={transformerRef}
-        />
+        <React.Fragment>
+            <Transformer
+                ref={transformerRef}
+                keepRatio={true}
+                enabledAnchors={['middle-left', 'middle-right']}
+                OnTransform={setTextAreaSpace}
+                borderEnabled={true}
+            />
+
+        </React.Fragment>
     );
 
 }

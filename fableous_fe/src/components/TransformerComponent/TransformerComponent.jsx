@@ -21,7 +21,7 @@ function TransformerComponent({selectedShapeID, stage, setValueOfText}) {
         // }
         if (selectedNode) {
             transformerRef.current.attachTo(selectedNode);
-            console.log("ATTACHED")
+            selectedNode.show()
         } else {
             console.log(transformerRef.current.anchorStrokeWidth(), " PEPEGA")
             selectedNode.show()

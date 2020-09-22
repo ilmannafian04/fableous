@@ -11,12 +11,16 @@ function TextAreaComponent({position,attrs,scale, setCurrentTextValue,currentTex
         position:'absolute',
         top: position.y +'px',
         left: position.x +'px',
-        width:attrs.width - 3 ,
+        bottom: 'auto',
+        width:(attrs.width - 8) ,
+        boxSizing: 'padding-box',
         height: dynamicHeight,
+        padding:0,
         border:0,
-        background: 'none',
+        background: 'red',
         outline:'none',
         resize:'none',
+        overflow:'hidden',
         fontSize:40 * scale + 'px',
         fontFamily:'Arial',
 
@@ -28,7 +32,7 @@ function TextAreaComponent({position,attrs,scale, setCurrentTextValue,currentTex
         console.log(textArea.scrollHeight)
         if (attrs.height < textArea.scrollHeight){
             setDynamicHeight(textArea.scrollHeight+ 'px')
-            setTextAreaSpace({height:textArea.scrollHeight})
+            setTextAreaSpace({width:attrs.width, height:textArea.scrollHeight})
         }
     }
 
@@ -46,6 +50,7 @@ function TextAreaComponent({position,attrs,scale, setCurrentTextValue,currentTex
                 style={styles}
                 onChange={() => handleExpandText()}
                 onKeyUp={()=> saveText()}
+                rows={1}
             >
             </textarea>
         </React.Fragment>

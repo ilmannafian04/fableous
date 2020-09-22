@@ -9,7 +9,7 @@ import {DEFAULT_HEIGHT_CANVAS, DEFAULT_WIDTH_CANVAS} from "../../constants/Scree
 import TransformerComponent from "../../components/TransformerComponent/TransformerComponent";
 import TextAreaComponent from "../../components/TextAreaComponent/TextAreaComponent";
 
-
+import { useDoubleTap, useSingleTap } from 'use-double-tap';
 
 function CanvasText() {
     // Window Size
@@ -29,6 +29,7 @@ function CanvasText() {
     const [textAreaSpace, setTextAreaSpace] = useState({width:0,height:0});
     const [shapes, setShapes] = useState([]);
     const [currentTextValue, setCurrentTextValue] = useState('')
+    const [isTransform,setIsTransform] = useState(false)
 
     // Context States
     const [scale, setScale] = useState(1);
@@ -37,6 +38,8 @@ function CanvasText() {
     const stageRef = useRef();
     const layerRef = useRef()
     const headerRef = useRef();
+
+
 
 
 
@@ -167,9 +170,12 @@ function CanvasText() {
 
 
 
+
     return (
         <div ref={headerRef} style={{ width: '100%', height: '100%' }}>
             <h1> {scale}</h1>
+            <h1> {absolutePosition.y}</h1>
+            <h1> {document.body.scrollHeight}</h1>
             <button onClick={drawText}> TEXT </button>
             <Stage
                 width={availSpace.width}
@@ -177,6 +183,7 @@ function CanvasText() {
                 ref={stageRef}
                 onTap={()=> outsideTextPress()}
                 onClick={()=> outsideTextPress()}
+                stroke={'black'}
             >
                 <Layer ref={layerRef}>
                     {shapes.map((textAttr, i) => (
@@ -213,13 +220,15 @@ function CanvasText() {
 
                                   onDblTap={(e)=>{
                                       console.log(selectedShape,"MOB")
+                                      setIsTransform(false)
                                       setSelectedShape(textAttr.text_id)
                                       const position = e.target.getAbsolutePosition()
                                       const stageBox = stageRef.current.container().getBoundingClientRect();
                                       setTextAreaSpace({width: textAttr.width, height: e.target.height()})
-                                      setAbsolutePosition({x:stageBox.left+ position.x, y:stageBox.top+ position.y})
+                                      setAbsolutePosition({x:stageBox.left+ textAttr.x, y:stageBox.top+ textAttr.y})
                                       console.log(textAttr.text)
                                       e.target.hide()
+                                      setIsTransform(false)
                                       setCurrentTextValue(textAttr.text)
                                   }}
 
@@ -234,9 +243,20 @@ function CanvasText() {
                                           console.log(e.target.getClientRect())
                                       }
                                   }
+
+                                  onChange={
+                                      (e)=> {
+                                          let tempShapes = [...shapes]
+                                          let textNode = {...tempShapes[i]};
+                                          textNode.height = e.target.getClientRect().height
+                                          tempShapes[i] = textNode
+                                          setTextAreaSpace({width: textAttr.width, height: textAttr.height+10})
+                                          setShapes(tempShapes);
+                                      }
+                                  }
                             />
                     ))}
-                    { selectedShape ?
+                    { selectedShape && isTransform ?
                         <TransformerComponent
                             selectedShapeID={selectedShape}
                             stage={stageRef.current}

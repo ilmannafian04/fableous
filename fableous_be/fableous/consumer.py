@@ -49,6 +49,8 @@ class DrawingConsumer(AsyncJsonWebsocketConsumer):
         content['sender_channel_name'] = self.channel_name
         if content['command'] == 'draw.lobby.playerState':
             await self.change_player_state(content['key'], content['value'])
+        elif content['command'] == 'draw.lobby.lobbyState':
+            await self.change_lobby_state(content['key'], content['value'])
         elif content['command'] == 'draw.story.stroke':
             await self.new_stroke(content['data'])
 
@@ -61,6 +63,12 @@ class DrawingConsumer(AsyncJsonWebsocketConsumer):
             await self.save_story_state(story_state)
         player_state[key] = value
         await self.save_self_state(player_state)
+        await self.validate_state()
+
+    async def change_lobby_state(self, key, value):
+        lobby_state = await self.get_story_state()
+        lobby_state[key] = value
+        await self.save_story_state(lobby_state)
         await self.validate_state()
 
     async def new_stroke(self, data):
@@ -79,11 +87,12 @@ class DrawingConsumer(AsyncJsonWebsocketConsumer):
             for role in [1, 2, 3, 4]:
                 if len(story_state['role'][f'{role}']) == 0:
                     advance_state = False
-            if advance_state:
-                for player in story_state['players']:
-                    other_player_state = await self.get_json_state(f'{self.room_name}.{player}')
-                    if not other_player_state['isReady']:
-                        advance_state = False
+            for player in story_state['players']:
+                other_player_state = await self.get_json_state(f'{self.room_name}.{player}')
+                if not other_player_state['isReady']:
+                    advance_state = False
+            if story_state['page_count'] < 2 or story_state['page_count'] > 3:
+                advance_state = False
             if not advance_state:
                 await self.channel_layer.group_send(self.room_group_name, {'type': 'draw.lobby_state'})
             else:
@@ -93,9 +102,18 @@ class DrawingConsumer(AsyncJsonWebsocketConsumer):
                 await self.channel_layer.group_send(self.room_group_name, {'type': 'draw.change_state'})
 
     async def story_loop(self):
+        story_state = await self.get_story_state()
+        for _ in range(story_state['page_count']):
+            await self.page_loop()
+            story_state['current_page'] = story_state['current_page'] + 1
+            await self.save_story_state(story_state)
+
+    async def page_loop(self):
         for time_left in range(3 * 60, -1, -1):
+            story_state = await self.get_story_state()
             await self.channel_layer.group_send(self.room_group_name, {'type': 'draw.draw_state',
-                                                                       'time_left': time_left})
+                                                                       'time_left': time_left,
+                                                                       'story_state': story_state})
             await asyncio.sleep(1.0)
 
     async def draw_change_state(self, _):
@@ -110,11 +128,14 @@ class DrawingConsumer(AsyncJsonWebsocketConsumer):
             players.append(await self.get_json_state(f'{self.room_name}.{player_name}'))
         await self.send_json(content={'players': players,
                                       'state': story_state['state'],
-                                      'self': player_state})
+                                      'self': player_state,
+                                      'pageCount': story_state['page_count']})
 
     async def draw_draw_state(self, event):
         await self.send_json({'type': 'state',
-                              'data': {'timeLeft': event['time_left']}})
+                              'data': {'timeLeft': event['time_left'],
+                                       'pageCount': event['story_state']['page_count'],
+                                       'currentPage': event['story_state']['current_page']}})
 
     async def draw_new_stroke(self, event):
         player_state = await self.get_self_state()

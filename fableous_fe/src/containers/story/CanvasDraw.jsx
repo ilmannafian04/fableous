@@ -44,7 +44,7 @@ function CanvasDraw({ socket }) {
     const headerRef = useRef();
 
     const [messages, setMessages] = useState([]);
-    const [timeLeft, setTimeLeft] = useState(3 * 60);
+    const [drawState, setDrawState] = useState({ timeLeft: 3 * 60, currentPage: 1, pageCount: 0 });
 
     useEffect(() => {
         if (headerRef.current) {
@@ -88,7 +88,7 @@ function CanvasDraw({ socket }) {
                     message['data']['strokes'].forEach((drawing) => draw(drawing.start, drawing.stop));
                     break;
                 case 'state':
-                    setTimeLeft(message['data']['timeLeft']);
+                    setDrawState(message['data']);
                     break;
                 default:
                     console.error('Unknown WS message');
@@ -169,7 +169,11 @@ function CanvasDraw({ socket }) {
         <div ref={headerRef} style={{ width: '100%', height: '100%' }}>
             <h1>Draw</h1>
             <span>
-                <b>Time left:</b> {secondsToMMSS(timeLeft)}
+                Page {drawState.currentPage} out of {drawState.pageCount}
+            </span>
+            <br />
+            <span>
+                <b>Time left:</b> {secondsToMMSS(drawState.timeLeft)}
             </span>
             <Stage width={availSpace.width} height={availSpace.height} ref={stageRef} className={classes.canvasStyle}>
                 <Layer>

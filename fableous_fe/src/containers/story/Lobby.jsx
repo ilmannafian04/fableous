@@ -142,8 +142,38 @@ const RoleSelect = ({ socket, isReady, selectedRole }) => {
     );
 };
 
+const PageForm = ({ socket, pageCount }) => {
+    const changePageCount = (event) => {
+        const value = event.target.value === 'inc' ? pageCount + 1 : pageCount - 1;
+        if (value >= 2 && value <= 3) {
+            socket.send(
+                JSON.stringify({
+                    command: 'draw.lobby.lobbyState',
+                    key: 'page_count',
+                    value: value,
+                })
+            );
+        }
+    };
+    return (
+        <div>
+            <span>Page count: {pageCount}</span>
+            <button value="inc" onClick={changePageCount}>
+                +
+            </button>
+            <button value="dec" onClick={changePageCount}>
+                -
+            </button>
+        </div>
+    );
+};
+
 const Lobby = ({ socket, changeState, roomCode }) => {
-    const [lobbyState, setLobbyState] = useState({ players: [], self: { name: 'Fableous', role: 0, isReady: false } });
+    const [lobbyState, setLobbyState] = useState({
+        players: [],
+        self: { name: 'Fableous', role: 0, isReady: false },
+        pageCount: 2,
+    });
     const classes = useStyles();
     if (socket) {
         socket.onmessage = (event) => {
@@ -174,6 +204,7 @@ const Lobby = ({ socket, changeState, roomCode }) => {
                                 isReady={lobbyState.self.isReady}
                                 selectedRole={lobbyState.self.role}
                             />
+                            <PageForm socket={socket} pageCount={lobbyState.pageCount} />
                         </Box>
                         <Box className={classes.box}>
                             <h2 className={classes.smallTitle}>Team</h2>

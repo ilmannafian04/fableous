@@ -16,6 +16,8 @@ def create_drawing_session(request):
     story_state = {'state': 0,
                    'players': [],
                    'role': {'0': [], '1': [], '2': [], '3': [], '4': []},
-                   'page': []}
+                   'page': [],
+                   'current_page': 1,
+                   'page_count': 2}
     r.set(room_code, json.dumps(story_state, separators=(',', ':')))
     return JsonResponse({'roomCode': room_code})

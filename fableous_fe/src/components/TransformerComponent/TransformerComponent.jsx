@@ -21,7 +21,7 @@ function TransformerComponent({selectedShapeID, stage, setValueOfText}) {
         // }
         if (selectedNode) {
             transformerRef.current.attachTo(selectedNode);
-            selectedNode.show()
+            selectedNode.hide()
         } else {
             console.log(transformerRef.current.anchorStrokeWidth(), " PEPEGA")
             selectedNode.show()
@@ -44,6 +44,8 @@ function TransformerComponent({selectedShapeID, stage, setValueOfText}) {
                 enabledAnchors={['middle-left', 'middle-right']}
                 OnTransform={setTextAreaSpace}
                 borderEnabled={true}
+                rotateEnabled={false}
+                borderDash= {[3, 3]}
             />
 
         </React.Fragment>

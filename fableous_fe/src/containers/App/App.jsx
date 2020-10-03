@@ -1,15 +1,14 @@
 import React from 'react';
 import './App.css';
 import CanvasDraw from '../CanvasDraw';
-import CanvasText from "../CanvasText/CanvasText";
+import CanvasText3 from "../CanvasText3/CanvasText3";
 import AudioRecorder from '../VoiceRecorder';
+import AutoTextArea from '../CanvasText2/CanvasText2';
 
 function App() {
     return (
-        <div className="App">
-            <div className="container">
-                <CanvasText/>
-            </div>
+        <div className="App" style={{overflow:'hidden',position:'relative'}}>
+                <CanvasText3/>
         </div>
     );
 }

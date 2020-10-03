@@ -4,12 +4,12 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width:100%;
+    max-width: 100vw;
     min-height: 100%;
-    overflow-y: scroll;
+    /*overflow-y: scroll;*/
     background: #61dafb;
-    position:relative;
-
+    z-index: 10;
+    overflow: hidden;
 }
 
 .container {

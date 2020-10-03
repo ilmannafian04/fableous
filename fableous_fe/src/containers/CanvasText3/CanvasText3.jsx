@@ -10,6 +10,7 @@ import TransformerComponent from "../../components/TransformerComponent/Transfor
 import TextAreaComponent from "../../components/TextAreaComponent/TextAreaComponent";
 
 import { useDoubleTap, useSingleTap } from 'use-double-tap';
+import AutoTextArea from '../CanvasText2/CanvasText2';
 
 function CanvasText() {
     // Window Size
@@ -26,11 +27,9 @@ function CanvasText() {
     const [availSpace, setAvailSpace] = useState({ width: 0, height: 0 });
     const [selectedShape, setSelectedShape] = useState(null);
     const [absolutePosition, setAbsolutePosition] = useState({x:0,y:0});
-    const [textAreaSpace, setTextAreaSpace] = useState({width:0,height:0});
     const [shapes, setShapes] = useState([]);
-    const [currentTextValue, setCurrentTextValue] = useState('')
     const [isTransform,setIsTransform] = useState(false)
-
+    const [textAreaSize, setTextAreaSize] = useState({textAreaWidth:0,textAreaHeight:0});
     // Context States
     const [scale, setScale] = useState(1);
 
@@ -69,12 +68,13 @@ function CanvasText() {
             setShapes(tempTextArray)
         }
 
+        outsideTextPress()
         stageRef.current.batchDraw()
     },[width,height , scale])
 
     useEffect( () => {
-        stageRef.current.batchDraw()
-    },[shapes,selectedShape])
+        stageRef.current.draw()
+    },[shapes,selectedShape,absolutePosition])
 
 
     useEffect(() => {
@@ -93,7 +93,7 @@ function CanvasText() {
         if (stageRef) {
             stageRef.current.batchDraw();
         }
-    }, [canvasIsReady, canvas, layerRef,textAreaSpace]);
+    }, [canvasIsReady, canvas, layerRef]);
 
     useEffect(() => {
         setSelectedShape(null)
@@ -109,6 +109,7 @@ function CanvasText() {
     const createTextNode = () => {
         const text_id = uuid()
         const textNode = {
+            text_id: text_id,
             text: "Type Here",
             x: 160 ,
             y: 90,
@@ -116,7 +117,6 @@ function CanvasText() {
             draggable: true,
             width: 200,
             height:40,
-            text_id,
             default_x:160,
             default_y: 90,
             default_fontSize: 40 * scale,
@@ -128,39 +128,40 @@ function CanvasText() {
     }
 
     const outsideTextPress = () => {
-        setValueOfText(currentTextValue, selectedShape)
-        // console.log(currentTextValue)
-        // console.log(selectedShape)
-        setCurrentTextValue('')
         setSelectedShape(null)
         if(selectedShape) {
-            const selectedNode = stageRef.current.findOne('#' + selectedShape);
+            const selectedNode = stageRef.current.findOne('#' + selectedShape.text_id);
             selectedNode.show()
         }
+        setTextAreaSize({textAreaWidth: 0,textAreaHeight: 0})
         setSelectedShape(null)
-    }
-
-    const setValueOfText = (newText, id) => {
-        let tempShapes = [...shapes]
-        const position = tempShapes.findIndex(node => node.text_id === id)
-        let textNode = {...tempShapes[position]};
-        textNode.text = newText
-        tempShapes[position] = textNode
-        setShapes(tempShapes);
-        console.log(newText, " HERE")
     }
 
     const setTextAttribute = (attributes, index) => {
-        console.log(attributes,index)
         let tempShapes = [...shapes]
         const position = tempShapes.findIndex(node => node.text_id === index)
         let textNode = {...tempShapes[position]};
         for (const [key, value] of Object.entries(attributes)) {
-            console.log(key,value)
             textNode[key] = value;
         }
-        console.log(textNode)
         tempShapes[index] = textNode
+        setShapes(tempShapes);
+    }
+    const updateTextHeight = (text_id,height) => {
+        let tempShapes = [...shapes]
+        const position = tempShapes.findIndex(node => node.text_id === text_id)
+        let textNode = {...tempShapes[position]};
+        textNode.height = height
+        tempShapes[position] = textNode
+        setShapes(tempShapes);
+    }
+
+    const updateTextValue = (text_id,text_value) => {
+        let tempShapes = [...shapes]
+        const position = tempShapes.findIndex(node => node.text_id === text_id)
+        let textNode = {...tempShapes[position]};
+        textNode.text = text_value
+        tempShapes[position] = textNode
         setShapes(tempShapes);
     }
 
@@ -168,10 +169,7 @@ function CanvasText() {
 
 
     return (
-        <div ref={headerRef} style={{ width: '100%', height: '100%' }}>
-            <h1> {scale}</h1>
-            <h1> {absolutePosition.y}</h1>
-            <h1> {document.body.scrollHeight}</h1>
+        <div ref={headerRef} style={{width:'100%',height: '100%',position:'relative',background:'yellow',overflow:'hidden' }}>
             <button onClick={drawText}> TEXT </button>
             <Stage
                 width={availSpace.width}
@@ -183,96 +181,93 @@ function CanvasText() {
             >
                 <Layer ref={layerRef}>
                     {shapes.map((textAttr, i) => (
-                            <Text key={i}
-                                  id={textAttr.text_id}
-                                  text={textAttr.text}
-                                  x= {textAttr.x}
-                                  y={textAttr.y}
-                                  fontSize={textAttr.fontSize}
-                                  draggable={true}
-                                  width={textAttr.width}
-                                  keepRatio={true}
+                        <Text key={i}
+                              id={textAttr.text_id}
+                              text={textAttr.text}
+                              x= {textAttr.x}
+                              y={textAttr.y}
+                              fontSize={textAttr.fontSize}
+                              draggable={true}
+                              width={textAttr.width}
+                              keepRatio={true}
 
-                                  onDragStart={() => {
-                                      setIsDragging(true);
-                                  }}
+                              onDragStart={() => {
+                                  setIsDragging(true);
+                              }}
 
-                                  onDragEnd={(e) => {
+                              onDragEnd={(e) => {
+                                  let tempShapes = [...shapes]
+                                  let textNode = {...tempShapes[i]};
+                                  textNode.x = e.target.x()
+                                  textNode.y = e.target.y()
+                                  textNode.default_x = e.target.x()
+                                  textNode.default_y = e.target.y()
+                                  tempShapes[i] = textNode
+                                  setShapes(tempShapes);
+                                  setIsDragging(false)
+                              }}
+
+                              onDblTap={(e)=>{
+                                  setIsTransform(false)
+                                  setSelectedShape(textAttr)
+                                  const stageBox = stageRef.current.container().getBoundingClientRect();
+                                  setAbsolutePosition({x:stageBox.left+ textAttr.x, y:stageBox.top+ textAttr.y})
+                                  e.target.hide()
+                                  setTextAreaSize({textAreaWidth: textAttr.width , textAreaHeight: textAttr.height})
+                                  setIsTransform(true)
+                              }}
+
+                              onTransform={
+                                  (e)=> {
                                       let tempShapes = [...shapes]
                                       let textNode = {...tempShapes[i]};
+                                      textNode.width = e.target.getClientRect().width
+                                      tempShapes[i] = textNode
+                                      setShapes(tempShapes);
+                                      e.target.setAttrs({
+                                          width: e.target.width() * e.target.scaleX(),
+                                          scaleX: 1,
+                                      })
                                       textNode.x = e.target.x()
                                       textNode.y = e.target.y()
                                       textNode.default_x = e.target.x()
                                       textNode.default_y = e.target.y()
                                       tempShapes[i] = textNode
                                       setShapes(tempShapes);
-                                      setIsDragging(false)
-                                  }}
-
-                                  onDoubleClick={() => {
-                                      console.log(selectedShape,"HERE")
-                                      setSelectedShape(textAttr.text_id)
-                                  }}
-
-                                  onDblTap={(e)=>{
-                                      console.log(selectedShape,"MOB")
-                                      setIsTransform(false)
-                                      setSelectedShape(textAttr.text_id)
-                                      const position = e.target.getAbsolutePosition()
                                       const stageBox = stageRef.current.container().getBoundingClientRect();
-                                      setTextAreaSpace({width: textAttr.width, height: e.target.height()})
                                       setAbsolutePosition({x:stageBox.left+ textAttr.x, y:stageBox.top+ textAttr.y})
-                                      console.log(textAttr.text)
-                                      e.target.hide()
-                                      setIsTransform(true)
-                                      setCurrentTextValue(textAttr.text)
-                                  }}
-
-                                  onTransform={
-                                      (e)=> {
-                                          let tempShapes = [...shapes]
-                                          let textNode = {...tempShapes[i]};
-                                          textNode.width = e.target.getClientRect().width
-                                          tempShapes[i] = textNode
-                                          setShapes(tempShapes);
-                                          setTextAreaSpace({width: textAttr.width, height: textAttr.height})
-                                          console.log(e.target.getClientRect())
-                                      }
+                                      setTextAreaSize({textAreaWidth: textNode.width, textAreaHeight: textNode.height})
                                   }
+                              }
 
-                                  onChange={
-                                      (e)=> {
-                                          let tempShapes = [...shapes]
-                                          let textNode = {...tempShapes[i]};
-                                          textNode.height = e.target.getClientRect().height
-                                          tempShapes[i] = textNode
-                                          setTextAreaSpace({width: textAttr.width, height: textAttr.height+10})
-                                          setShapes(tempShapes);
-                                      }
+                              onChange={
+                                  (e)=> {
+                                      let tempShapes = [...shapes]
+                                      let textNode = {...tempShapes[i]};
+                                      textNode.height = e.target.getClientRect().height
+                                      tempShapes[i] = textNode
+                                      setShapes(tempShapes);
                                   }
-                            />
+                              }
+                        />
                     ))}
                     { selectedShape && isTransform ?
                         <TransformerComponent
-                            selectedShapeID={selectedShape}
+                            selectedShapeID={selectedShape.text_id}
                             stage={stageRef.current}
-                            setValueOfText={setValueOfText}
                         /> :
                         null
                     }
                 </Layer>
             </Stage>
-            { selectedShape  && currentTextValue !== ''?
-                <TextAreaComponent
+            { selectedShape ?
+                <AutoTextArea
                     position={absolutePosition}
                     scale={scale}
-                    stage={stageRef}
-                    attrs={textAreaSpace}
-                    currentTextValue={currentTextValue}
-                    setCurrentTextValue={setCurrentTextValue}
-                    selectedShapeID={selectedShape}
-                    setTextAreaSpace={setTextAreaSpace}
-                    setTextAttribute={setTextAttribute}
+                    selectedShape={selectedShape}
+                    textAreaSize={textAreaSize}
+                    updateTextHeight={updateTextHeight}
+                    updateTextValue={updateTextValue}
                 />  :
                 null
             }

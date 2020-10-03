@@ -2,11 +2,11 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Transformer } from 'react-konva';
 
 
-function TextAreaComponent({position,attrs,scale, setCurrentTextValue,currentTextValue,setTextAreaSpace}) {
+function TextAreaComponent({position,attrs,scale, setCurrentTextValue,selectedShapeID,currentTextValue,setTextAreaSpace,setTextAttribute}) {
     const [dynamicHeight, setDynamicHeight] = useState(attrs.height)
     useEffect(()=> {
         handleExpandText()
-    },[])
+    },[attrs])
     const styles= {
         position:'absolute',
         top: position.y +'px',
@@ -23,17 +23,23 @@ function TextAreaComponent({position,attrs,scale, setCurrentTextValue,currentTex
         overflow:'hidden',
         fontSize:40 * scale + 'px',
         fontFamily:'Arial',
+        zIndex:1
 
     }
 
     const handleExpandText = () => {
         const textArea = document.querySelector('textarea')
         console.log(attrs.height)
-        console.log(textArea.scrollHeight)
+        console.log(textArea.scrollHeight, "HERE")
+        console.log("CALLED")
         if (attrs.height < textArea.scrollHeight){
             setDynamicHeight(textArea.scrollHeight+ 'px')
             setTextAreaSpace({width:attrs.width, height:textArea.scrollHeight})
+            setTextAttribute({'height': textArea.scrollHeight},selectedShapeID)
+        }else {
+            setDynamicHeight(attrs.height)
         }
+
     }
 
     const saveText = () => {
@@ -45,14 +51,17 @@ function TextAreaComponent({position,attrs,scale, setCurrentTextValue,currentTex
 
     return (
         <React.Fragment>
-            <textarea
-                defaultValue={currentTextValue}
-                style={styles}
-                onChange={() => handleExpandText()}
-                onKeyUp={()=> saveText()}
-                rows={1}
-            >
+            <div>
+                <textarea
+                    defaultValue={currentTextValue}
+                    style={styles}
+                    onChange={() => handleExpandText()}
+                    onKeyUp={()=> saveText()}
+                    rows={1}
+                >
             </textarea>
+            </div>
+
         </React.Fragment>
     );
 

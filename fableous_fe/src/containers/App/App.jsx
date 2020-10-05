@@ -7,7 +7,7 @@ import AutoTextArea from '../CanvasText2/CanvasText2';
 
 function App() {
     return (
-        <div className="App" style={{overflow:'hidden',position:'relative'}}>
+        <div className="App" style={{overflow:'hidden'}}>
                 <CanvasText3/>
         </div>
     );

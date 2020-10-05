@@ -68,7 +68,6 @@ function CanvasText() {
             setShapes(tempTextArray)
         }
 
-        outsideTextPress()
         stageRef.current.batchDraw()
     },[width,height , scale])
 
@@ -96,7 +95,12 @@ function CanvasText() {
     }, [canvasIsReady, canvas, layerRef]);
 
     useEffect(() => {
-        setSelectedShape(null)
+        if(selectedShape) {
+            const selectedNode = stageRef.current.findOne('#' + selectedShape.text_id);
+            selectedNode.show()
+            setTextAreaAttributes({x:0, y:0 ,textAreaWidth: 0, textAreaHeight:0})
+            setSelectedShape(null)
+        }
     },[scale])
 
 
@@ -115,12 +119,12 @@ function CanvasText() {
             y: 90,
             fontSize: 40 * scale,
             draggable: true,
-            width: 200,
+            width: 220,
             height:40,
             default_x:160,
             default_y: 90,
             default_fontSize: 40 * scale,
-            default_width: 200,
+            default_width: 220,
             textScale: scale,
 
         }
@@ -128,7 +132,6 @@ function CanvasText() {
     }
 
     const outsideTextPress = () => {
-        setSelectedShape(null)
         if(selectedShape) {
             const selectedNode = stageRef.current.findOne('#' + selectedShape.text_id);
             selectedNode.show()
@@ -137,16 +140,6 @@ function CanvasText() {
         setSelectedShape(null)
     }
 
-    const setTextAttribute = (attributes, index) => {
-        let tempShapes = [...shapes]
-        const position = tempShapes.findIndex(node => node.text_id === index)
-        let textNode = {...tempShapes[position]};
-        for (const [key, value] of Object.entries(attributes)) {
-            textNode[key] = value;
-        }
-        tempShapes[index] = textNode
-        setShapes(tempShapes);
-    }
     const updateTextHeight = (text_id,height) => {
         let tempShapes = [...shapes]
         const position = tempShapes.findIndex(node => node.text_id === text_id)
@@ -176,6 +169,7 @@ function CanvasText() {
 
     return (
         <div ref={headerRef} style={{width:'100%',height: '100%', overflow:'hidden',background:'yellow',position:'relative', display:'inline-block'}}>
+            <h1>{isTransform}</h1>
             <button onClick={drawText}> TEXT </button>
             <Stage
                 width={availSpace.width}
@@ -196,11 +190,12 @@ function CanvasText() {
                               draggable={true}
                               width={textAttr.width}
                               keepRatio={true}
+                              padding={3}
                               dragBoundFunc={(pos)=>{
                                   let positionX = pos.x
                                   let positionY = pos.y
                                   const maxWidth = stageRef.current.width() - (textAttr.width)
-                                  const maxHeight = stageRef.current.height() - (textAttr.height)
+                                  const maxHeight = stageRef.current.height()
                                   let finalPosition;
 
                                   if(pos.x < 0 || pos.x > maxWidth ) {
@@ -238,6 +233,7 @@ function CanvasText() {
                               }}
 
                               onDragEnd={(e) => {
+                                  console.log(e.target.x() + e.target.getClientRect(),e.target.y())
                                   let tempShapes = [...shapes]
                                   let textNode = {...tempShapes[i]};
                                   textNode.x = e.target.x()
@@ -254,7 +250,8 @@ function CanvasText() {
                                   setSelectedShape(textAttr)
                                   const stageBox = stageRef.current.container().getBoundingClientRect();
                                   e.target.hide()
-                                  setTextAreaAttributes({x:stageBox.left + textAttr.x, y:stageBox.top + textAttr.y,textAreaWidth: textAttr.width, textAreaHeight: textAttr.height})
+                                  console.log(e.target.getClientRect().width)
+                                  setTextAreaAttributes({x:stageBox.left + textAttr.x, y:stageBox.top + textAttr.y,textAreaWidth: e.target.getClientRect().width, textAreaHeight: e.target.getClientRect().height})
                                   setIsTransform(true)
                               }}
 
@@ -293,6 +290,7 @@ function CanvasText() {
                                   textNode.default_x = e.target.x()
                                   textNode.default_y = e.target.y()
                                   tempShapes[i] = textNode
+                                  console.log(tempShapes)
                                   setShapes(tempShapes);
                               }}
 

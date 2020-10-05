@@ -7,17 +7,15 @@ import React, {
 const AutoTextArea = (props) => {
     const textAreaRef = useRef(null);
     const [text, setText] = useState("");
-    const [textAreaHeight, setTextAreaHeight] = useState('auto');
+    const [textAreaHeight, setTextAreaHeight] = useState(props.textAreaAttributes.textAreaHeight);
     const [parentHeight, setParentHeight] = useState(props.textAreaAttributes.textAreaHeight);
 
 
     const styles= {
         height: textAreaHeight,
         maxHeight: props.stage.current.height(),
-        padding:0,
+        padding:1,
         border:0,
-        // left:0,
-        // top:0,
         overflow:'hidden',
         background: 'none',
         outline:'none',
@@ -25,14 +23,15 @@ const AutoTextArea = (props) => {
         fontSize:40 * props.scale +'px',
         fontFamily:'Arial',
         lineHeight:1,
-        width: props.textAreaAttributes.textAreaWidth - 3,
+        width: props.textAreaAttributes.textAreaWidth - (3*props.scale),
 
     }
 
     useEffect(() => {
+        console.log(textAreaHeight,parentHeight)
         setParentHeight(textAreaRef.current.scrollHeight);
         setTextAreaHeight(textAreaRef.current.scrollHeight);
-        if(props.selectedShape.height < parentHeight) {
+        if(props.selectedShape.height <= parentHeight) {
             props.updateTextHeight(props.selectedShape.text_id,parentHeight)
         }
     }, [text, props.textAreaAttributes.textAreaWidth]);
@@ -64,7 +63,6 @@ const AutoTextArea = (props) => {
                 onChange={onChangeHandler}
             />
             </div>
-        // </div>
     );
 };
 

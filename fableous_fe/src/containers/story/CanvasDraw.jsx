@@ -1,11 +1,14 @@
 import produce from 'immer';
 import Konva from 'konva';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Heartbeat from 'react-heartbeat';
-import { Stage, Layer, Image } from 'react-konva';
+import { Image, Layer, Stage } from 'react-konva';
 
 import useWindowSize from '../../utils/hooks/useWindowSize';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { CirclePicker } from 'react-color';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
 import { secondsToMMSS } from '../../utils/formatting';
 
 const DEFAULT_WIDTH_CANVAS = 1280;
@@ -30,6 +33,9 @@ function CanvasDraw({ socket }) {
     const [canvas] = useState(document.createElement('canvas'));
     const [canvasIsReady, setCanvasIsReady] = useState(false);
     const [context, setContext] = useState(null);
+    const [color, setColor] = useState('#000000');
+    const [brushSize, setBrushSize] = useState(20);
+    const [mode, setMode] = React.useState('brush');
 
     // Dynamic Sizing States
     const [lastPointerPosition, setLastPointerPosition] = useState(null);
@@ -105,7 +111,7 @@ function CanvasDraw({ socket }) {
         setIsPainting(true);
 
         // Temporary value
-        context.lineWidth = 20;
+        context.lineWidth = brushSize;
         context.lineJoin = 'round';
         context.lineCap = 'round';
 
@@ -130,7 +136,17 @@ function CanvasDraw({ socket }) {
         if (context) {
             const image = imageRef.current;
             let localPos;
+
+            if (mode === 'brush') {
+                context.globalCompositeOperation = 'source-over';
+            }
+            if (mode === 'eraser') {
+                context.globalCompositeOperation = 'destination-out';
+            }
+
             context.beginPath();
+
+            context.strokeStyle = color;
 
             localPos = normalizePoint(prevPointer, scale);
 
@@ -154,7 +170,13 @@ function CanvasDraw({ socket }) {
             setLastPointerPosition({ x: x, y: y });
             setMessages(
                 produce(messages, (draft) => {
-                    draft.push({ start: lastPointerPosition, stop: { x: x, y: y }, color: '', size: 10 });
+                    draft.push({
+                        start: lastPointerPosition,
+                        stop: { x: x, y: y },
+                        strokeStyle: color,
+                        size: brushSize,
+                        globalCompositeOperation: mode,
+                    });
                 })
             );
         }
@@ -165,9 +187,46 @@ function CanvasDraw({ socket }) {
             setIsPainting(false);
         }
     };
+
+    const modeHandler = (event) => {
+        setMode(event.target.value);
+    };
+
     return (
         <div ref={headerRef} style={{ width: '100%', height: '100%' }}>
             <h1>Draw</h1>
+            <CirclePicker
+                color={color}
+                onChangeComplete={(color) => {
+                    setColor(color.hex);
+                }}
+            />
+            <button
+                onClick={() => {
+                    setBrushSize(5);
+                }}
+            >
+                Small
+            </button>
+            <button
+                onClick={() => {
+                    setBrushSize(15);
+                }}
+            >
+                Medium
+            </button>
+            <button
+                onClick={() => {
+                    setBrushSize(30);
+                }}
+            >
+                Large
+            </button>
+
+            <RadioGroup aria-label="tool" name="tool" value={mode} onChange={modeHandler}>
+                <Radio onChange={modeHandler} value="brush" label="Brush" />
+                <Radio onChange={modeHandler} value="eraser" label="Eraser" />
+            </RadioGroup>
             <span>
                 Page {drawState.currentPage} out of {drawState.pageCount}
             </span>
@@ -205,6 +264,7 @@ function CanvasDraw({ socket }) {
                 heartbeatInterval={200}
                 heartbeatFunction={() => {
                     if (socket && messages.length > 0) {
+                        console.log(messages);
                         socket.send(JSON.stringify({ command: 'draw.story.stroke', data: messages }));
                         setMessages([]);
                     }

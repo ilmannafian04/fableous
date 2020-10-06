@@ -1,19 +1,14 @@
 import produce from 'immer';
 import Konva from 'konva';
 import React, { useEffect, useRef, useState } from 'react';
-import Heartbeat from 'react-heartbeat';
-import { Image, Layer, Stage } from 'react-konva';
 
 import useWindowSize from '../../utils/hooks/useWindowSize';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import { secondsToMMSS } from '../../utils/formatting';
 
-import MenuAppBar from './CanvasComponent/MenuAppBar';
-import PageBar from './CanvasComponent/PageBar';
-import SideBar from './CanvasComponent/SideBar';
-import ColorBar from './CanvasComponent/ColorBar';
+import CanvasLayout from '../CanvasLayout/CanvasLayout';
+import { secondsToMMSS } from '../../utils/formatting';
+import { Image, Layer, Stage } from 'react-konva';
+import Heartbeat from 'react-heartbeat';
 
 const DEFAULT_WIDTH_CANVAS = 1280;
 const DEFAULT_HEIGHT_CANVAS = 720;
@@ -33,7 +28,7 @@ function CanvasDraw({ socket }) {
     // Window Size
     const { width, height } = useWindowSize();
 
-    // Canvas State
+    // CanvasLayout State
     const [canvas] = useState(document.createElement('canvas'));
     const [canvasIsReady, setCanvasIsReady] = useState(false);
     const [context, setContext] = useState(null);
@@ -198,44 +193,7 @@ function CanvasDraw({ socket }) {
 
     return (
         <div ref={headerRef} style={{ width: '100%', height: '100%' }}>
-            <SideBar />
-            <PageBar />
-            <h1>Draw</h1>
-            <ColorBar />
-            <button
-                onClick={() => {
-                    setBrushSize(5);
-                }}
-            >
-                Small
-            </button>
-            <button
-                onClick={() => {
-                    setBrushSize(15);
-                }}
-            >
-                Medium
-            </button>
-            <button
-                onClick={() => {
-                    setBrushSize(30);
-                }}
-            >
-                Large
-            </button>
-
-            <RadioGroup aria-label="tool" name="tool" value={mode} onChange={modeHandler}>
-                <Radio onChange={modeHandler} value="brush" label="Brush" />
-                <Radio onChange={modeHandler} value="eraser" label="Eraser" />
-            </RadioGroup>
-            <span>
-                Page {drawState.currentPage} out of {drawState.pageCount}
-            </span>
-            <br />
-            <span>
-                <b>Time left:</b> {secondsToMMSS(drawState.timeLeft)}
-            </span>
-            <MenuAppBar />
+            <CanvasLayout />
             <Stage width={availSpace.width} height={availSpace.height} ref={stageRef} className={classes.canvasStyle}>
                 <Layer>
                     <Image
@@ -258,10 +216,7 @@ function CanvasDraw({ socket }) {
                     />
                 </Layer>
             </Stage>
-            <span>
-                Some notes: combined story only appears on the hub, this is to encourage interaction between team
-                members, according to proposal
-            </span>
+
             <Heartbeat
                 heartbeatInterval={200}
                 heartbeatFunction={() => {

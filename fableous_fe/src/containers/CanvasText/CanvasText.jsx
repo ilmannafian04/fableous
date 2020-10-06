@@ -181,7 +181,7 @@ function CanvasText() {
                               text={textAttr.text}
                               x= {textAttr.x}
                               y={textAttr.y}
-                              fontSize={textAttr.fontSize}
+                              fontSize={textAttr.fontSize * scale}
                               draggable={true}
                               width={textAttr.width}
                               keepRatio={true}

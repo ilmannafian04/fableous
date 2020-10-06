@@ -4,10 +4,8 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
 import SettingsIcon from '@material-ui/icons/Settings';
 import HomeIcon from '@material-ui/icons/Home';
-import { Home } from '@material-ui/icons';
 import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
 
 const useStyles = makeStyles((theme) => ({

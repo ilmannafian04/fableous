@@ -6,7 +6,6 @@ import useWindowSize from '../../utils/hooks/useWindowSize';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 
 import CanvasLayout from '../CanvasLayout/CanvasLayout';
-import { secondsToMMSS } from '../../utils/formatting';
 import { Image, Layer, Stage } from 'react-konva';
 import Heartbeat from 'react-heartbeat';
 
@@ -32,9 +31,6 @@ function CanvasDraw({ socket }) {
     const [canvas] = useState(document.createElement('canvas'));
     const [canvasIsReady, setCanvasIsReady] = useState(false);
     const [context, setContext] = useState(null);
-    const [color, setColor] = useState('#000000');
-    const [brushSize, setBrushSize] = useState(20);
-    const [mode, setMode] = React.useState('brush');
 
     // Dynamic Sizing States
     const [lastPointerPosition, setLastPointerPosition] = useState(null);
@@ -110,7 +106,7 @@ function CanvasDraw({ socket }) {
         setIsPainting(true);
 
         // Temporary value
-        context.lineWidth = brushSize;
+        // context.lineWidth = brushSize;
         context.lineJoin = 'round';
         context.lineCap = 'round';
 
@@ -136,16 +132,16 @@ function CanvasDraw({ socket }) {
             const image = imageRef.current;
             let localPos;
 
-            if (mode === 'brush') {
-                context.globalCompositeOperation = 'source-over';
-            }
-            if (mode === 'eraser') {
-                context.globalCompositeOperation = 'destination-out';
-            }
+            // if (mode === 'brush') {
+            //     context.globalCompositeOperation = 'source-over';
+            // }
+            // if (mode === 'eraser') {
+            //     context.globalCompositeOperation = 'destination-out';
+            // }
 
             context.beginPath();
 
-            context.strokeStyle = color;
+            // context.strokeStyle = color;
 
             localPos = normalizePoint(prevPointer, scale);
 
@@ -172,9 +168,9 @@ function CanvasDraw({ socket }) {
                     draft.push({
                         start: lastPointerPosition,
                         stop: { x: x, y: y },
-                        strokeStyle: color,
-                        size: brushSize,
-                        globalCompositeOperation: mode,
+                        // strokeStyle: color,
+                        // size: brushSize,
+                        // globalCompositeOperation: mode,
                     });
                 })
             );

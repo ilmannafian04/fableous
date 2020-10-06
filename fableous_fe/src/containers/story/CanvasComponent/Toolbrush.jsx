@@ -1,11 +1,7 @@
-import React, { useState } from 'react';
+import React  from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import CloseIcon from '@material-ui/icons/Close';
-import ListItem from '@material-ui/core/ListItem';
 import ColorBar from './ColorBar';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import AppBar from '@material-ui/core/AppBar';
 
 const useStyles = makeStyles((theme) => ({
     root: {

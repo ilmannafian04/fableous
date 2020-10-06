@@ -9,6 +9,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { CirclePicker } from 'react-color';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
+import { secondsToMMSS } from '../../utils/formatting';
 
 const DEFAULT_WIDTH_CANVAS = 1280;
 const DEFAULT_HEIGHT_CANVAS = 720;
@@ -49,6 +50,7 @@ function CanvasDraw({ socket }) {
     const headerRef = useRef();
 
     const [messages, setMessages] = useState([]);
+    const [drawState, setDrawState] = useState({ timeLeft: 3 * 60, currentPage: 1, pageCount: 0 });
 
     useEffect(() => {
         if (headerRef.current) {
@@ -87,7 +89,16 @@ function CanvasDraw({ socket }) {
     if (socket) {
         socket.onmessage = (event) => {
             const message = JSON.parse(event.data);
-            message['strokes'].forEach((drawing) => draw(drawing.start, drawing.stop));
+            switch (message['type']) {
+                case 'draw':
+                    message['data']['strokes'].forEach((drawing) => draw(drawing.start, drawing.stop));
+                    break;
+                case 'state':
+                    setDrawState(message['data']);
+                    break;
+                default:
+                    console.error('Unknown WS message');
+            }
         };
     }
 
@@ -216,7 +227,13 @@ function CanvasDraw({ socket }) {
                 <Radio onChange={modeHandler} value="brush" label="Brush" />
                 <Radio onChange={modeHandler} value="eraser" label="Eraser" />
             </RadioGroup>
-
+            <span>
+                Page {drawState.currentPage} out of {drawState.pageCount}
+            </span>
+            <br />
+            <span>
+                <b>Time left:</b> {secondsToMMSS(drawState.timeLeft)}
+            </span>
             <Stage width={availSpace.width} height={availSpace.height} ref={stageRef} className={classes.canvasStyle}>
                 <Layer>
                     <Image

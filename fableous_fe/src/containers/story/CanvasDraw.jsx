@@ -51,8 +51,8 @@ function CanvasDraw({ socket }) {
     const stageRef = useRef();
     const headerRef = useRef();
 
-    const [socket, setSocket] = useState(null);
-    const [socketIsOpen, setSocketIsOpen] = useState(false);
+    // const [socket, setSocket] = useState(null);
+    // const [socketIsOpen, setSocketIsOpen] = useState(false);
     const [messages, setMessages] = useState([]);
     const [drawState, setDrawState] = useState({ timeLeft: 3 * 60, currentPage: 1, pageCount: 0 });
 
@@ -84,16 +84,16 @@ function CanvasDraw({ socket }) {
         }
     }, [canvasIsReady, canvas]);
 
-    useEffect(() => {
-        const socket = new WebSocket('ws://127.0.0.1:8000/ws/drawing/lol/');
-        socket.onopen = () => {
-            setSocketIsOpen(true);
-        };
-        socket.onclose = () => setSocketIsOpen(false);
-        socket.onerror = () => setSocketIsOpen(false);
-        setSocket(socket);
-        return () => socket.close();
-    }, []);
+    // useEffect(() => {
+    //     // const socket = new WebSocket('ws://127.0.0.1:8000/ws/drawing/lol/');
+    //     // socket.onopen = () => {
+    //     //     setSocketIsOpen(true);
+    //     // };
+    //     // socket.onclose = () => setSocketIsOpen(false);
+    //     // socket.onerror = () => setSocketIsOpen(false);
+    //     // setSocket(socket);
+    //     // return () => socket.close();
+    // }, []);
 
     if (socket) {
         socket.onmessage = (event) => {
@@ -255,8 +255,8 @@ function CanvasDraw({ socket }) {
             <Heartbeat
                 heartbeatInterval={200}
                 heartbeatFunction={() => {
-                    if (socketIsOpen && messages.length > 0) {
-                        socket.send(JSON.stringify(messages));
+                    if (socket && messages.length > 0) {
+                        socket.send(JSON.stringify({ command: 'draw.story.stroke', data: messages }));
                         setMessages([]);
                     }
                 }}

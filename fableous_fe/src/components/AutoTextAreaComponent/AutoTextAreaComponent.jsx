@@ -4,7 +4,7 @@ import React, {
     useRef,
 } from "react";
 
-const AutoTextArea = (props) => {
+const AutoTextAreaComponent = (props) => {
     const textAreaRef = useRef(null);
     const [text, setText] = useState("");
     const [textAreaHeight, setTextAreaHeight] = useState(props.textAreaAttributes.textAreaHeight);
@@ -44,15 +44,15 @@ const AutoTextArea = (props) => {
     };
 
     return (
-            <div
-                style={{
-                    minHeight: parentHeight,
-                    position:'absolute',
-                    float:'left',
-                    left: props.textAreaAttributes.x +'px',
-                    top: props.textAreaAttributes.y +'px',
-                }}
-            >
+        <div
+            style={{
+                minHeight: parentHeight,
+                position:'absolute',
+                float:'left',
+                left: props.textAreaAttributes.x +'px',
+                top: props.textAreaAttributes.y +'px',
+            }}
+        >
 			<textarea
                 onKeyDown={(event) => onChangeHandler}
                 ref={textAreaRef}
@@ -62,8 +62,8 @@ const AutoTextArea = (props) => {
                 defaultValue={props.selectedShape.text}
                 onChange={onChangeHandler}
             />
-            </div>
+        </div>
     );
 };
 
-export default AutoTextArea;
+export default AutoTextAreaComponent;

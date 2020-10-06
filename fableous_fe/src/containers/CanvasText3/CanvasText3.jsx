@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Konva from 'konva';
-import { Stage, Layer, Text,Transformer } from 'react-konva';
+import { Stage, Layer, Text} from 'react-konva';
 import {v1 as uuid} from "uuid";
 import _ from 'lodash'
 
@@ -8,9 +8,7 @@ import useWindowSize from '../../utils/hooks/useWindowSize';
 import {calculateHeightBasedOnRatio} from "../../helper/CanvasHelperFunctions/calculateHeightBasedOnRatio";
 import {DEFAULT_HEIGHT_CANVAS, DEFAULT_WIDTH_CANVAS} from "../../constants/ScreenRatio";
 import TransformerComponent from "../../components/TransformerComponent/TransformerComponent";
-import TextAreaComponent from "../../components/TextAreaComponent/TextAreaComponent";
 
-import { useDoubleTap, useSingleTap } from 'use-double-tap';
 import AutoTextArea from '../CanvasText2/CanvasText2';
 
 function CanvasText() {
@@ -21,10 +19,8 @@ function CanvasText() {
     const [canvas] = useState(document.createElement('canvas'));
     const [canvasIsReady, setCanvasIsReady] = useState(false);
     const [context, setContext] = useState(null);
-    const [isDragging, setIsDragging] = useState(false);
 
     // Dynamic Sizing States
-    const [lastPointerPosition, setLastPointerPosition] = useState(null);
     const [availSpace, setAvailSpace] = useState({ width: 0, height: 0 });
     const [selectedShape, setSelectedShape] = useState(null);
     const [textAreaAttributes, setTextAreaAttributes] = useState({x:0,y:0 , textAreaWidth:0,textAreaHeight:0});
@@ -119,12 +115,12 @@ function CanvasText() {
             y: 90,
             fontSize: 40 * scale,
             draggable: true,
-            width: 220,
+            width: 180,
             height:40,
             default_x:160,
             default_y: 90,
             default_fontSize: 40 * scale,
-            default_width: 220,
+            default_width: 180,
             textScale: scale,
 
         }
@@ -168,7 +164,7 @@ function CanvasText() {
 
 
     return (
-        <div ref={headerRef} style={{width:'100%',height: '100%', overflow:'hidden',background:'yellow',position:'relative', display:'inline-block'}}>
+        <div ref={headerRef} style={{width:'100%',height: '100%', overflow:'hidden',background:'yellow', display:'inline-block'}}>
             <h1>{isTransform}</h1>
             <button onClick={drawText}> TEXT </button>
             <Stage
@@ -228,9 +224,6 @@ function CanvasText() {
                                   return finalPosition;
                               }}
 
-                              onDragStart={() => {
-                                  setIsDragging(true);
-                              }}
 
                               onDragEnd={(e) => {
                                   console.log(e.target.x() + e.target.getClientRect(),e.target.y())
@@ -242,7 +235,15 @@ function CanvasText() {
                                   textNode.default_y = e.target.y()
                                   tempShapes[i] = textNode
                                   setShapes(tempShapes);
-                                  setIsDragging(false)
+                              }}
+
+                              onDblClick = {(e) => {
+                                  setIsTransform(false)
+                                  setSelectedShape(textAttr)
+                                  const stageBox = stageRef.current.container().getBoundingClientRect();
+                                  e.target.hide()
+                                  setTextAreaAttributes({x:stageBox.left + textAttr.x, y:stageBox.top + textAttr.y,textAreaWidth: e.target.getClientRect().width, textAreaHeight: e.target.getClientRect().height})
+                                  setIsTransform(true)
                               }}
 
                               onDblTap={(e)=>{
@@ -250,7 +251,6 @@ function CanvasText() {
                                   setSelectedShape(textAttr)
                                   const stageBox = stageRef.current.container().getBoundingClientRect();
                                   e.target.hide()
-                                  console.log(e.target.getClientRect().width)
                                   setTextAreaAttributes({x:stageBox.left + textAttr.x, y:stageBox.top + textAttr.y,textAreaWidth: e.target.getClientRect().width, textAreaHeight: e.target.getClientRect().height})
                                   setIsTransform(true)
                               }}
@@ -267,15 +267,6 @@ function CanvasText() {
                                           scaleX: 1,
                                       })
 
-                                      // console.log(textNode.width)
-                                      // console.log(e.target.x())
-                                      // textNode.x = e.target.x()
-                                      // textNode.y = e.target.y()
-                                      // textNode.default_x = e.target.x()
-                                      // textNode.default_y = e.target.y()
-                                      // tempShapes[i] = textNode
-                                      // setShapes(tempShapes);
-                                      // console.log(tempShapes[i])
                                       const stageBox = stageRef.current.container().getBoundingClientRect();
                                       setTextAreaAttributes({x:stageBox.left + e.target.x(), y:stageBox.top + textAttr.y,textAreaWidth: textNode.width, textAreaHeight: textNode.height})
                                   }

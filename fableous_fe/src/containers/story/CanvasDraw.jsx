@@ -1,17 +1,33 @@
-import React, { useState, useRef, useEffect } from 'react';
+import produce from 'immer';
 import Konva from 'konva';
-import { Stage, Layer, Image } from 'react-konva';
+import React, { useEffect, useRef, useState } from 'react';
+import Heartbeat from 'react-heartbeat';
+import { Image, Layer, Stage } from 'react-konva';
 
 import useWindowSize from '../../utils/hooks/useWindowSize';
-import produce from 'immer';
-import Heartbeat from 'react-heartbeat';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { CirclePicker } from 'react-color';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import { secondsToMMSS } from '../../utils/formatting';
+
 import {calculateScale} from "../../helper/CanvasHelperFunctions/calculateScale";
 import {calculateHeightBasedOnRatio} from "../../helper/CanvasHelperFunctions/calculateHeightBasedOnRatio";
 import {DEFAULT_HEIGHT_CANVAS, DEFAULT_WIDTH_CANVAS} from "../../constants/ScreenRatio";
 import {normalizePoint} from "../../helper/CanvasHelperFunctions/normalizePoint";
 
 
-function CanvasDraw() {
+
+const useStyles = makeStyles(() =>
+    createStyles({
+        canvasStyle: {
+            background: 'purple',
+        },
+    })
+);
+
+function CanvasDraw({ socket }) {
+    const classes = useStyles();
     // Window Size
     const { width, height } = useWindowSize();
 
@@ -19,6 +35,9 @@ function CanvasDraw() {
     const [canvas] = useState(document.createElement('canvas'));
     const [canvasIsReady, setCanvasIsReady] = useState(false);
     const [context, setContext] = useState(null);
+    const [color, setColor] = useState('#000000');
+    const [brushSize, setBrushSize] = useState(20);
+    const [mode, setMode] = React.useState('brush');
 
     // Dynamic Sizing States
     const [lastPointerPosition, setLastPointerPosition] = useState(null);
@@ -35,6 +54,7 @@ function CanvasDraw() {
     const [socket, setSocket] = useState(null);
     const [socketIsOpen, setSocketIsOpen] = useState(false);
     const [messages, setMessages] = useState([]);
+    const [drawState, setDrawState] = useState({ timeLeft: 3 * 60, currentPage: 1, pageCount: 0 });
 
     useEffect(() => {
         if (headerRef.current) {
@@ -76,9 +96,18 @@ function CanvasDraw() {
     }, []);
 
     if (socket) {
-        socket.onmessage = (ev) => {
-            const drawings = JSON.parse(ev.data);
-            drawings.forEach((drawing) => draw(drawing.start, drawing.stop));
+        socket.onmessage = (event) => {
+            const message = JSON.parse(event.data);
+            switch (message['type']) {
+                case 'draw':
+                    message['data']['strokes'].forEach((drawing) => draw(drawing.start, drawing.stop));
+                    break;
+                case 'state':
+                    setDrawState(message['data']);
+                    break;
+                default:
+                    console.error('Unknown WS message');
+            }
         };
     }
 
@@ -100,7 +129,16 @@ function CanvasDraw() {
         if (context) {
             const image = imageRef.current;
             let localPos;
+
+            if (mode === 'brush') {
+                context.globalCompositeOperation = 'source-over';
+            }
+            if (mode === 'eraser') {
+                context.globalCompositeOperation = 'destination-out';
+            }
+
             context.beginPath();
+            context.strokeStyle = color;
 
             localPos = normalizePoint(prevPointer, scale, headerRef.current);
 
@@ -124,7 +162,13 @@ function CanvasDraw() {
             setLastPointerPosition({ x: x, y: y });
             setMessages(
                 produce(messages, (draft) => {
-                    draft.push({ start: lastPointerPosition, stop: { x: x, y: y }, color: '', size: 10 });
+                    draft.push({
+                        start: lastPointerPosition,
+                        stop: { x: x, y: y },
+                        strokeStyle: color,
+                        size: brushSize,
+                        globalCompositeOperation: mode,
+                    });
                 })
             );
         }
@@ -135,9 +179,54 @@ function CanvasDraw() {
             setIsPainting(false);
         }
     };
+
+    const modeHandler = (event) => {
+        setMode(event.target.value);
+    };
+
     return (
         <div ref={headerRef} style={{ width: '100%', height: '100%' }}>
-            <Stage width={availSpace.width} height={availSpace.height} ref={stageRef}>
+            <h1>Draw</h1>
+            <CirclePicker
+                color={color}
+                onChangeComplete={(color) => {
+                    setColor(color.hex);
+                }}
+            />
+            <button
+                onClick={() => {
+                    setBrushSize(5);
+                }}
+            >
+                Small
+            </button>
+            <button
+                onClick={() => {
+                    setBrushSize(15);
+                }}
+            >
+                Medium
+            </button>
+            <button
+                onClick={() => {
+                    setBrushSize(30);
+                }}
+            >
+                Large
+            </button>
+
+            <RadioGroup aria-label="tool" name="tool" value={mode} onChange={modeHandler}>
+                <Radio onChange={modeHandler} value="brush" label="Brush" />
+                <Radio onChange={modeHandler} value="eraser" label="Eraser" />
+            </RadioGroup>
+            <span>
+                Page {drawState.currentPage} out of {drawState.pageCount}
+            </span>
+            <br />
+            <span>
+                <b>Time left:</b> {secondsToMMSS(drawState.timeLeft)}
+            </span>
+            <Stage width={availSpace.width} height={availSpace.height} ref={stageRef} className={classes.canvasStyle}>
                 <Layer>
                     <Image
                         image={canvas}
@@ -159,6 +248,10 @@ function CanvasDraw() {
                     />
                 </Layer>
             </Stage>
+            <span>
+                Some notes: combined story only appears on the hub, this is to encourage interaction between team
+                members, according to proposal
+            </span>
             <Heartbeat
                 heartbeatInterval={200}
                 heartbeatFunction={() => {

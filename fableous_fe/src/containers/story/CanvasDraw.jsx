@@ -6,10 +6,14 @@ import { Image, Layer, Stage } from 'react-konva';
 
 import useWindowSize from '../../utils/hooks/useWindowSize';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { CirclePicker } from 'react-color';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import { secondsToMMSS } from '../../utils/formatting';
+
+import MenuAppBar from './CanvasComponent/MenuAppBar';
+import PageBar from './CanvasComponent/PageBar';
+import SideBar from './CanvasComponent/SideBar';
+import ColorBar from './CanvasComponent/ColorBar';
 
 const DEFAULT_WIDTH_CANVAS = 1280;
 const DEFAULT_HEIGHT_CANVAS = 720;
@@ -194,13 +198,10 @@ function CanvasDraw({ socket }) {
 
     return (
         <div ref={headerRef} style={{ width: '100%', height: '100%' }}>
+            <SideBar />
+            <PageBar />
             <h1>Draw</h1>
-            <CirclePicker
-                color={color}
-                onChangeComplete={(color) => {
-                    setColor(color.hex);
-                }}
-            />
+            <ColorBar />
             <button
                 onClick={() => {
                     setBrushSize(5);
@@ -234,6 +235,7 @@ function CanvasDraw({ socket }) {
             <span>
                 <b>Time left:</b> {secondsToMMSS(drawState.timeLeft)}
             </span>
+            <MenuAppBar />
             <Stage width={availSpace.width} height={availSpace.height} ref={stageRef} className={classes.canvasStyle}>
                 <Layer>
                     <Image

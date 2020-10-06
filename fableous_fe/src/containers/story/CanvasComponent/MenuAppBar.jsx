@@ -52,9 +52,6 @@ export default function MenuAppBar() {
         <div className={classes.root}>
             <AppBar position="static" className={classes.appbar} style={{ backgroundColor: '#2F3138' }}>
                 <Toolbar>
-                    <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-                        <MenuIcon />
-                    </IconButton>
                     <Typography variant="h4" className={classes.title} align={'left'}>
                         Crabbing In the Disco
                     </Typography>

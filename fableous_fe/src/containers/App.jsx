@@ -14,7 +14,7 @@ function App() {
                 <Story />
             </Route>
             <Route path="/story">
-                <CanvasLayout />
+                <CanvasDraw />
             </Route>
             <Route path="/">
                 <HomePage />

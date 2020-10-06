@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function BottomAppBar() {
+export default function BottomAppBar(props) {
     const classes = useStyles();
 
     return (
@@ -64,6 +64,8 @@ export default function BottomAppBar() {
                         </IconButton>
                         Previous Page
                     </Button>
+                    <div className={classes.grow} />
+                    <Button className={classes.button}>Page {props.page}</Button>
                     <div className={classes.grow} />
                     <Button className={classes.button}>
                         Next Page

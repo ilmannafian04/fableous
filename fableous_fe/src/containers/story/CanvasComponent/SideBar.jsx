@@ -14,7 +14,6 @@ import eraserIcon from '@iconify/icons-mdi/eraser';
 import BrushIcon from '@material-ui/icons/Brush';
 import TitleIcon from '@material-ui/icons/Title';
 import VolumeUpIcon from '@material-ui/icons/VolumeUp';
-import CloseIcon from '@material-ui/icons/Close';
 
 const drawerWidth = 100;
 const drawerHeight = 500;
@@ -65,13 +64,26 @@ const useStyles = makeStyles((theme) => ({
     closeBrush: {
         backgroundColor: 'red',
     },
+    toolBrush: {
+        marginTop: '10rem',
+    },
 }));
 
 export default function ClippedDrawer() {
     const classes = useStyles();
 
     const [isOpen, setOpen] = useState(false);
-    const onClick = () => setOpen(true);
+    const [mode, setMode] = React.useState('brush');
+    const [brushSize, setBrushSize] = useState(15);
+
+    const modeHandler = (event) => {
+        setMode(event.target.value);
+    };
+
+    const onClick = () => {
+        setOpen(true);
+        setMode('brush');
+    };
 
     return (
         <div className={classes.root}>
@@ -90,12 +102,12 @@ export default function ClippedDrawer() {
                                 <Icon icon={mousePointer} />
                             </ListItemIcon>
                         </ListItem>
-                        <ListItem button onClick={onClick}>
+                        <ListItem button onClick={() => onClick}>
                             <ListItemIcon>
                                 <BrushIcon />
                             </ListItemIcon>
                         </ListItem>
-                        <ListItem button>
+                        <ListItem button onClick={modeHandler} value={'eraser'}>
                             <ListItemIcon>
                                 <Icon icon={eraserIcon} />
                             </ListItemIcon>
@@ -113,7 +125,7 @@ export default function ClippedDrawer() {
                     </List>
                 </div>
             </Drawer>
-            {isOpen ? <Toolbrush /> : null};
+            {isOpen ? <Toolbrush className={classes.toolBrush} closeDrawer={setOpen} brushSize={setBrushSize} /> : null}
         </div>
     );
 }

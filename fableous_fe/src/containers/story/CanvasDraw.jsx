@@ -187,10 +187,6 @@ function CanvasDraw({ socket }) {
         }
     };
 
-    const modeHandler = (event) => {
-        setMode(event.target.value);
-    };
-
     return (
         <div ref={headerRef} style={{ width: '100%', height: '100%' }}>
             <CanvasLayout />

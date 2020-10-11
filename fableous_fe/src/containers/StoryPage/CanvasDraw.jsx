@@ -11,12 +11,10 @@ import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import { secondsToMMSS } from '../../utils/formatting';
 
-import {calculateScale} from "../../helper/CanvasHelperFunctions/calculateScale";
-import {calculateHeightBasedOnRatio} from "../../helper/CanvasHelperFunctions/calculateHeightBasedOnRatio";
-import {DEFAULT_HEIGHT_CANVAS, DEFAULT_WIDTH_CANVAS} from "../../constants/ScreenRatio";
-import {normalizePoint} from "../../helper/CanvasHelperFunctions/normalizePoint";
-
-
+import { calculateScale } from '../../helper/CanvasHelperFunctions/calculateScale';
+import { calculateHeightBasedOnRatio } from '../../helper/CanvasHelperFunctions/calculateHeightBasedOnRatio';
+import { DEFAULT_HEIGHT_CANVAS, DEFAULT_WIDTH_CANVAS } from '../../constants/ScreenRatio';
+import { normalizePoint } from '../../helper/CanvasHelperFunctions/normalizePoint';
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -58,10 +56,10 @@ function CanvasDraw({ socket }) {
 
     useEffect(() => {
         if (headerRef.current) {
-            const totalScale = calculateScale(headerRef.current)
+            const totalScale = calculateScale(headerRef.current);
             const availableSpaceBasedOnRatio = calculateHeightBasedOnRatio(headerRef.current);
-            setScale(totalScale)
-            setAvailSpace(availableSpaceBasedOnRatio)
+            setScale(totalScale);
+            setAvailSpace(availableSpaceBasedOnRatio);
         }
         stageRef.current.batchDraw();
     }, [width, height, scale]);
@@ -99,10 +97,10 @@ function CanvasDraw({ socket }) {
         socket.onmessage = (event) => {
             const message = JSON.parse(event.data);
             switch (message['type']) {
-                case 'draw':
+                case 'newStroke':
                     message['data']['strokes'].forEach((drawing) => draw(drawing.start, drawing.stop));
                     break;
-                case 'state':
+                case 'drawState':
                     setDrawState(message['data']);
                     break;
                 default:
@@ -110,7 +108,6 @@ function CanvasDraw({ socket }) {
             }
         };
     }
-
 
     const onPressDownHandler = () => {
         const currentPosition = imageRef.current.getStage().getPointerPosition();
@@ -123,7 +120,6 @@ function CanvasDraw({ socket }) {
 
         setLastPointerPosition(currentPosition);
     };
-
 
     const draw = (prevPointer, nextPointer) => {
         if (context) {
@@ -144,7 +140,7 @@ function CanvasDraw({ socket }) {
 
             context.moveTo(localPos.x, localPos.y);
 
-            localPos = normalizePoint(nextPointer, scale,headerRef.current);
+            localPos = normalizePoint(nextPointer, scale, headerRef.current);
 
             context.lineTo(localPos.x, localPos.y);
             context.closePath();

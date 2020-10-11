@@ -1,26 +1,32 @@
 import CanvasText from '../CanvasText/CanvasText';
 import HomePage from '../HomePage/HomePage';
-import StoryPage from '../StoryPage/StoryPage'
+import StoryPage from '../StoryPage/StoryPage';
+import CanvasHub from '../CanvasHub/CanvasHub';
 
 export const routes = [
     {
         component: HomePage,
         exact: true,
-        path: "/",
+        path: '/',
     },
     {
         component: StoryPage,
         exact: true,
-        path: "/story/:joinCode",
+        path: '/story/:joinCode',
     },
     {
         component: StoryPage,
         exact: true,
-        path: "/story",
+        path: '/story',
     },
     {
-        component:CanvasText,
+        component: CanvasText,
         exact: true,
-        path:"/text"
-    }
-]
+        path: '/text',
+    },
+    {
+        component: CanvasHub,
+        exact: true,
+        path: '/hub',
+    },
+];

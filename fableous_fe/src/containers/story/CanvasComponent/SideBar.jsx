@@ -14,7 +14,6 @@ import TitleIcon from '@material-ui/icons/Title';
 import VolumeUpIcon from '@material-ui/icons/VolumeUp';
 
 const drawerWidth = 100;
-const drawerHeight = 500;
 
 const useStyles = makeStyles((theme) => ({
     root: {

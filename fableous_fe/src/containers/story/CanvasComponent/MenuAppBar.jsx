@@ -34,21 +34,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function MenuAppBar() {
     const classes = useStyles();
-    const [auth, setAuth] = React.useState(true);
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const open = Boolean(anchorEl);
-
-    const handleChange = (event) => {
-        setAuth(event.target.checked);
-    };
-
-    const handleMenu = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
 
     return (
         <div className={classes.root}>
@@ -57,19 +42,17 @@ export default function MenuAppBar() {
                     <Typography variant="h4" className={classes.title} align={'left'}>
                         Crabbing In the Disco
                     </Typography>
-                    {auth && (
-                        <div>
-                            <IconButton className={classes.icon} style={{ color: '#FFFFFF' }}>
-                                <QuestionAnswerIcon />
-                            </IconButton>
-                            <IconButton className={classes.icon} style={{ color: '#FFFFFF' }}>
-                                <SettingsIcon />
-                            </IconButton>
-                            <IconButton className={classes.icon} style={{ color: '#FFFFFF' }}>
-                                <HomeIcon />
-                            </IconButton>
-                        </div>
-                    )}
+                    <div>
+                        <IconButton className={classes.icon} style={{ color: '#FFFFFF' }}>
+                            <QuestionAnswerIcon />
+                        </IconButton>
+                        <IconButton className={classes.icon} style={{ color: '#FFFFFF' }}>
+                            <SettingsIcon />
+                        </IconButton>
+                        <IconButton className={classes.icon} style={{ color: '#FFFFFF' }}>
+                            <HomeIcon />
+                        </IconButton>
+                    </div>
                 </Toolbar>
             </AppBar>
         </div>

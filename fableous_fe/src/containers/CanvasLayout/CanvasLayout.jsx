@@ -47,7 +47,7 @@ const CanvasLayout = () => {
     const [brushSize, setBrushSize] = useState(20);
     const [mode, setMode] = React.useState('brush');
 
-    const canvasWrapperRef = useRef();
+    // const canvasWrapperRef = useRef();
     // const [canvasSize, setCanvasSize] = useState({width: 0, height: 0})
 
     // useEffect(() => {
@@ -78,7 +78,7 @@ const CanvasLayout = () => {
             {/*        <h1>{secondsToMMSS(drawState.timeLeft)}</h1>*/}
             {/*    </div>*/}
             {/*</div>*/}
-            <CanvasDraw brushColor={color} mode={mode} brushSize={brushSize} />
+            <CanvasDraw drawState={setDrawState} brushColor={color} mode={mode} brushSize={brushSize} />
         </div>
     );
 };

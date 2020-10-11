@@ -20,7 +20,7 @@ const useStyles = makeStyles(() =>
     })
 );
 
-function CanvasDraw({ socket, brushColor, mode, brushSize }) {
+function CanvasDraw({ socket, brushColor, mode, brushSize, drawState }) {
     const classes = useStyles();
     // Window Size
     const { width, height } = useWindowSize();
@@ -43,7 +43,7 @@ function CanvasDraw({ socket, brushColor, mode, brushSize }) {
     const headerRef = useRef();
 
     const [messages, setMessages] = useState([]);
-    const [drawState, setDrawState] = useState({ timeLeft: 3 * 60, currentPage: 1, pageCount: 0 });
+    // const [drawState, setDrawState] = useState({ timeLeft: 3 * 60, currentPage: 1, pageCount: 0 });
 
     useEffect(() => {
         if (headerRef.current) {
@@ -87,7 +87,7 @@ function CanvasDraw({ socket, brushColor, mode, brushSize }) {
                     message['data']['strokes'].forEach((drawing) => draw(drawing.start, drawing.stop));
                     break;
                 case 'state':
-                    setDrawState(message['data']);
+                    drawState(message['data']);
                     break;
                 default:
                     console.error('Unknown WS message');

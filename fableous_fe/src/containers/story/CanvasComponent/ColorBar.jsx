@@ -11,7 +11,6 @@ const useStyles = makeStyles((Theme) => ({
 export default function ColorBar() {
     const classes = useStyles();
     const [color, setColor] = useState('#000000');
-
     return (
         <div className={classes.root}>
             <CirclePicker

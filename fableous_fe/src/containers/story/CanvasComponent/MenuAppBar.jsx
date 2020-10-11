@@ -4,10 +4,8 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
 import SettingsIcon from '@material-ui/icons/Settings';
 import HomeIcon from '@material-ui/icons/Home';
-import { Home } from '@material-ui/icons';
 import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
 
 const useStyles = makeStyles((theme) => ({
@@ -52,9 +50,6 @@ export default function MenuAppBar() {
         <div className={classes.root}>
             <AppBar position="static" className={classes.appbar} style={{ backgroundColor: '#2F3138' }}>
                 <Toolbar>
-                    <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-                        <MenuIcon />
-                    </IconButton>
                     <Typography variant="h4" className={classes.title} align={'left'}>
                         Crabbing In the Disco
                     </Typography>

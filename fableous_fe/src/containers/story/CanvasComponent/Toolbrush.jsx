@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import ColorBar from './ColorBar';
 import CloseIcon from '@material-ui/icons/Close';
-import ListItem from '@material-ui/core/ListItem';
+import ColorBar from './ColorBar';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -13,40 +12,42 @@ const useStyles = makeStyles((theme) => ({
         paddingBottom: '1rem',
         paddingRight: '1rem',
     },
+    position: {
+        marginTop: '25rem',
+        marginLeft: '28%',
+    },
 }));
 
-export default function Toolbrush() {
+export default function Toolbrush(props) {
     const classes = useStyles();
 
-    const [brushSize, setBrushSize] = useState(15);
-
     return (
-        <div className={classes.root}>
-            <ColorBar />
-            <button
-                onClick={() => {
-                    setBrushSize(5);
-                }}
-            >
-                Small
-            </button>
-            <button
-                onClick={() => {
-                    setBrushSize(15);
-                }}
-            >
-                Medium
-            </button>
-            <button
-                onClick={() => {
-                    setBrushSize(30);
-                }}
-            >
-                Large
-            </button>
-            <ListItem button>
-                <CloseIcon />
-            </ListItem>
+        <div className={classes.position}>
+            <div className={classes.root}>
+                <CloseIcon button onClick={() => props.closeDrawer(false)} />
+                <ColorBar />
+                <button
+                    onClick={() => {
+                        props.brushSize(5);
+                    }}
+                >
+                    Small
+                </button>
+                <button
+                    onClick={() => {
+                        props.brushSize(15);
+                    }}
+                >
+                    Medium
+                </button>
+                <button
+                    onClick={() => {
+                        props.brushSize(30);
+                    }}
+                >
+                    Large
+                </button>
+            </div>
         </div>
     );
 }

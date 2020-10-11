@@ -3,11 +3,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
-import SearchIcon from '@material-ui/icons/Search';
-import MoreIcon from '@material-ui/icons/MoreVert';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 
@@ -50,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function BottomAppBar() {
+export default function BottomAppBar(props) {
     const classes = useStyles();
 
     return (
@@ -64,6 +61,8 @@ export default function BottomAppBar() {
                         </IconButton>
                         Previous Page
                     </Button>
+                    <div className={classes.grow} />
+                    <Button className={classes.button}>Page {props.page}</Button>
                     <div className={classes.grow} />
                     <Button className={classes.button}>
                         Next Page

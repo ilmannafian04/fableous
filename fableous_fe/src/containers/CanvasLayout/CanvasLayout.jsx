@@ -2,58 +2,43 @@ import React, { useState } from 'react';
 
 import SideBar from '../story/CanvasComponent/SideBar';
 import PageBar from '../story/CanvasComponent/PageBar';
-import ColorBar from '../story/CanvasComponent/ColorBar';
 import MenuAppBar from '../story/CanvasComponent/MenuAppBar';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
 import { secondsToMMSS } from '../../utils/formatting';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import CanvasDraw from '../story/CanvasDraw';
+
+const useStyles = makeStyles((theme) => ({
+    timer: {
+        display: 'flex',
+        width: '10rem',
+        height: '5rem',
+        backgroundColor: '#7030A2',
+        color: '#F6F1D3',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: '20px',
+    },
+    timerBox: {
+        display: 'flex',
+        flexDirection: 'row-reverse',
+        marginRight: '3rem',
+        marginTop: '2rem',
+    },
+}));
 
 const CanvasLayout = () => {
     const [drawState, setDrawState] = useState({ timeLeft: 3 * 60, currentPage: 1, pageCount: 0 });
-
-    const [brushSize, setBrushSize] = useState(20);
-    const [mode, setMode] = React.useState('brush');
-
-    const modeHandler = (event) => {
-        setMode(event.target.value);
-    };
-
+    const classes = useStyles();
     return (
         <div>
             <SideBar />
-            <PageBar />
-            {/*<ColorBar/>*/}
+            <PageBar page={drawState.pageCount} />
             <MenuAppBar />
-
-            {/*<button*/}
-            {/*    onClick={() => {*/}
-            {/*        setBrushSize(5);*/}
-            {/*    }}*/}
-            {/*>Small*/}
-            {/*</button>*/}
-            {/*<button*/}
-            {/*    onClick={() => {*/}
-            {/*        setBrushSize(15);*/}
-            {/*    }}*/}
-            {/*>Medium*/}
-            {/*</button>*/}
-            {/*<button*/}
-            {/*    onClick={() => {*/}
-            {/*        setBrushSize(30);*/}
-            {/*    }}*/}
-            {/*>Large*/}
-            {/*</button>*/}
-            {/*<RadioGroup aria-label="tool" name="tool" value={mode} onChange={modeHandler}>*/}
-            {/*    <Radio onChange={modeHandler} value="brush" label="Brush" />*/}
-            {/*    <Radio onChange={modeHandler} value="eraser" label="Eraser" />*/}
-            {/*</RadioGroup>*/}
-            <span>
-                Page {drawState.currentPage} out of {drawState.pageCount}
-            </span>
-            <br />
-            <span>
-                <b>Time left:</b> {secondsToMMSS(drawState.timeLeft)}
-            </span>
+            <div className={classes.timerBox}>
+                <div className={classes.timer}>
+                    <h1>{secondsToMMSS(drawState.timeLeft)}</h1>
+                </div>
+            </div>
         </div>
     );
 };

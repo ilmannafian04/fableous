@@ -11,6 +11,7 @@
         "konva": "^7.0.6",
         "material-ui-chip-input": "^1.1.0",
         "material-ui-color": "^0.4.6",
+        "prop-types": "^15.7.2",
         "react": "^16.13.1",
         "react-audio-recorder": "^2.2.0",
         "react-color": "^2.18.1",

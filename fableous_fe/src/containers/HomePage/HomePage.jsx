@@ -83,7 +83,7 @@ const useStyles = makeStyles(() =>
     })
 );
 
-const Home = () => {
+const HomePage = () => {
     const classes = useStyles();
     return (
         <div className={classes.boxWrapper}>
@@ -120,4 +120,4 @@ const Home = () => {
     );
 };
 
-export default Home;
+export default HomePage;

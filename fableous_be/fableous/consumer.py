@@ -53,6 +53,8 @@ class DrawingConsumer(AsyncJsonWebsocketConsumer):
             await self.change_lobby_state(content['key'], content['value'])
         elif content['command'] == 'draw.story.stroke':
             await self.new_stroke(content['data'])
+        elif content['command'] == 'text.story.textNode':
+            await self.text_function(content['data'])
 
     async def change_player_state(self, key, value):
         player_state = await self.get_self_state()
@@ -76,6 +78,15 @@ class DrawingConsumer(AsyncJsonWebsocketConsumer):
         player_state = await self.get_self_state()
         await self.channel_layer.group_send(self.room_group_name, {
             'type': 'draw.new_stroke',
+            'data': data,
+            'layer': player_state['role']
+        })
+
+    async def text_function(self, data):
+        # TODO: persist the stroke data
+        player_state = await self.get_self_state()
+        await self.channel_layer.group_send(self.room_group_name, {
+            'type': 'draw.text_handler',
             'data': data,
             'layer': player_state['role']
         })
@@ -147,6 +158,12 @@ class DrawingConsumer(AsyncJsonWebsocketConsumer):
         if player_state['role'] == 4:
             await self.send_json(content={'type': 'newStroke',
                                           'data': {'strokes': event['data'],
+                                                   'layer': event['layer']}})
+    async def draw_text_handler(self, event):
+        player_state = await self.get_self_state()
+        if player_state['role'] == 4:
+            await self.send_json(content={'type': 'text',
+                                          'data': {'text_node': event['data'],
                                                    'layer': event['layer']}})
 
     @staticmethod

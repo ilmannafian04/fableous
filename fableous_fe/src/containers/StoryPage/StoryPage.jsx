@@ -17,7 +17,7 @@ const useStyles = makeStyles(() =>
 
 // Session state
 // 0 = Lobby
-const Story = () => {
+const StoryPage = () => {
     const [sessionState, setSessionState] = useState(0);
     const [roomCode, setRoomCode] = useState(null);
     const [socket, setSocket] = useState(null);
@@ -73,4 +73,4 @@ const Story = () => {
     return <div className={classes.drawingSessionContainer}>{displayedComponent} </div>;
 };
 
-export default Story;
+export default StoryPage;

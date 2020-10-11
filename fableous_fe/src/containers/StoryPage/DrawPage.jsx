@@ -1,5 +1,7 @@
 import React from 'react';
 import CanvasDraw from './CanvasDraw';
+import CanvasText from '../CanvasText/CanvasText';
+import CanvasHub from '../CanvasHub/CanvasHub';
 
 const DrawPage = ({ socket, role }) => {
     let displayedCanvas;
@@ -9,10 +11,10 @@ const DrawPage = ({ socket, role }) => {
             displayedCanvas = <CanvasDraw socket={socket} />;
             break;
         case 3:
-            displayedCanvas = <h1>Text canvas</h1>;
+            displayedCanvas = <CanvasText socket={socket} />;
             break;
         case 4:
-            displayedCanvas = <h1>Hub canvas</h1>;
+            displayedCanvas = <CanvasHub socket={socket} />;
             break;
         default:
             displayedCanvas = <h1>Uh oh</h1>;

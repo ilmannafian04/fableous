@@ -1,11 +1,10 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-
 import Toolbrush from './Toolbrush';
 
 import { Icon } from '@iconify/react';
@@ -49,14 +48,14 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
     },
     List: {
-        paddingTop: '150px',
-        paddingBottom: '150px',
+        display: 'flex',
         backgroundColor: '#7030A2',
         borderTopRightRadius: '3%',
         borderBottomRightRadius: '3%',
         height: 500,
         justifyContent: 'center',
         alignItems: 'center',
+        flexDirection: 'column',
     },
     icons: {
         color: 'black',
@@ -66,18 +65,28 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         alignItems: 'center',
         flexDirection: 'column',
+        borderRadius: '20%',
     },
 }));
 
-export default function ClippedDrawer() {
+export default function ClippedDrawer({ brushColor, erase, brushSize }) {
     const classes = useStyles();
 
     const [isOpen, setOpen] = useState(false);
-    const onClick = () => setOpen(true);
+    const clickHandler = () => {
+        setOpen(true);
+        erase.setMode('brush');
+    };
+
+    const eraserHandler = () => {
+        erase.setMode('eraser');
+        brushSize(15);
+    };
 
     return (
         <div className={classes.root}>
             <CssBaseline />
+            {isOpen ? <Toolbrush brushSize={brushSize} brushColor={brushColor} closeDrawer={setOpen} /> : null}
             <Drawer
                 className={classes.drawer}
                 variant="permanent"
@@ -87,12 +96,12 @@ export default function ClippedDrawer() {
             >
                 <div className={classes.drawerContainer}>
                     <List className={classes.List}>
-                        <ListItem button onClick={onClick}>
+                        <ListItem button onClick={clickHandler}>
                             <ListItemIcon>
                                 <BrushIcon className={classes.icons} />
                             </ListItemIcon>
                         </ListItem>
-                        <ListItem button>
+                        <ListItem button onClick={eraserHandler}>
                             <ListItemIcon>
                                 <Icon icon={eraserIcon} className={classes.icons} />
                             </ListItemIcon>
@@ -110,7 +119,6 @@ export default function ClippedDrawer() {
                     </List>
                 </div>
             </Drawer>
-            {isOpen ? <Toolbrush /> : null};
         </div>
     );
 }

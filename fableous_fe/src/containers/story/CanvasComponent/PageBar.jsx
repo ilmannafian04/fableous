@@ -26,17 +26,11 @@ const useStyles = makeStyles((theme) => ({
         bottom: 0,
         height: '100px',
         justifyContent: 'center',
+        backgroundColor: '#2F3138',
+        position: 'absolute',
     },
     grow: {
         flexGrow: 1,
-    },
-    fabButton: {
-        position: 'absolute',
-        zIndex: 1,
-        top: -30,
-        left: 0,
-        right: 0,
-        margin: '0 auto',
     },
     button: {
         backgroundColor: '#CACACA',
@@ -53,7 +47,7 @@ export default function BottomAppBar(props) {
     return (
         <React.Fragment>
             <CssBaseline />
-            <AppBar position="fixed" color="primary" className={classes.appBar} style={{ backgroundColor: '#2F3138' }}>
+            <AppBar color="primary" className={classes.appBar}>
                 <Toolbar>
                     <Button className={classes.button}>
                         <IconButton color="inherit">

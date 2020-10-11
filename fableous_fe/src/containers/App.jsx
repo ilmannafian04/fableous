@@ -4,6 +4,8 @@ import { Switch, Route } from 'react-router-dom';
 import './App.css';
 import Story from './story/Story';
 import HomePage from './HomePage/HomePage';
+import CanvasDraw from './story/CanvasDraw';
+import CanvasLayout from './CanvasLayout/CanvasLayout';
 
 function App() {
     return (
@@ -12,7 +14,7 @@ function App() {
                 <Story />
             </Route>
             <Route path="/story">
-                <Story />
+                <CanvasLayout />
             </Route>
             <Route path="/">
                 <HomePage />

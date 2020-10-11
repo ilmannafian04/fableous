@@ -8,17 +8,14 @@ const useStyles = makeStyles((Theme) => ({
     },
 }));
 
-export default function ColorBar() {
+export default function ColorBar({ brushColor }) {
     const classes = useStyles();
-    const [color, setColor] = useState('#000000');
+    const handleColor = (color) => {
+        brushColor.setColor(color.hex);
+    };
     return (
         <div className={classes.root}>
-            <CirclePicker
-                color={color}
-                onChangeComplete={(color) => {
-                    setColor(color.hex);
-                }}
-            />
+            <CirclePicker color={brushColor.color} onChangeComplete={handleColor} />
         </div>
     );
 }

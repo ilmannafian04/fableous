@@ -11,38 +11,39 @@ const useStyles = makeStyles((theme) => ({
         paddingLeft: '1rem',
         paddingBottom: '1rem',
         paddingRight: '1rem',
+        flexDirection: 'column',
     },
-    position: {
-        marginTop: '25rem',
-        marginLeft: '28%',
+    padding: {
+        paddingTop: '1rem',
     },
 }));
 
-export default function Toolbrush(props) {
+export default function Toolbrush({ brushColor, closeDrawer, brushSize }) {
     const classes = useStyles();
 
     return (
-        <div className={classes.position}>
+        <div>
             <div className={classes.root}>
-                <CloseIcon button onClick={() => props.closeDrawer(false)} />
-                <ColorBar />
+                <CloseIcon button onClick={() => closeDrawer(false)} />
+                <ColorBar brushColor={brushColor} />
+                <div className={classes.padding} />
                 <button
                     onClick={() => {
-                        props.brushSize(5);
+                        brushSize(5);
                     }}
                 >
                     Small
                 </button>
                 <button
                     onClick={() => {
-                        props.brushSize(15);
+                        brushSize(15);
                     }}
                 >
                     Medium
                 </button>
                 <button
                     onClick={() => {
-                        props.brushSize(30);
+                        brushSize(30);
                     }}
                 >
                     Large

@@ -4,8 +4,6 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import useWindowSize from '../../utils/hooks/useWindowSize';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-
-import CanvasLayout from '../CanvasLayout/CanvasLayout';
 import { Image, Layer, Stage } from 'react-konva';
 import Heartbeat from 'react-heartbeat';
 
@@ -22,7 +20,7 @@ const useStyles = makeStyles(() =>
     })
 );
 
-function CanvasDraw({ socket }) {
+function CanvasDraw({ socket, brushColor, mode, brushSize }) {
     const classes = useStyles();
     // Window Size
     const { width, height } = useWindowSize();
@@ -106,7 +104,9 @@ function CanvasDraw({ socket }) {
         setIsPainting(true);
 
         // Temporary value
-        // context.lineWidth = brushSize;
+        context.lineWidth = brushSize;
+        if (mode === 'eraser') {
+        }
         context.lineJoin = 'round';
         context.lineCap = 'round';
 
@@ -132,16 +132,16 @@ function CanvasDraw({ socket }) {
             const image = imageRef.current;
             let localPos;
 
-            // if (mode === 'brush') {
-            //     context.globalCompositeOperation = 'source-over';
-            // }
-            // if (mode === 'eraser') {
-            //     context.globalCompositeOperation = 'destination-out';
-            // }
+            if (mode === 'brush') {
+                context.globalCompositeOperation = 'source-over';
+            }
+            if (mode === 'eraser') {
+                context.globalCompositeOperation = 'destination-out';
+            }
 
             context.beginPath();
 
-            // context.strokeStyle = color;
+            context.strokeStyle = brushColor;
 
             localPos = normalizePoint(prevPointer, scale);
 
@@ -168,9 +168,9 @@ function CanvasDraw({ socket }) {
                     draft.push({
                         start: lastPointerPosition,
                         stop: { x: x, y: y },
-                        // strokeStyle: color,
-                        // size: brushSize,
-                        // globalCompositeOperation: mode,
+                        strokeStyle: brushColor,
+                        size: brushSize,
+                        globalCompositeOperation: mode,
                     });
                 })
             );
@@ -185,7 +185,6 @@ function CanvasDraw({ socket }) {
 
     return (
         <div ref={headerRef} style={{ width: '100%', height: '100%' }}>
-            <CanvasLayout />
             <Stage width={availSpace.width} height={availSpace.height} ref={stageRef} className={classes.canvasStyle}>
                 <Layer>
                     <Image

@@ -11,6 +11,9 @@ import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
 const useStyles = makeStyles((theme) => ({
     root: {
         flexGrow: 1,
+        position: 'absolute',
+        top: 0,
+        left: 0,
     },
     menuButton: {
         marginRight: theme.spacing(2),
@@ -19,9 +22,10 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
     },
 
-    appbar: {
+    appBar: {
         height: '100px',
         justifyContent: 'center',
+        backgroundColor: '#2F3138',
     },
     icon: {
         fontSize: 'inherit',
@@ -48,7 +52,7 @@ export default function MenuAppBar() {
 
     return (
         <div className={classes.root}>
-            <AppBar position="static" className={classes.appbar} style={{ backgroundColor: '#2F3138' }}>
+            <AppBar className={classes.appBar}>
                 <Toolbar>
                     <Typography variant="h4" className={classes.title} align={'left'}>
                         Crabbing In the Disco

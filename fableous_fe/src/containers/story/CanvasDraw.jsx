@@ -90,10 +90,10 @@ function CanvasDraw({ socket }) {
         socket.onmessage = (event) => {
             const message = JSON.parse(event.data);
             switch (message['type']) {
-                case 'draw':
+                case 'newStroke':
                     message['data']['strokes'].forEach((drawing) => draw(drawing.start, drawing.stop));
                     break;
-                case 'state':
+                case 'drawState':
                     setDrawState(message['data']);
                     break;
                 default:
@@ -264,7 +264,6 @@ function CanvasDraw({ socket }) {
                 heartbeatInterval={200}
                 heartbeatFunction={() => {
                     if (socket && messages.length > 0) {
-                        console.log(messages);
                         socket.send(JSON.stringify({ command: 'draw.story.stroke', data: messages }));
                         setMessages([]);
                     }

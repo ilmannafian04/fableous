@@ -3,7 +3,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
-import CanvasDraw from './CanvasDraw';
+import DrawPage from './DrawPage';
 import Lobby from './Lobby';
 import { baseUrl, wsProtocol } from '../../constant/url';
 
@@ -65,7 +65,7 @@ const Story = () => {
             );
             break;
         case 1:
-            displayedComponent = <CanvasDraw socket={socket} />;
+            displayedComponent = <DrawPage socket={socket} role={playerState.role} />;
             break;
         default:
             displayedComponent = <Lobby />;

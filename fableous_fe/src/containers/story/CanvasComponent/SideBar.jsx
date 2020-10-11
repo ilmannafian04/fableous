@@ -9,12 +9,10 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Toolbrush from './Toolbrush';
 
 import { Icon } from '@iconify/react';
-import mousePointer from '@iconify/icons-fa-solid/mouse-pointer';
 import eraserIcon from '@iconify/icons-mdi/eraser';
 import BrushIcon from '@material-ui/icons/Brush';
 import TitleIcon from '@material-ui/icons/Title';
 import VolumeUpIcon from '@material-ui/icons/VolumeUp';
-import CloseIcon from '@material-ui/icons/Close';
 
 const drawerWidth = 100;
 const drawerHeight = 500;
@@ -58,12 +56,16 @@ const useStyles = makeStyles((theme) => ({
         borderBottomRightRadius: '3%',
         height: 500,
         justifyContent: 'center',
+        alignItems: 'center',
     },
-    openBrush: {
-        backgroundColor: 'blue',
-    },
-    closeBrush: {
-        backgroundColor: 'red',
+    icons: {
+        color: 'black',
+        backgroundColor: 'white',
+        height: '48px',
+        width: '48px',
+        display: 'flex',
+        alignItems: 'center',
+        flexDirection: 'column',
     },
 }));
 
@@ -85,29 +87,24 @@ export default function ClippedDrawer() {
             >
                 <div className={classes.drawerContainer}>
                     <List className={classes.List}>
-                        <ListItem button>
-                            <ListItemIcon>
-                                <Icon icon={mousePointer} />
-                            </ListItemIcon>
-                        </ListItem>
                         <ListItem button onClick={onClick}>
                             <ListItemIcon>
-                                <BrushIcon />
+                                <BrushIcon className={classes.icons} />
                             </ListItemIcon>
                         </ListItem>
                         <ListItem button>
                             <ListItemIcon>
-                                <Icon icon={eraserIcon} />
+                                <Icon icon={eraserIcon} className={classes.icons} />
                             </ListItemIcon>
                         </ListItem>
                         <ListItem button>
                             <ListItemIcon>
-                                <TitleIcon />
+                                <TitleIcon className={classes.icons} />
                             </ListItemIcon>
                         </ListItem>
                         <ListItem button>
                             <ListItemIcon>
-                                <VolumeUpIcon />
+                                <VolumeUpIcon className={classes.icons} />
                             </ListItemIcon>
                         </ListItem>
                     </List>

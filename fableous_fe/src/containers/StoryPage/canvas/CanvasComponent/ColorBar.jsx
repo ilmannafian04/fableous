@@ -1,8 +1,8 @@
-import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import React from 'react';
 import { CirclePicker } from 'react-color';
 
-const useStyles = makeStyles((Theme) => ({
+const useStyles = makeStyles(() => ({
     root: {
         flexGrow: 1,
     },

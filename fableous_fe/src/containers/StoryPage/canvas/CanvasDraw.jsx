@@ -1,16 +1,15 @@
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import produce from 'immer';
 import Konva from 'konva';
 import React, { useEffect, useRef, useState } from 'react';
-
-import useWindowSize from '../../utils/hooks/useWindowSize';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Image, Layer, Stage } from 'react-konva';
 import Heartbeat from 'react-heartbeat';
+import { Image, Layer, Stage } from 'react-konva';
 
-const DEFAULT_WIDTH_CANVAS = 1280;
-const DEFAULT_HEIGHT_CANVAS = 720;
-const WIDTH_RATIO = 16;
-const HEIGHT_RATIO = 9;
+import { DEFAULT_HEIGHT_CANVAS, DEFAULT_WIDTH_CANVAS } from '../../../constant/ScreenRatio';
+import { calculateHeightBasedOnRatio } from '../../../helper/CanvasHelperFunctions/calculateHeightBasedOnRatio';
+import { calculateScale } from '../../../helper/CanvasHelperFunctions/calculateScale';
+import { normalizePoint } from '../../../helper/CanvasHelperFunctions/normalizePoint';
+import useWindowSize from '../../../utils/hooks/useWindowSize';
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -20,7 +19,7 @@ const useStyles = makeStyles(() =>
     })
 );
 
-function CanvasDraw({ socket, brushColor, mode, brushSize, drawState }) {
+const CanvasDraw = ({ socket, brushColor, mode, brushSize }) => {
     const classes = useStyles();
     // Window Size
     const { width, height } = useWindowSize();
@@ -42,23 +41,18 @@ function CanvasDraw({ socket, brushColor, mode, brushSize, drawState }) {
     const stageRef = useRef();
     const headerRef = useRef();
 
+    // const [socket, setSocket] = useState(null);
+    // const [socketIsOpen, setSocketIsOpen] = useState(false);
     const [messages, setMessages] = useState([]);
-    // const [drawState, setDrawState] = useState({ timeLeft: 3 * 60, currentPage: 1, pageCount: 0 });
 
     useEffect(() => {
         if (headerRef.current) {
-            const calculateScale = () => {
-                let parentWidth = headerRef.current.offsetWidth;
-                const numerator = parentWidth > DEFAULT_WIDTH_CANVAS ? parentWidth : DEFAULT_WIDTH_CANVAS;
-                const denominator = parentWidth > DEFAULT_WIDTH_CANVAS ? DEFAULT_WIDTH_CANVAS : parentWidth;
-                const totalScale = numerator / denominator;
-                const availableSpaceBasedOnRatio = calculateHeightBasedOnRatio(parentWidth);
-                setScale(totalScale);
-                setAvailSpace(availableSpaceBasedOnRatio);
-            };
-
-            calculateScale();
+            const totalScale = calculateScale(headerRef.current);
+            const availableSpaceBasedOnRatio = calculateHeightBasedOnRatio(headerRef.current);
+            setScale(totalScale);
+            setAvailSpace(availableSpaceBasedOnRatio);
         }
+        stageRef.current.batchDraw();
     }, [width, height, scale]);
 
     useEffect(() => {
@@ -79,52 +73,26 @@ function CanvasDraw({ socket, brushColor, mode, brushSize, drawState }) {
         }
     }, [canvasIsReady, canvas]);
 
-    if (socket) {
-        socket.onmessage = (event) => {
-            const message = JSON.parse(event.data);
-            switch (message['type']) {
-                case 'draw':
-                    message['data']['strokes'].forEach((drawing) => draw(drawing.start, drawing.stop));
-                    break;
-                case 'state':
-                    drawState(message['data']);
-                    break;
-                default:
-                    console.error('Unknown WS message');
-            }
-        };
-    }
-
-    const calculateHeightBasedOnRatio = (width) => {
-        return { width: width, height: (width / WIDTH_RATIO) * HEIGHT_RATIO };
-    };
+    // useEffect(() => {
+    //     // const socket = new WebSocket('ws://127.0.0.1:8000/ws/drawing/lol/');
+    //     // socket.onopen = () => {
+    //     //     setSocketIsOpen(true);
+    //     // };
+    //     // socket.onclose = () => setSocketIsOpen(false);
+    //     // socket.onerror = () => setSocketIsOpen(false);
+    //     // setSocket(socket);
+    //     // return () => socket.close();
+    // }, []);
 
     const onPressDownHandler = () => {
         const currentPosition = imageRef.current.getStage().getPointerPosition();
         setIsPainting(true);
 
-        // Temporary value
         context.lineWidth = brushSize;
-        if (mode === 'eraser') {
-        }
         context.lineJoin = 'round';
         context.lineCap = 'round';
 
         setLastPointerPosition(currentPosition);
-    };
-
-    const normalizePoint = (mousePosition, scale) => {
-        if (headerRef.current.offsetWidth < DEFAULT_WIDTH_CANVAS) {
-            return {
-                x: mousePosition.x * scale,
-                y: mousePosition.y * scale,
-            };
-        } else {
-            return {
-                x: mousePosition.x / scale,
-                y: mousePosition.y / scale,
-            };
-        }
     };
 
     const draw = (prevPointer, nextPointer) => {
@@ -140,14 +108,13 @@ function CanvasDraw({ socket, brushColor, mode, brushSize, drawState }) {
             }
 
             context.beginPath();
-
             context.strokeStyle = brushColor;
 
-            localPos = normalizePoint(prevPointer, scale);
+            localPos = normalizePoint(prevPointer, scale, headerRef.current);
 
             context.moveTo(localPos.x, localPos.y);
 
-            localPos = normalizePoint(nextPointer, scale);
+            localPos = normalizePoint(nextPointer, scale, headerRef.current);
 
             context.lineTo(localPos.x, localPos.y);
             context.closePath();
@@ -212,7 +179,6 @@ function CanvasDraw({ socket, brushColor, mode, brushSize, drawState }) {
                 heartbeatInterval={200}
                 heartbeatFunction={() => {
                     if (socket && messages.length > 0) {
-                        console.log(messages);
                         socket.send(JSON.stringify({ command: 'draw.story.stroke', data: messages }));
                         setMessages([]);
                     }
@@ -220,6 +186,6 @@ function CanvasDraw({ socket, brushColor, mode, brushSize, drawState }) {
             />
         </div>
     );
-}
+};
 
 export default CanvasDraw;

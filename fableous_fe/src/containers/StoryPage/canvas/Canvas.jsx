@@ -1,12 +1,14 @@
-import React, { useRef, useState } from 'react';
-
-import SideBar from '../story/CanvasComponent/SideBar';
-import PageBar from '../story/CanvasComponent/PageBar';
-import MenuAppBar from '../story/CanvasComponent/MenuAppBar';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import CanvasDraw from '../story/CanvasDraw';
+import React, { useEffect, useState } from 'react';
 
-const useStyles = makeStyles((theme) => ({
+import MenuAppBar from './CanvasComponent/MenuAppBar';
+import PageBar from './CanvasComponent/PageBar';
+import SideBar from './CanvasComponent/SideBar';
+import CanvasDraw from './CanvasDraw';
+import CanvasHub from './CanvasHub';
+import CanvasText from './CanvasText';
+
+const useStyles = makeStyles(() => ({
     root: {
         display: 'flex',
         justifyContent: 'center',
@@ -40,30 +42,50 @@ const useStyles = makeStyles((theme) => ({
     // }
 }));
 
-const CanvasLayout = () => {
+const Canvas = ({ socket, role }) => {
     const [drawState, setDrawState] = useState({ timeLeft: 3 * 60, currentPage: 1, pageCount: 0 });
-    const classes = useStyles();
     const [color, setColor] = useState('#000000');
     const [brushSize, setBrushSize] = useState(20);
     const [mode, setMode] = React.useState('brush');
+    const classes = useStyles();
 
-    // const canvasWrapperRef = useRef();
-    // const [canvasSize, setCanvasSize] = useState({width: 0, height: 0})
+    useEffect(() => {
+        const drawStateHandler = (event) => {
+            const message = JSON.parse(event.data);
+            if (message['type'] === 'drawState') {
+                setDrawState(message['data']);
+            }
+        };
+        socket.addEventListener('message', drawStateHandler);
+        return () => {
+            socket.removeEventListener('message', drawStateHandler);
+        };
+    }, [socket]);
 
-    // useEffect(() => {
-    //     if (canvasWrapperRef) {
-    //         widthMaintainer()
-    //     }
-    // }, [])
-
-    // const widthMaintainer = () => {
-    //     console.log(ref)
-    //     const width = canvasWrapperRef.current.getBoundingClientRect().width
-    //     const result = Math.floor(width / 16)
-    //     setCanvasSize({width: 16 * result, height: 9 * result})
-    //     console.log(canvasSize)
-    // }
-
+    let displayedCanvas;
+    switch (role) {
+        case 1:
+        case 2:
+            displayedCanvas = (
+                <CanvasDraw
+                    changeDrawState={setDrawState}
+                    brushColor={color}
+                    mode={mode}
+                    brushSize={brushSize}
+                    socket={socket}
+                />
+            );
+            break;
+        case 3:
+            displayedCanvas = <CanvasText socket={socket} />;
+            break;
+        case 4:
+            displayedCanvas = <CanvasHub socket={socket} />;
+            break;
+        default:
+            displayedCanvas = <h1>Uh oh</h1>;
+            break;
+    }
     return (
         <div className={classes.root}>
             <SideBar
@@ -78,9 +100,9 @@ const CanvasLayout = () => {
             {/*        <h1>{secondsToMMSS(drawState.timeLeft)}</h1>*/}
             {/*    </div>*/}
             {/*</div>*/}
-            <CanvasDraw drawState={setDrawState} brushColor={color} mode={mode} brushSize={brushSize} />
+            {displayedCanvas}
         </div>
     );
 };
 
-export default CanvasLayout;
+export default Canvas;

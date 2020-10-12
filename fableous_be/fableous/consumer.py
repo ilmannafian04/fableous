@@ -53,6 +53,8 @@ class DrawingConsumer(AsyncJsonWebsocketConsumer):
             await self.change_lobby_state(content['key'], content['value'])
         elif content['command'] == 'draw.story.stroke':
             await self.new_stroke(content['data'])
+        elif content['command'] == 'text.story.textNode':
+            await self.text_function(content['data'])
 
     async def change_player_state(self, key, value):
         player_state = await self.get_self_state()
@@ -80,6 +82,15 @@ class DrawingConsumer(AsyncJsonWebsocketConsumer):
             'layer': player_state['role']
         })
 
+    async def text_function(self, data):
+        # TODO: persist the stroke data
+        player_state = await self.get_self_state()
+        await self.channel_layer.group_send(self.room_group_name, {
+            'type': 'draw.text_handler',
+            'data': data,
+            'layer': player_state['role']
+        })
+
     async def validate_state(self):
         story_state = await self.get_story_state()
         if story_state['state'] == 0:
@@ -99,7 +110,8 @@ class DrawingConsumer(AsyncJsonWebsocketConsumer):
                 story_state['state'] = 1
                 await self.save_json_state(self.room_name, story_state)
                 asyncio.create_task(self.story_loop())
-                await self.channel_layer.group_send(self.room_group_name, {'type': 'draw.change_state'})
+                await self.channel_layer.group_send(self.room_group_name, {'type': 'draw.change_state',
+                                                                           'data': {'state': story_state['state']}})
 
     async def story_loop(self):
         story_state = await self.get_story_state()
@@ -109,16 +121,19 @@ class DrawingConsumer(AsyncJsonWebsocketConsumer):
             await self.save_story_state(story_state)
 
     async def page_loop(self):
+        story_state = await self.get_story_state()
         for time_left in range(3 * 60, -1, -1):
-            story_state = await self.get_story_state()
             await self.channel_layer.group_send(self.room_group_name, {'type': 'draw.draw_state',
                                                                        'time_left': time_left,
                                                                        'story_state': story_state})
             await asyncio.sleep(1.0)
 
-    async def draw_change_state(self, _):
-        story_state = await self.get_story_state()
-        await self.send_json(content={'state': story_state['state']})
+    async def draw_change_state(self, event):
+        player_state = await self.get_self_state()
+        event['data']['self'] = player_state
+        event['data']['self'].pop('isReady')
+        await self.send_json(content={'type': 'storyState',
+                                      'data': event['data']})
 
     async def draw_lobby_state(self, _):
         story_state = await self.get_story_state()
@@ -126,22 +141,29 @@ class DrawingConsumer(AsyncJsonWebsocketConsumer):
         players = []
         for player_name in story_state['players']:
             players.append(await self.get_json_state(f'{self.room_name}.{player_name}'))
-        await self.send_json(content={'players': players,
-                                      'state': story_state['state'],
-                                      'self': player_state,
-                                      'pageCount': story_state['page_count']})
+        await self.send_json(content={'type': 'lobbyState',
+                                      'data': {'players': players,
+                                               'self': player_state,
+                                               'pageCount': story_state['page_count']}})
 
     async def draw_draw_state(self, event):
-        await self.send_json({'type': 'state',
+        await self.send_json({'type': 'drawState',
                               'data': {'timeLeft': event['time_left'],
                                        'pageCount': event['story_state']['page_count'],
                                        'currentPage': event['story_state']['current_page']}})
 
     async def draw_new_stroke(self, event):
+        # TODO: refactor this to not broadcast but instead direct send from sender to hub
         player_state = await self.get_self_state()
         if player_state['role'] == 4:
-            await self.send_json(content={'type': 'draw',
+            await self.send_json(content={'type': 'newStroke',
                                           'data': {'strokes': event['data'],
+                                                   'layer': event['layer']}})
+    async def draw_text_handler(self, event):
+        player_state = await self.get_self_state()
+        if player_state['role'] == 4:
+            await self.send_json(content={'type': 'text',
+                                          'data': {'text_node': event['data'],
                                                    'layer': event['layer']}})
 
     @staticmethod

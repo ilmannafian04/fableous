@@ -1,17 +1,16 @@
-import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { Icon } from '@iconify/react';
+import eraserIcon from '@iconify/icons-mdi/eraser';
 import Drawer from '@material-ui/core/Drawer';
-import CssBaseline from '@material-ui/core/CssBaseline';
+import { makeStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import Toolbrush from './Toolbrush';
-
-import { Icon } from '@iconify/react';
-import eraserIcon from '@iconify/icons-mdi/eraser';
 import BrushIcon from '@material-ui/icons/Brush';
 import TitleIcon from '@material-ui/icons/Title';
 import VolumeUpIcon from '@material-ui/icons/VolumeUp';
+import React, { useState } from 'react';
+
+import Toolbrush from './Toolbrush';
 
 const drawerWidth = 100;
 
@@ -84,7 +83,6 @@ export default function ClippedDrawer({ brushColor, erase, brushSize }) {
 
     return (
         <div className={classes.root}>
-            <CssBaseline />
             {isOpen ? <Toolbrush brushSize={brushSize} brushColor={brushColor} closeDrawer={setOpen} /> : null}
             <Drawer
                 className={classes.drawer}

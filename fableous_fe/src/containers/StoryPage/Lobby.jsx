@@ -168,7 +168,7 @@ const PageForm = ({ socket, pageCount }) => {
     );
 };
 
-const Lobby = ({ socket, changeState, roomCode }) => {
+const Lobby = ({ socket, changeState, roomCode, setPlayerState }) => {
     const [lobbyState, setLobbyState] = useState({
         players: [],
         self: { name: 'Fableous', role: 0, isReady: false },
@@ -178,11 +178,15 @@ const Lobby = ({ socket, changeState, roomCode }) => {
     if (socket) {
         socket.onmessage = (event) => {
             const message = JSON.parse(event.data);
-            if (message['state'] === 0) {
-                delete message['state'];
-                setLobbyState(message);
-            } else {
-                changeState(message['state']);
+            switch (message['type']) {
+                case 'lobbyState':
+                    setLobbyState(message['data']);
+                    break;
+                case 'storyState':
+                    changeState(message['data']['state']);
+                    setPlayerState(message['data']['self']);
+                    break;
+                default:
             }
         };
     }

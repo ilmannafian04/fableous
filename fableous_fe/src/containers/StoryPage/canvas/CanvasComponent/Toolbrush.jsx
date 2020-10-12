@@ -1,9 +1,10 @@
-import React from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import CloseIcon from '@material-ui/icons/Close';
+import React from 'react';
+
 import ColorBar from './ColorBar';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     root: {
         display: 'flex',
         backgroundColor: '#7030A2',

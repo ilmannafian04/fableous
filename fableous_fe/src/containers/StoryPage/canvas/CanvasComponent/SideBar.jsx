@@ -1,6 +1,5 @@
 import { Icon } from '@iconify/react';
 import eraserIcon from '@iconify/icons-mdi/eraser';
-import Drawer from '@material-ui/core/Drawer';
 import { makeStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -9,18 +8,13 @@ import BrushIcon from '@material-ui/icons/Brush';
 import TitleIcon from '@material-ui/icons/Title';
 import VolumeUpIcon from '@material-ui/icons/VolumeUp';
 import React, { useState } from 'react';
-
 import Toolbrush from './Toolbrush';
-
-const drawerWidth = 100;
 
 const useStyles = makeStyles((theme) => ({
     root: {
         display: 'flex',
         justifyContent: 'space-between',
-        width: 300,
-        alignItems: 'center',
-        position: 'absolute',
+        position: 'sticky',
         zIndex: 1,
     },
     appBar: {
@@ -28,15 +22,6 @@ const useStyles = makeStyles((theme) => ({
     },
     drawer: {
         flexShrink: 0,
-    },
-    drawerPaper: {
-        width: drawerWidth,
-        borderColor: 'transparent',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'flex-start',
-        backgroundColor: 'transparent',
-        padding: 0,
     },
     drawerContainer: {
         overflow: 'auto',
@@ -50,8 +35,8 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: '#7030A2',
         borderTopRightRadius: '3%',
         borderBottomRightRadius: '3%',
-        height: 500,
         justifyContent: 'center',
+        maxHeight: '50%',
         alignItems: 'center',
         flexDirection: 'column',
     },
@@ -64,6 +49,12 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         flexDirection: 'column',
         borderRadius: '20%',
+    },
+    sidebarWrapper: {
+        marginTop: '50%',
+    },
+    iconWrapper: {
+        display: 'flex',
     },
 }));
 
@@ -82,40 +73,39 @@ export default function ClippedDrawer({ brushColor, erase, brushSize }) {
     };
 
     return (
-        <div className={classes.root}>
-            {isOpen ? <Toolbrush brushSize={brushSize} brushColor={brushColor} closeDrawer={setOpen} /> : null}
-            <Drawer
-                className={classes.drawer}
-                variant="permanent"
-                classes={{
-                    paper: classes.drawerPaper,
-                }}
-            >
-                <div className={classes.drawerContainer}>
-                    <List className={classes.List}>
-                        <ListItem button onClick={clickHandler}>
-                            <ListItemIcon>
-                                <BrushIcon className={classes.icons} />
-                            </ListItemIcon>
-                        </ListItem>
-                        <ListItem button onClick={eraserHandler}>
-                            <ListItemIcon>
-                                <Icon icon={eraserIcon} className={classes.icons} />
-                            </ListItemIcon>
-                        </ListItem>
-                        <ListItem button>
-                            <ListItemIcon>
-                                <TitleIcon className={classes.icons} />
-                            </ListItemIcon>
-                        </ListItem>
-                        <ListItem button>
-                            <ListItemIcon>
-                                <VolumeUpIcon className={classes.icons} />
-                            </ListItemIcon>
-                        </ListItem>
-                    </List>
-                </div>
-            </Drawer>
+        <div>
+            <div className={classes.iconWrapper}>
+                <List className={classes.List}>
+                    <ListItem button onClick={clickHandler}>
+                        <ListItemIcon>
+                            <BrushIcon className={classes.icons} />
+                        </ListItemIcon>
+                    </ListItem>
+                    <ListItem button onClick={eraserHandler}>
+                        <ListItemIcon>
+                            <Icon icon={eraserIcon} className={classes.icons} />
+                        </ListItemIcon>
+                    </ListItem>
+                    <ListItem button>
+                        <ListItemIcon>
+                            <TitleIcon className={classes.icons} />
+                        </ListItemIcon>
+                    </ListItem>
+                    <ListItem button>
+                        <ListItemIcon>
+                            <VolumeUpIcon className={classes.icons} />
+                        </ListItemIcon>
+                    </ListItem>
+                </List>
+                {isOpen ? (
+                    <Toolbrush
+                        style={{ zIndex: 0 }}
+                        brushSize={brushSize}
+                        brushColor={brushColor}
+                        closeDrawer={setOpen}
+                    />
+                ) : null}
+            </div>
         </div>
     );
 }

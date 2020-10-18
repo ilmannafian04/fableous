@@ -13,6 +13,7 @@ const useStyles = makeStyles(() => ({
         paddingBottom: '1rem',
         paddingRight: '1rem',
         flexDirection: 'column',
+        position: 'sticky',
     },
     padding: {
         paddingTop: '1rem',

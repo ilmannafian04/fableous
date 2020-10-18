@@ -7,14 +7,15 @@ import SideBar from './CanvasComponent/SideBar';
 import CanvasDraw from './CanvasDraw';
 import CanvasHub from './CanvasHub';
 import CanvasText from './CanvasText';
+import useWindowSize from '../../../utils/hooks/useWindowSize';
 
 const useStyles = makeStyles(() => ({
     root: {
         display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
         width: '100vw',
         height: '100vh',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
     },
 
     timer: {
@@ -33,13 +34,11 @@ const useStyles = makeStyles(() => ({
         marginRight: '3rem',
         marginTop: '2rem',
     },
-    // canvasWrapper: {
-    //     display: "flex",
-    //     justifyContent: "center",
-    //     alignItems: "center",
-    //     width: '100vw',
-    //     height: '100vh'
-    // }
+    canvasWrapper: {
+        display: 'flex',
+        zIndex: 1,
+        position: 'sticky',
+    },
 }));
 
 const Canvas = ({ socket, role }) => {
@@ -47,6 +46,7 @@ const Canvas = ({ socket, role }) => {
     const [color, setColor] = useState('#000000');
     const [brushSize, setBrushSize] = useState(20);
     const [mode, setMode] = React.useState('brush');
+    const { width, height } = useWindowSize();
     const classes = useStyles();
 
     useEffect(() => {
@@ -61,6 +61,10 @@ const Canvas = ({ socket, role }) => {
             socket.removeEventListener('message', drawStateHandler);
         };
     }, [socket]);
+
+    useEffect(() => {
+        const checkOrientation = () => {};
+    });
 
     let displayedCanvas;
     switch (role) {
@@ -86,23 +90,33 @@ const Canvas = ({ socket, role }) => {
             displayedCanvas = <h1>Uh oh</h1>;
             break;
     }
-    return (
-        <div className={classes.root}>
-            <SideBar
-                brushSize={setBrushSize}
-                erase={{ mode: mode, setMode: setMode }}
-                brushColor={{ color: color, setColor: setColor }}
-            />
-            <PageBar page={drawState.pageCount} />
-            <MenuAppBar />
-            {/*<div className={classes.timerBox}>*/}
-            {/*    <div className={classes.timer}>*/}
-            {/*        <h1>{secondsToMMSS(drawState.timeLeft)}</h1>*/}
-            {/*    </div>*/}
-            {/*</div>*/}
-            {displayedCanvas}
-        </div>
-    );
+    if (window.innerHeight < window.innerWidth) {
+        return (
+            <div className={classes.root}>
+                <div className={classes.canvasWrapper}>
+                    <SideBar
+                        brushSize={setBrushSize}
+                        erase={{ mode: mode, setMode: setMode }}
+                        brushColor={{ color: color, setColor: setColor }}
+                    />
+                </div>
+                {displayedCanvas}
+                <PageBar page={drawState.pageCount} />
+                <MenuAppBar />
+                {/*<div className={classes.timerBox}>*/}
+                {/*    <div className={classes.timer}>*/}
+                {/*        <h1>{secondsToMMSS(drawState.timeLeft)}</h1>*/}
+                {/*    </div>*/}
+                {/*</div>*/}
+            </div>
+        );
+    } else {
+        return (
+            <div className={classes.root}>
+                <h1> portrait</h1>
+            </div>
+        );
+    }
 };
 
 export default Canvas;

@@ -19,7 +19,8 @@ export const SignIn = () => {
         event.preventDefault();
         Axios.post('/api/token/', new FormData(event.currentTarget))
             .then((response) => {
-                console.log(response);
+                window.localStorage.setItem('fableousAccessToken', response.data['access']);
+                window.localStorage.setItem('fableousRefreshToken', response.data['refresh']);
             })
             .catch((error) => {
                 console.error(error);

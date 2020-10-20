@@ -16,7 +16,7 @@ export const jwtResponseInterceptor = (error) => {
         return Promise.reject(error);
     }
     if (
-        error.config.url === '/token/refresh' ||
+        error.config.url === '/api/token/refresh' ||
         error.response.data.detail === 'User is inactive' ||
         error.response.data.detail === 'User not found'
     ) {
@@ -27,11 +27,11 @@ export const jwtResponseInterceptor = (error) => {
     if (refreshToken === null) {
         return Promise.reject(error);
     }
-    return Axios.post('/token/refresh/', { refresh: refreshToken }).then((response) => {
+    return Axios.post('/api/token/refresh/', { refresh: refreshToken }).then((response) => {
         const newAccessToken = response.data['access'];
         const config = error.config;
         config.headers.Authorization = `Bearer ${newAccessToken}`;
-        window.localStorage.setItem('watchdogAccessToken', newAccessToken);
+        window.localStorage.setItem('fableousAccessToken', newAccessToken);
         return new Promise((resolve, reject) => {
             Axios(config)
                 .then((res) => {

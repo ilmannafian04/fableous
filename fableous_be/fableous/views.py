@@ -6,9 +6,8 @@ from django.http import HttpResponse, JsonResponse
 from django_redis import get_redis_connection
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
 from fableous.models import FableousUser
 
@@ -31,7 +30,7 @@ def create_drawing_session(request):
 
 
 @api_view(['POST'])
-@permission_classes([AllowAny,])
+@permission_classes([AllowAny])
 def signup(request):
     if 'username' in request.POST and 'password' in request.POST and 'email' in request.POST:
         user = FableousUser.objects.create_user(request.POST['username'],
@@ -41,3 +40,10 @@ def signup(request):
         return Response(status=status.HTTP_200_OK)
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def upload_story_page(request):
+    print(request.FILES)
+    return Response(status=status.HTTP_200_OK)

@@ -2,7 +2,6 @@ import CanvasText from '../StoryPage/canvas/CanvasText';
 import HomePage from '../HomePage/HomePage';
 import StoryPage from '../StoryPage/StoryPage';
 import CanvasHub from '../StoryPage/canvas/CanvasHub';
-import Canvas from '../StoryPage/canvas/Canvas';
 
 export const routes = [
     {
@@ -16,7 +15,7 @@ export const routes = [
         path: '/story/:joinCode',
     },
     {
-        component: Canvas,
+        component: StoryPage,
         exact: true,
         path: '/story',
     },

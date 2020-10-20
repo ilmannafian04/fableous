@@ -8,6 +8,7 @@ import CanvasDraw from './CanvasDraw';
 import CanvasHub from './CanvasHub';
 import CanvasText from './CanvasText';
 import useWindowSize from '../../../utils/hooks/useWindowSize';
+import ScreenRotate from './CanvasComponent/screenRotate';
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -46,25 +47,33 @@ const Canvas = ({ socket, role }) => {
     const [color, setColor] = useState('#000000');
     const [brushSize, setBrushSize] = useState(20);
     const [mode, setMode] = React.useState('brush');
-    const { width, height } = useWindowSize();
+
     const classes = useStyles();
 
-    useEffect(() => {
-        const drawStateHandler = (event) => {
-            const message = JSON.parse(event.data);
-            if (message['type'] === 'drawState') {
-                setDrawState(message['data']);
-            }
-        };
-        socket.addEventListener('message', drawStateHandler);
-        return () => {
-            socket.removeEventListener('message', drawStateHandler);
-        };
-    }, [socket]);
+    // Window Size
+    const { width, height } = useWindowSize();
+    const [isPortrait, setIsPortrait] = useState(false);
 
     useEffect(() => {
-        const checkOrientation = () => {};
-    });
+        if (width < height) {
+            setIsPortrait(true);
+        } else {
+            setIsPortrait(false);
+        }
+    }, [width, height]);
+
+    // useEffect(() => {
+    //     const drawStateHandler = (event) => {
+    //         const message = JSON.parse(event.data);
+    //         if (message['type'] === 'drawState') {
+    //             setDrawState(message['data']);
+    //         }
+    //     };
+    //     socket.addEventListener('message', drawStateHandler);
+    //     return () => {
+    //         socket.removeEventListener('message', drawStateHandler);
+    //     };
+    // }, [socket]);
 
     let displayedCanvas;
     switch (role) {
@@ -94,6 +103,7 @@ const Canvas = ({ socket, role }) => {
         return (
             <div className={classes.root}>
                 <div className={classes.canvasWrapper}>
+                    {isPortrait ? <h1> please rotate your screen </h1> : displayedCanvas}
                     <SideBar
                         brushSize={setBrushSize}
                         erase={{ mode: mode, setMode: setMode }}
@@ -111,11 +121,7 @@ const Canvas = ({ socket, role }) => {
             </div>
         );
     } else {
-        return (
-            <div className={classes.root}>
-                <h1> portrait</h1>
-            </div>
-        );
+        return <ScreenRotate time={drawState.timeLeft} />;
     }
 };
 

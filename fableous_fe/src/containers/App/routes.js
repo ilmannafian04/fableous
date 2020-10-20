@@ -2,6 +2,8 @@ import CanvasText from '../CanvasText/CanvasText';
 import HomePage from '../HomePage/HomePage';
 import StoryPage from '../StoryPage/StoryPage';
 import CanvasHub from '../CanvasHub/CanvasHub';
+import SignUp from '../authentication/SignUp';
+import SignIn from '../authentication/SignIn';
 
 export const routes = [
     {
@@ -28,5 +30,15 @@ export const routes = [
         component: CanvasHub,
         exact: true,
         path: '/hub',
+    },
+    {
+        component: SignUp,
+        exact: true,
+        path: '/signup',
+    },
+    {
+        component: SignIn,
+        exact: true,
+        path: '/signin',
     },
 ];

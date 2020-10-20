@@ -6,7 +6,7 @@ const clearToken = () => {
 };
 
 export const jwtRequestInterceptor = (config) => {
-    const accessToken = window.localStorage.getItem('watchdogAccessToken');
+    const accessToken = window.localStorage.getItem('fableousAccessToken');
     if (accessToken) config.headers.Authorization = `Bearer ${accessToken}`;
     return config;
 };

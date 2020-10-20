@@ -4,5 +4,6 @@ from fableous import views
 
 urlpatterns = [
     path('ping', views.ping),
-    path('createsession', views.create_drawing_session)
+    path('createsession', views.create_drawing_session),
+    path('signup', views.signup)
 ]

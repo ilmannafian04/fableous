@@ -159,7 +159,9 @@ class DrawingConsumer(AsyncJsonWebsocketConsumer):
             await self.send_json(content={'type': 'newStroke',
                                           'data': {'strokes': event['data'],
                                                    'layer': event['layer']}})
+
     async def draw_text_handler(self, event):
+        # TODO: refactor this to not broadcast but instead direct send from sender to hub
         player_state = await self.get_self_state()
         if player_state['role'] == 4:
             await self.send_json(content={'type': 'text',

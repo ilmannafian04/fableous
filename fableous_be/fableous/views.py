@@ -4,6 +4,12 @@ import string
 
 from django.http import HttpResponse, JsonResponse
 from django_redis import get_redis_connection
+from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from fableous.models import FableousUser
 
 
 def ping(request):
@@ -21,3 +27,17 @@ def create_drawing_session(request):
                    'page_count': 2}
     r.set(room_code, json.dumps(story_state, separators=(',', ':')))
     return JsonResponse({'roomCode': room_code})
+
+
+class UserView(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def post(self, request):
+        if 'username' in request.POST and 'password' in request.POST and 'email' in request.POST:
+            user = FableousUser.objects.create_user(request.POST['username'],
+                                                    request.POST['email'],
+                                                    request.POST['password'])
+            user.save()
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)

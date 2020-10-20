@@ -18,6 +18,7 @@ const useStyles = makeStyles(() => ({
         alignItems: 'center',
         justifyContent: 'flex-start',
         position: 'absolute',
+        backgroundColor: '#7030A2',
     },
     timer: {
         display: 'flex',
@@ -110,14 +111,14 @@ const Canvas = ({ socket, role }) => {
     return (
         <div className={classes.root}>
             <div className={classes.canvasWrapper}>
-                {isPortrait ? <ScreenRotate /> : displayedCanvas}
+                {isPortrait ? <ScreenRotate /> : null}
                 <SideBar
                     brushSize={setBrushSize}
                     erase={{ mode: mode, setMode: setMode }}
                     brushColor={{ color: color, setColor: setColor }}
                 />
             </div>
-            <div className={classes.canvasCentered}>{displayedCanvas}</div>
+            {displayedCanvas}
             <PageBar page={drawState.pageCount} />
             <MenuAppBar />
             {/*<div className={classes.timerBox}>*/}

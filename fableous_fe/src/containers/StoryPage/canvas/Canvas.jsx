@@ -40,6 +40,13 @@ const useStyles = makeStyles(() => ({
         zIndex: 1,
         position: 'absolute',
     },
+    canvasCentered: {
+        width: '100vw',
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
 }));
 
 const Canvas = ({ socket, role }) => {
@@ -96,8 +103,8 @@ const Canvas = ({ socket, role }) => {
             displayedCanvas = <CanvasHub socket={socket} />;
             break;
         default:
-            displayedCanvas = <h1>Uh oh</h1>;
-            displayedCanvas = <CanvasDraw />;
+            // displayedCanvas = <h1>Uh oh</h1>;
+            displayedCanvas = <CanvasDraw className={classes.canvasCentered} />;
             break;
     }
     return (
@@ -110,7 +117,7 @@ const Canvas = ({ socket, role }) => {
                     brushColor={{ color: color, setColor: setColor }}
                 />
             </div>
-            {displayedCanvas}
+            <div className={classes.canvasCentered}>{displayedCanvas}</div>
             <PageBar page={drawState.pageCount} />
             <MenuAppBar />
             {/*<div className={classes.timerBox}>*/}

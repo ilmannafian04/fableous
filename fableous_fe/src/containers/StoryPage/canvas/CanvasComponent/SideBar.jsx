@@ -16,6 +16,7 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'space-between',
         position: 'sticky',
         zIndex: 1,
+        left: '0%',
     },
     appBar: {
         zIndex: theme.zIndex.drawer - 1,

@@ -17,8 +17,8 @@ const useStyles = makeStyles(() => ({
         height: '100vh',
         alignItems: 'center',
         justifyContent: 'flex-start',
+        position: 'absolute',
     },
-
     timer: {
         display: 'flex',
         width: '10rem',
@@ -38,7 +38,7 @@ const useStyles = makeStyles(() => ({
     canvasWrapper: {
         display: 'flex',
         zIndex: 1,
-        position: 'sticky',
+        position: 'absolute',
     },
 }));
 
@@ -97,32 +97,29 @@ const Canvas = ({ socket, role }) => {
             break;
         default:
             displayedCanvas = <h1>Uh oh</h1>;
+            displayedCanvas = <CanvasDraw />;
             break;
     }
-    if (window.innerHeight < window.innerWidth) {
-        return (
-            <div className={classes.root}>
-                <div className={classes.canvasWrapper}>
-                    {isPortrait ? <h1> please rotate your screen </h1> : displayedCanvas}
-                    <SideBar
-                        brushSize={setBrushSize}
-                        erase={{ mode: mode, setMode: setMode }}
-                        brushColor={{ color: color, setColor: setColor }}
-                    />
-                </div>
-                {displayedCanvas}
-                <PageBar page={drawState.pageCount} />
-                <MenuAppBar />
-                {/*<div className={classes.timerBox}>*/}
-                {/*    <div className={classes.timer}>*/}
-                {/*        <h1>{secondsToMMSS(drawState.timeLeft)}</h1>*/}
-                {/*    </div>*/}
-                {/*</div>*/}
+    return (
+        <div className={classes.root}>
+            <div className={classes.canvasWrapper}>
+                {isPortrait ? <ScreenRotate /> : displayedCanvas}
+                <SideBar
+                    brushSize={setBrushSize}
+                    erase={{ mode: mode, setMode: setMode }}
+                    brushColor={{ color: color, setColor: setColor }}
+                />
             </div>
-        );
-    } else {
-        return <ScreenRotate time={drawState.timeLeft} />;
-    }
+            {displayedCanvas}
+            <PageBar page={drawState.pageCount} />
+            <MenuAppBar />
+            {/*<div className={classes.timerBox}>*/}
+            {/*    <div className={classes.timer}>*/}
+            {/*        <h1>{secondsToMMSS(drawState.timeLeft)}</h1>*/}
+            {/*    </div>*/}
+            {/*</div>*/}
+        </div>
+    );
 };
 
 export default Canvas;

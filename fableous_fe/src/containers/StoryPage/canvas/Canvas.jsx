@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 
 import MenuAppBar from './CanvasComponent/MenuAppBar';
 import PageBar from './CanvasComponent/PageBar';
-import SideBar from './CanvasComponent/SideBar';
+// import SideBar from './CanvasComponent/SideBar';
 import CanvasDraw from './CanvasDraw';
 import CanvasHub from './CanvasHub';
 import CanvasText from './CanvasText';
@@ -44,9 +44,6 @@ const useStyles = makeStyles(() => ({
 
 const Canvas = ({ socket, role }) => {
     const [drawState, setDrawState] = useState({ timeLeft: 3 * 60, currentPage: 1, pageCount: 0 });
-    const [color, setColor] = useState('#000000');
-    const [brushSize, setBrushSize] = useState(20);
-    const [mode, setMode] = React.useState('brush');
     const classes = useStyles();
 
     useEffect(() => {
@@ -66,15 +63,7 @@ const Canvas = ({ socket, role }) => {
     switch (role) {
         case 1:
         case 2:
-            displayedCanvas = (
-                <CanvasDraw
-                    changeDrawState={setDrawState}
-                    brushColor={color}
-                    mode={mode}
-                    brushSize={brushSize}
-                    socket={socket}
-                />
-            );
+            displayedCanvas = <CanvasDraw socket={socket} />;
             break;
         case 3:
             displayedCanvas = <CanvasText socket={socket} />;

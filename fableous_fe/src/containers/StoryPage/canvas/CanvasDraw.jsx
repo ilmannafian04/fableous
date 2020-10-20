@@ -47,7 +47,6 @@ const CanvasDraw = ({ socket }) => {
     const [color, setColor] = useState('#000000');
     const [brushSize, setBrushSize] = useState(20);
     const [mode, setMode] = React.useState('brush');
-    const [isOpen, setOpen] = useState(false);
 
     useEffect(() => {
         if (headerRef.current) {
@@ -139,9 +138,9 @@ const CanvasDraw = ({ socket }) => {
                     draft.push({
                         start: lastPointerPosition,
                         stop: { x: x, y: y },
-                        strokeStyle: color,
+                        color: color,
                         size: brushSize,
-                        globalCompositeOperation: mode,
+                        mode: mode,
                     });
                 })
             );

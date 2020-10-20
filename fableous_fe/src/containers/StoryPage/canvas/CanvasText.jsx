@@ -90,10 +90,6 @@ function CanvasText({ socket }) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [scale]);
 
-    const drawText = () => {
-        createTextNode();
-    };
-
     const createTextNode = () => {
         const text_id = uuid();
         const textNode = {

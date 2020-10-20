@@ -29,7 +29,7 @@ const AutoTextAreaComponent = (props) => {
             props.updateTextHeight(props.selectedShape.text_id, parentHeight);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [text, props.textAreaAttributes.textAreaWidth, parentHeight, textAreaHeight]);
+    }, [text, props.textAreaAttributes.textAreaWidth]);
 
     const onChangeHandler = (event) => {
         setTextAreaHeight('auto');

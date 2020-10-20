@@ -67,7 +67,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function ClippedDrawer({ brushColor, erase, brushSize }) {
+export default function ClippedDrawer({ brushColor, erase, brushSize, createTextNode }) {
     const classes = useStyles();
 
     const [isOpen, setOpen] = useState(false);
@@ -105,7 +105,7 @@ export default function ClippedDrawer({ brushColor, erase, brushSize }) {
                         </ListItem>
                         <ListItem button>
                             <ListItemIcon>
-                                <TitleIcon className={classes.icons} />
+                                <TitleIcon className={classes.icons} onClick={() => createTextNode()} />
                             </ListItemIcon>
                         </ListItem>
                         <ListItem button>

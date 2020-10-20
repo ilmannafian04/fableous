@@ -88,11 +88,11 @@ const Canvas = ({ socket, role }) => {
     }
     return (
         <div className={classes.root}>
-            <SideBar
-                brushSize={setBrushSize}
-                erase={{ mode: mode, setMode: setMode }}
-                brushColor={{ color: color, setColor: setColor }}
-            />
+            {/*<SideBar*/}
+            {/*    brushSize={setBrushSize}*/}
+            {/*    erase={{ mode: mode, setMode: setMode }}*/}
+            {/*    brushColor={{ color: color, setColor: setColor }}*/}
+            {/*/>*/}
             <PageBar page={drawState.pageCount} />
             <MenuAppBar />
             {/*<div className={classes.timerBox}>*/}

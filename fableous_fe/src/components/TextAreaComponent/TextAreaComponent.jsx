@@ -14,7 +14,7 @@ function TextAreaComponent({
     const [dynamicHeight, setDynamicHeight] = useState(attrs.height);
     useEffect(() => {
         handleExpandText();
-    }, [attrs]);
+    }, []);
     const styles = {
         position: 'absolute',
         top: position.y + 'px',

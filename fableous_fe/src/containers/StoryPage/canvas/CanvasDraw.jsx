@@ -10,6 +10,7 @@ import { calculateHeightBasedOnRatio } from '../../../helper/CanvasHelperFunctio
 import { calculateScale } from '../../../helper/CanvasHelperFunctions/calculateScale';
 import { normalizePoint } from '../../../helper/CanvasHelperFunctions/normalizePoint';
 import useWindowSize from '../../../utils/hooks/useWindowSize';
+import SideBar from './CanvasComponent/SideBar';
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -19,7 +20,7 @@ const useStyles = makeStyles(() =>
     })
 );
 
-const CanvasDraw = ({ socket, brushColor, mode, brushSize }) => {
+const CanvasDraw = ({ socket }) => {
     const classes = useStyles();
     // Window Size
     const { width, height } = useWindowSize();
@@ -41,9 +42,12 @@ const CanvasDraw = ({ socket, brushColor, mode, brushSize }) => {
     const stageRef = useRef();
     const headerRef = useRef();
 
-    // const [socket, setSocket] = useState(null);
-    // const [socketIsOpen, setSocketIsOpen] = useState(false);
     const [messages, setMessages] = useState([]);
+
+    const [color, setColor] = useState('#000000');
+    const [brushSize, setBrushSize] = useState(20);
+    const [mode, setMode] = React.useState('brush');
+    const [isOpen, setOpen] = useState(false);
 
     useEffect(() => {
         if (headerRef.current) {
@@ -108,7 +112,7 @@ const CanvasDraw = ({ socket, brushColor, mode, brushSize }) => {
             }
 
             context.beginPath();
-            context.strokeStyle = brushColor;
+            context.strokeStyle = color;
 
             localPos = normalizePoint(prevPointer, scale, headerRef.current);
 
@@ -135,7 +139,7 @@ const CanvasDraw = ({ socket, brushColor, mode, brushSize }) => {
                     draft.push({
                         start: lastPointerPosition,
                         stop: { x: x, y: y },
-                        strokeStyle: brushColor,
+                        strokeStyle: color,
                         size: brushSize,
                         globalCompositeOperation: mode,
                     });
@@ -151,40 +155,52 @@ const CanvasDraw = ({ socket, brushColor, mode, brushSize }) => {
     };
 
     return (
-        <div ref={headerRef} style={{ width: '100%', height: '100%' }}>
-            <Stage width={availSpace.width} height={availSpace.height} ref={stageRef} className={classes.canvasStyle}>
-                <Layer>
-                    <Image
-                        image={canvas}
-                        width={availSpace.width}
-                        height={availSpace.height}
-                        ref={imageRef}
-                        stroke={'black'}
-                        onMouseDown={onPressDownHandler}
-                        onMouseMove={onMoveHandler}
-                        onTouchStart={() => {
-                            onPressDownHandler();
-                            setIsPainting(true);
-                        }}
-                        onTouchMove={onMoveHandler}
-                        onTouchEnd={endDrawing}
-                        onMouseUp={endDrawing}
-                        onMouseLeave={endDrawing}
-                        listening={true}
-                    />
-                </Layer>
-            </Stage>
-
-            <Heartbeat
-                heartbeatInterval={200}
-                heartbeatFunction={() => {
-                    if (socket && messages.length > 0) {
-                        socket.send(JSON.stringify({ command: 'draw.story.stroke', data: messages }));
-                        setMessages([]);
-                    }
-                }}
+        <React.Fragment>
+            <SideBar
+                brushSize={setBrushSize}
+                erase={{ mode: mode, setMode: setMode }}
+                brushColor={{ color: color, setColor: setColor }}
             />
-        </div>
+            <div ref={headerRef} style={{ width: '100%', height: '100%' }}>
+                <Stage
+                    width={availSpace.width}
+                    height={availSpace.height}
+                    ref={stageRef}
+                    className={classes.canvasStyle}
+                >
+                    <Layer>
+                        <Image
+                            image={canvas}
+                            width={availSpace.width}
+                            height={availSpace.height}
+                            ref={imageRef}
+                            stroke={'black'}
+                            onMouseDown={onPressDownHandler}
+                            onMouseMove={onMoveHandler}
+                            onTouchStart={() => {
+                                onPressDownHandler();
+                                setIsPainting(true);
+                            }}
+                            onTouchMove={onMoveHandler}
+                            onTouchEnd={endDrawing}
+                            onMouseUp={endDrawing}
+                            onMouseLeave={endDrawing}
+                            listening={true}
+                        />
+                    </Layer>
+                </Stage>
+
+                <Heartbeat
+                    heartbeatInterval={200}
+                    heartbeatFunction={() => {
+                        if (socket && messages.length > 0) {
+                            socket.send(JSON.stringify({ command: 'draw.story.stroke', data: messages }));
+                            setMessages([]);
+                        }
+                    }}
+                />
+            </div>
+        </React.Fragment>
     );
 };
 

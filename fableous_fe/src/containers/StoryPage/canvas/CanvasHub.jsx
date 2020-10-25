@@ -53,9 +53,6 @@ function CanvasHub({ socket }) {
 
         if (stageRef) {
             stageRef.current.batchDraw();
-
-            // backgroundLayerRef.current.style.zIndex=1;
-            // characterLayerRef.current.style.zIndex=2;
         }
     }, [canvasIsReady, canvas, canvasCharacter]);
 
@@ -246,7 +243,6 @@ function CanvasHub({ socket }) {
     };
 
     const saveAsImage = () => {
-        console.log('SAVE');
         const dataurl = stageRef.current.toDataURL({
             pixelRatio: 2,
         });

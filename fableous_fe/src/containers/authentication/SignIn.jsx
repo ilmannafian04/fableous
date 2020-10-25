@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Axios from 'axios';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import { useHistory } from 'react-router-dom';
+import userAtom from '../../atom/userAtom';
+import { useRecoilState } from 'recoil';
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -66,6 +69,8 @@ const useStyles = makeStyles(() =>
 export const SignIn = () => {
     const classes = useStyles();
     const [formState, setFormState] = useState({ username: '', password: '' });
+    const [user, setUser] = useRecoilState(userAtom);
+    const history = useHistory();
     const changeHandler = (event) => {
         const target = event.target;
         switch (target.name) {
@@ -78,17 +83,28 @@ export const SignIn = () => {
             default:
         }
     };
+
     const submitHandler = (event) => {
         event.preventDefault();
         Axios.post('/api/token/', new FormData(event.currentTarget))
             .then((response) => {
                 window.localStorage.setItem('fableousAccessToken', response.data['access']);
                 window.localStorage.setItem('fableousRefreshToken', response.data['refresh']);
+                setUser((previous) => {
+                    return { ...previous, isLoggedIn: true };
+                });
             })
             .catch((error) => {
                 console.error(error);
             });
     };
+
+    useEffect(() => {
+        if (user.isLoggedIn) {
+            history.push('/');
+        }
+    }, [user, history]);
+
     return (
         <div className={classes.root}>
             <div className={classes.paper}>

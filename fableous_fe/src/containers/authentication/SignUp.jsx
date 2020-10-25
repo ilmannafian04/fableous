@@ -4,6 +4,8 @@ import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import { useHistory } from 'react-router-dom';
+
 const useStyles = makeStyles(() =>
     createStyles({
         root: {
@@ -65,6 +67,8 @@ const useStyles = makeStyles(() =>
 export const SignUp = () => {
     const classes = useStyles();
     const [formState, setFormState] = useState({ username: '', email: '', password: '' });
+    const history = useHistory();
+
     const changeHandler = (event) => {
         const target = event.target;
         switch (target.name) {
@@ -80,11 +84,13 @@ export const SignUp = () => {
             default:
         }
     };
+
     const submitHandler = (event) => {
         event.preventDefault();
         Axios.post('/api/signup', new FormData(event.currentTarget))
             .then((response) => {
                 console.log(response);
+                history.push('/signin');
             })
             .catch((error) => {
                 console.log(error.config);

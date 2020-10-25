@@ -4,7 +4,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import ListItemText from '@material-ui/core/ListItemText';
 import TextField from '@material-ui/core/TextField';
 import React, { useEffect, useState } from 'react';
-
+import Background from '../../assets/icons/background.png';
+import Character from '../../assets/icons/character.png';
+import Story from '../../assets/icons/story.png';
+import Hub from '../../assets/icons/hub.png';
 import Role from '../../constant/role';
 
 const useStyles = makeStyles(() => ({
@@ -81,6 +84,40 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
+const buttonRoleUseStyles = makeStyles(() => ({
+    container: {
+        display: 'flex',
+        margin: '1rem 0',
+    },
+
+    wrapper: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        color: '#F6F1D3',
+    },
+
+    button: {
+        width: '50px',
+        height: '50px',
+        background: 'red',
+        textDecoration: 'none',
+        textAlign: 'center',
+        margin: '4px 1rem',
+        borderRadius: '50%',
+        cursor: 'pointer',
+        padding: '10px',
+        '&:hover': {
+            opacity: '0.7',
+        },
+    },
+    image: {
+        width: '26px',
+        height: '26px',
+    },
+}));
+
 const nameValidator = (name) => {
     let isValid = true;
     if (name.length < 1) isValid = false;
@@ -114,29 +151,37 @@ const ArtistForm = ({ socket, isReady, name }) => {
 };
 
 const RoleSelect = ({ socket, isReady, selectedRole }) => {
-    const clickHandler = (event) => {
+    const clickHandler = (val) => {
         if (socket) {
-            socket.send(
-                JSON.stringify({ command: 'draw.lobby.playerState', key: 'role', value: parseInt(event.target.value) })
-            );
+            socket.send(JSON.stringify({ command: 'draw.lobby.playerState', key: 'role', value: parseInt(val) }));
         }
     };
+    const buttonClass = buttonRoleUseStyles();
     return (
-        <div>
+        <div className={buttonClass.container}>
             {[
-                { text: 'Background', value: 1 },
-                { text: 'Character', value: 2 },
-                { text: 'Story', value: 3 },
-                { text: 'Hub', value: 4 },
+                { text: 'Background', value: 1, image: Background, color: '#067A00' },
+                { text: 'Character', value: 2, image: Character, color: '#00CEE6', selected: '#0093A3' },
+                { text: 'Story', value: 3, image: Story, color: '#FA9600', selected: '#E08700' },
+                { text: 'Hub', value: 4, image: Hub, color: '#E71D36', selected: '#000000' },
             ].map((button, index) => (
-                <button
-                    onClick={clickHandler}
-                    value={button.value}
-                    key={index}
-                    disabled={selectedRole === button.value || isReady}
-                >
+                <div className={buttonClass.wrapper}>
+                    <button
+                        className={buttonClass.button}
+                        onClick={() => clickHandler(button.value)}
+                        value={button.value}
+                        key={index}
+                        disabled={selectedRole === button.value || isReady}
+                        style={{
+                            background: button.color,
+                            borderStyle: selectedRole === button.value || isReady ? 'solid' : 'none',
+                            borderColor: button.selected,
+                        }}
+                    >
+                        <img className={buttonClass.image} src={button.image} alt={button.text} />
+                    </button>
                     {button.text}
-                </button>
+                </div>
             ))}
         </div>
     );
@@ -187,7 +232,6 @@ const Lobby = ({ socket, changeState, roomCode, setPlayerState }) => {
                     setPlayerState(message['data']['self']);
                     break;
                 default:
-                    console.error('Unknown WS message');
             }
         };
     }

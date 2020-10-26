@@ -82,6 +82,18 @@ const useStyles = makeStyles(() => ({
     success: {
         backgroundColor: '#89c143',
     },
+    pageButton: {
+        background: '#3f51b5',
+        width: '30px',
+        height: '30px',
+        borderRadius: '30%',
+        margin: '2px 2px 2px 6px',
+        border: '0',
+        color: 'white',
+        '&:hover': {
+            background: '#3f94b5',
+        },
+    },
 }));
 
 const buttonRoleUseStyles = makeStyles(() => ({
@@ -188,6 +200,7 @@ const RoleSelect = ({ socket, isReady, selectedRole }) => {
 };
 
 const PageForm = ({ socket, pageCount }) => {
+    const classes = useStyles();
     const changePageCount = (event) => {
         const value = event.target.value === 'inc' ? pageCount + 1 : pageCount - 1;
         if (value >= 2 && value <= 3) {
@@ -203,10 +216,10 @@ const PageForm = ({ socket, pageCount }) => {
     return (
         <div>
             <span>Page count: {pageCount}</span>
-            <button value="inc" onClick={changePageCount}>
+            <button value="inc" onClick={changePageCount} className={classes.pageButton}>
                 +
             </button>
-            <button value="dec" onClick={changePageCount}>
+            <button value="dec" onClick={changePageCount} className={classes.pageButton}>
                 -
             </button>
         </div>

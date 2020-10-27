@@ -1,11 +1,13 @@
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useHistory, useParams } from 'react-router-dom';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 
 import Canvas from './canvas/Canvas';
 import Lobby from './Lobby';
 import { baseUrl, wsProtocol } from '../../constant/url';
+import socketAtom from '../../atom/socketAtom';
+import storyAtom from '../../atom/storyAtom';
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -16,56 +18,42 @@ const useStyles = makeStyles(() =>
 );
 
 const StoryPage = () => {
-    const [sessionState, setSessionState] = useState(0);
-    const [roomCode, setRoomCode] = useState(null);
-    const [socket, setSocket] = useState(null);
-    const [playerState, setPlayerState] = useState({ name: '', role: 0 });
+    const setSocket = useSetRecoilState(socketAtom);
+    const storyState = useRecoilValue(storyAtom);
     const { joinCode } = useParams();
+    const history = useHistory();
     const classes = useStyles();
     useEffect(() => {
         if (joinCode) {
-            setRoomCode(joinCode);
-        } else {
-            axios
-                .get('/api/createsession')
-                .then((responce) => {
-                    setRoomCode(responce.data['roomCode']);
-                })
-                .catch((err) => {
-                    console.error(err);
-                });
-        }
-    }, [joinCode]);
-    useEffect(() => {
-        if (roomCode) {
-            const sock = new WebSocket(`${baseUrl(wsProtocol)}/ws/drawing/${roomCode}/`);
+            const sock = new WebSocket(`${baseUrl(wsProtocol)}/ws/drawing/${joinCode}/`);
             sock.onopen = () => {
                 setSocket(sock);
             };
-            return () => sock.close();
+            const backToHome = () => history.push('/');
+            const echoHandler = (event) => console.log(JSON.parse(event.data));
+            sock.addEventListener('message', echoHandler);
+            sock.addEventListener('error', backToHome);
+            sock.addEventListener('close', backToHome);
+            return () => {
+                sock.removeEventListener('message', echoHandler);
+                sock.removeEventListener('error', backToHome);
+                sock.removeEventListener('close', backToHome);
+                sock.close();
+            };
         }
-    }, [roomCode]);
-    const changeState = (state) => setSessionState(state);
-    const setFinalPlayerState = (state) => setPlayerState(state);
+    }, [joinCode, setSocket, history]);
     let displayedComponent;
-    switch (sessionState) {
+    switch (storyState.state) {
         case 0:
-            displayedComponent = (
-                <Lobby
-                    socket={socket}
-                    roomCode={roomCode}
-                    changeState={changeState}
-                    setPlayerState={setFinalPlayerState}
-                />
-            );
+            displayedComponent = <Lobby />;
             break;
         case 1:
-            displayedComponent = <Canvas socket={socket} role={playerState.role} />;
+            displayedComponent = <Canvas />;
             break;
         default:
             displayedComponent = <Lobby />;
     }
-    return <div className={classes.drawingSessionContainer}>{displayedComponent} </div>;
+    return <div className={classes.drawingSessionContainer}>{displayedComponent}</div>;
 };
 
 export default StoryPage;

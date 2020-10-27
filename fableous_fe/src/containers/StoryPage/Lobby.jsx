@@ -4,11 +4,16 @@ import { makeStyles } from '@material-ui/core/styles';
 import ListItemText from '@material-ui/core/ListItemText';
 import TextField from '@material-ui/core/TextField';
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { useRecoilState, useRecoilValue } from 'recoil';
+
 import Background from '../../assets/icons/background.png';
 import Character from '../../assets/icons/character.png';
 import Story from '../../assets/icons/story.png';
 import Hub from '../../assets/icons/hub.png';
 import Role from '../../constant/role';
+import storyAtom from '../../atom/storyAtom';
+import socketAtom from '../../atom/socketAtom';
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -141,12 +146,14 @@ const nameValidator = (name) => {
     return isValid;
 };
 
-const ArtistForm = ({ socket, isReady, name }) => {
+const ArtistForm = () => {
     const [newName, setNewName] = useState('Fableous');
+    const storyState = useRecoilValue(storyAtom);
+    const socket = useRecoilValue(socketAtom);
     const classes = useStyles();
     useEffect(() => {
-        setNewName(name);
-    }, [name]);
+        setNewName(storyState.self.name);
+    }, [storyState]);
     const submitHandler = (event) => {
         event.preventDefault();
         if (socket) {
@@ -155,11 +162,17 @@ const ArtistForm = ({ socket, isReady, name }) => {
     };
     return (
         <form onSubmit={submitHandler}>
-            <TextField value={newName} onChange={(event) => setNewName(event.target.value)} disabled={isReady} />
+            <TextField
+                value={newName}
+                onChange={(event) => setNewName(event.target.value)}
+                disabled={storyState.self.isReady}
+            />
             <Button
                 className={classes.setButton}
                 type="submit"
-                disabled={(!nameValidator(newName) && socket) || isReady || name === newName}
+                disabled={
+                    (!nameValidator(newName) && socket) || storyState.self.isReady || storyState.self.name === newName
+                }
             >
                 Set
             </Button>
@@ -167,7 +180,9 @@ const ArtistForm = ({ socket, isReady, name }) => {
     );
 };
 
-const RoleSelect = ({ socket, isReady, selectedRole }) => {
+const RoleSelect = () => {
+    const storyState = useRecoilValue(storyAtom);
+    const socket = useRecoilValue(socketAtom);
     const clickHandler = (val) => {
         if (socket) {
             socket.send(JSON.stringify({ command: 'draw.lobby.playerState', key: 'role', value: parseInt(val) }));
@@ -182,16 +197,16 @@ const RoleSelect = ({ socket, isReady, selectedRole }) => {
                 { text: 'Story', value: 3, image: Story, color: '#FA9600', selected: '#E08700' },
                 { text: 'Hub', value: 4, image: Hub, color: '#E71D36', selected: '#000000' },
             ].map((button, index) => (
-                <div className={buttonClass.wrapper}>
+                <div className={buttonClass.wrapper} key={index}>
                     <button
                         className={buttonClass.button}
                         onClick={() => clickHandler(button.value)}
                         value={button.value}
-                        key={index}
-                        disabled={selectedRole === button.value || isReady}
+                        disabled={storyState.self.role === button.value || storyState.self.isReady}
                         style={{
                             background: button.color,
-                            borderStyle: selectedRole === button.value || isReady ? 'solid' : 'none',
+                            borderStyle:
+                                storyState.self.role === button.value || storyState.self.isReady ? 'solid' : 'none',
                             borderColor: button.selected,
                         }}
                     >
@@ -204,10 +219,12 @@ const RoleSelect = ({ socket, isReady, selectedRole }) => {
     );
 };
 
-const PageForm = ({ socket, pageCount }) => {
+const PageForm = () => {
+    const storyState = useRecoilValue(storyAtom);
+    const socket = useRecoilValue(socketAtom);
     const classes = useStyles();
     const changePageCount = (event) => {
-        const value = event.target.value === 'inc' ? pageCount + 1 : pageCount - 1;
+        const value = event.target.value === 'inc' ? storyState.pageCount + 1 : storyState.pageCount - 1;
         if (value >= 2 && value <= 3) {
             socket.send(
                 JSON.stringify({
@@ -220,7 +237,7 @@ const PageForm = ({ socket, pageCount }) => {
     };
     return (
         <div>
-            <span>Page count: {pageCount}</span>
+            <span>Page count: {storyState.pageCount}</span>
             <button value="inc" onClick={changePageCount} className={classes.pageButton}>
                 +
             </button>
@@ -231,53 +248,44 @@ const PageForm = ({ socket, pageCount }) => {
     );
 };
 
-const Lobby = ({ socket, changeState, roomCode, setPlayerState }) => {
-    const [lobbyState, setLobbyState] = useState({
-        players: [],
-        self: { name: 'Fableous', role: 0, isReady: false },
-        pageCount: 2,
-    });
+const Lobby = () => {
+    const [storyState, setStoryState] = useRecoilState(storyAtom);
+    const socket = useRecoilValue(socketAtom);
+    const { joinCode } = useParams();
     const classes = useStyles();
-    if (socket) {
-        socket.onmessage = (event) => {
+    useEffect(() => {
+        const lobbyMessageHandler = (event) => {
             const message = JSON.parse(event.data);
-            switch (message['type']) {
-                case 'lobbyState':
-                    setLobbyState(message['data']);
-                    break;
-                case 'storyState':
-                    changeState(message['data']['state']);
-                    setPlayerState(message['data']['self']);
-                    break;
-                default:
+            if (message.type === 'lobbyState') {
+                setStoryState(message.data);
             }
         };
-    }
+        if (socket) socket.addEventListener('message', lobbyMessageHandler);
+        return () => {
+            if (socket) socket.removeEventListener('message', lobbyMessageHandler);
+        };
+    });
     return (
         <div className={classes.root}>
             <div className={classes.paper}>
                 <div className={classes.paperInside}>
                     <h1 className={classes.title}>Lobby</h1>
                     <Box className={classes.roomCode}>
-                        <h1 className={classes.roomCode}>Room Code {roomCode}</h1>
+                        <h1 className={classes.roomCode}>Room Code {joinCode}</h1>
                     </Box>
                     <hr className={classes.divider} />
                     <Container className={classes.boxContainer}>
                         <Box className={classes.box}>
-                            <h2>Your Name: {lobbyState.self.name}</h2>
-                            <h3>Role: {Role[lobbyState.self.role]}</h3>
-                            <ArtistForm socket={socket} isReady={lobbyState.self.isReady} name={lobbyState.self.name} />
-                            <RoleSelect
-                                socket={socket}
-                                isReady={lobbyState.self.isReady}
-                                selectedRole={lobbyState.self.role}
-                            />
-                            <PageForm socket={socket} pageCount={lobbyState.pageCount} />
+                            <h2>Your Name: {storyState.self.name}</h2>
+                            <h3>Role: {Role[storyState.self.role]}</h3>
+                            <ArtistForm isReady={storyState.self.isReady} name={storyState.self.name} />
+                            <RoleSelect isReady={storyState.self.isReady} selectedRole={storyState.self.role} />
+                            <PageForm pageCount={storyState.pageCount} />
                         </Box>
                         <Box className={classes.box}>
                             <h2 className={classes.smallTitle}>Team</h2>
                             <List>
-                                {lobbyState.players.map((player, index) => (
+                                {storyState.players.map((player, index) => (
                                     <ListItem
                                         className={player.isReady ? classes.success : classes.listStyle}
                                         key={index}
@@ -302,12 +310,12 @@ const Lobby = ({ socket, changeState, roomCode, setPlayerState }) => {
                                     JSON.stringify({
                                         command: 'draw.lobby.playerState',
                                         key: 'isReady',
-                                        value: !lobbyState.self.isReady,
+                                        value: !storyState.self.isReady,
                                     })
                                 )
                             }
                         >
-                            {lobbyState.self.isReady ? 'Cancel' : 'Ready'}
+                            {storyState.self.isReady ? 'Cancel' : 'Ready'}
                         </Button>
                     </Box>
                 </div>

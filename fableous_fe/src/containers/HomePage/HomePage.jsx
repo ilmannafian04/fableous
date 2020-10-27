@@ -7,6 +7,7 @@ import CustomModal from './CustomModal';
 import userAtom from '../../atom/userAtom';
 import { useRecoilValue } from 'recoil';
 import { useHistory } from 'react-router-dom';
+import Axios from 'axios';
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -91,10 +92,11 @@ const HomePage = () => {
     const history = useHistory();
 
     const handleClick = (event) => {
-        console.log(event.currentTarget.value);
         switch (parseInt(event.currentTarget.value)) {
             case 1:
-                history.push('/story');
+                Axios.get('/api/createsession')
+                    .then((response) => history.push(`/story/${response.data.roomCode}`))
+                    .catch((error) => console.error(error));
                 return;
             case 2:
                 history.push('/signup');
@@ -105,7 +107,6 @@ const HomePage = () => {
             default:
         }
     };
-
     return (
         <div className={classes.boxWrapper}>
             <div className={classes.bigBox}>

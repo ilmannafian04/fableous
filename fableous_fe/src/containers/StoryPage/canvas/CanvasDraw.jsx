@@ -163,7 +163,16 @@ const CanvasDraw = () => {
                 erase={{ mode: mode, setMode: setMode }}
                 brushColor={{ color: color, setColor: setColor }}
             />
-            <div ref={headerRef} style={{ width: '100%', height: '100%' }}>
+            <div
+                ref={headerRef}
+                style={{
+                    width: '100%',
+                    height: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                }}
+            >
                 <Stage
                     width={availSpace.width}
                     height={availSpace.height}

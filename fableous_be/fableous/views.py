@@ -18,15 +18,20 @@ def ping(request):
     return HttpResponse('pong')
 
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def create_drawing_session(request):
     room_code = ''.join(random.choice(string.ascii_uppercase) for _ in range(5))
     r = get_redis_connection()
+    story = Story(owner=request.user, title='Crabbing in the disco')
+    story.save()
     story_state = {'state': 0,
                    'players': [],
                    'role': {'0': [], '1': [], '2': [], '3': [], '4': []},
                    'page': [],
                    'current_page': 1,
-                   'page_count': 2}
+                   'page_count': 2,
+                   'story_id': story.id}
     r.set(room_code, json.dumps(story_state, separators=(',', ':')))
     return JsonResponse({'roomCode': room_code})
 
@@ -58,7 +63,7 @@ def upload_story_page(request):
         if 'image' in request.POST:
             # modified from https://dev.to/ageumatheus/creating-image-from-dataurl-base64-with-pyhton-django-454g
             mime, _dataurl = request.POST['image'].split(';base64,')
-            _extension = 'test', mime.split('/')[-1]
+            _extension = mime.split('/')[-1]
             file = SimpleUploadedFile(f'file.{_extension}', b64decode(_dataurl), mime)
 
         elif 'image' in request.FILES:
@@ -74,3 +79,20 @@ def upload_story_page(request):
         return Response({'status': 'OK'})
     else:
         return Response('Missing value(s)', status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def gallery(request):
+    stories = Story.objects.filter(owner=request.user)
+    result = []
+    for story in stories:
+        try:
+            thumbnail = StoryPage.objects.get(story=story, page=1)
+            result.append({'id': story.id,
+                           'title': story.title,
+                           'thumbnail': thumbnail.image.url})
+        except StoryPage.DoesNotExist:
+            result.append({'id': story.id,
+                           'title': story.title})
+    return Response(result)

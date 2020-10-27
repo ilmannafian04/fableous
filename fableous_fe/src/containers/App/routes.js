@@ -1,8 +1,10 @@
-import CanvasText from '../CanvasText/CanvasText';
-import HomePage from '../HomePage/HomePage';
+import CanvasText from '../StoryPage/canvas/CanvasText';
 import StoryPage from '../StoryPage/StoryPage';
-import CanvasHub from '../CanvasHub/CanvasHub';
+import SignUp from '../authentication/SignUp';
+import SignIn from '../authentication/SignIn';
+import CanvasHub from '../StoryPage/canvas/CanvasHub';
 import Gallery from '../Gallery/Gallery';
+import HomePage from '../HomePage/HomePage';
 
 export const routes = [
     {
@@ -34,5 +36,15 @@ export const routes = [
         component: Gallery,
         exact: true,
         path: '/gallery',
+    },
+    {
+        component: SignUp,
+        exact: true,
+        path: '/signup',
+    },
+    {
+        component: SignIn,
+        exact: true,
+        path: '/signin',
     },
 ];

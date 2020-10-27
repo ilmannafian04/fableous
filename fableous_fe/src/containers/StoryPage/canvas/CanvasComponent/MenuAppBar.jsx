@@ -3,6 +3,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
+import IconButton from '@material-ui/core/IconButton';
+import SettingsIcon from '@material-ui/icons/Settings';
+import HomeIcon from '@material-ui/icons/Home';
+import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -26,12 +30,9 @@ const useStyles = makeStyles((theme) => ({
     icon: {
         fontSize: 'inherit',
     },
-    button: {
-        fontSize: '36px',
-    },
 }));
 
-export default function GalleryAppBar() {
+export default function MenuAppBar() {
     const classes = useStyles();
 
     return (
@@ -39,19 +40,18 @@ export default function GalleryAppBar() {
             <AppBar className={classes.appBar}>
                 <Toolbar>
                     <Typography variant="h4" className={classes.title} align={'left'}>
-                        My Bookshelf
+                        Crabbing In the Disco
                     </Typography>
-                    <div className={classes.button}>
-                        📚 🏠
-                        {/*<IconButton className={classes.icon} style={{ color: '#FFFFFF' }}>*/}
-                        {/*    <QuestionAnswerIcon />*/}
-                        {/*</IconButton>*/}
-                        {/*<IconButton className={classes.icon} style={{ color: '#FFFFFF' }}>*/}
-                        {/*    <SettingsIcon />*/}
-                        {/*</IconButton>*/}
-                        {/*<IconButton className={classes.icon} style={{ color: '#FFFFFF' }}>*/}
-                        {/*    <HomeIcon />*/}
-                        {/*</IconButton>*/}
+                    <div>
+                        <IconButton className={classes.icon} style={{ color: '#FFFFFF' }}>
+                            <QuestionAnswerIcon />
+                        </IconButton>
+                        <IconButton className={classes.icon} style={{ color: '#FFFFFF' }}>
+                            <SettingsIcon />
+                        </IconButton>
+                        <IconButton className={classes.icon} style={{ color: '#FFFFFF' }}>
+                            <HomeIcon />
+                        </IconButton>
                     </div>
                 </Toolbar>
             </AppBar>

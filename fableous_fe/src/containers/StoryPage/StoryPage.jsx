@@ -3,7 +3,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
-import DrawPage from './DrawPage';
+import Canvas from './canvas/Canvas';
 import Lobby from './Lobby';
 import { baseUrl, wsProtocol } from '../../constant/url';
 
@@ -15,8 +15,6 @@ const useStyles = makeStyles(() =>
     })
 );
 
-// Session state
-// 0 = Lobby
 const StoryPage = () => {
     const [sessionState, setSessionState] = useState(0);
     const [roomCode, setRoomCode] = useState(null);
@@ -49,9 +47,6 @@ const StoryPage = () => {
     }, [roomCode]);
     const changeState = (state) => setSessionState(state);
     const setFinalPlayerState = (state) => setPlayerState(state);
-    useEffect(() => {
-        console.log(playerState);
-    }, [playerState]);
     let displayedComponent;
     switch (sessionState) {
         case 0:
@@ -65,7 +60,7 @@ const StoryPage = () => {
             );
             break;
         case 1:
-            displayedComponent = <DrawPage socket={socket} role={playerState.role} />;
+            displayedComponent = <Canvas socket={socket} role={playerState.role} />;
             break;
         default:
             displayedComponent = <Lobby />;

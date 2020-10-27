@@ -4,7 +4,9 @@ import React from 'react';
 
 import CustomChip from './CustomChip';
 import CustomModal from './CustomModal';
-import { Link } from 'react-router-dom';
+import userAtom from '../../atom/userAtom';
+import { useRecoilValue } from 'recoil';
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -85,6 +87,25 @@ const useStyles = makeStyles(() =>
 
 const HomePage = () => {
     const classes = useStyles();
+    const user = useRecoilValue(userAtom);
+    const history = useHistory();
+
+    const handleClick = (event) => {
+        console.log(event.currentTarget.value);
+        switch (parseInt(event.currentTarget.value)) {
+            case 1:
+                history.push('/story');
+                return;
+            case 2:
+                history.push('/signup');
+                return;
+            case 3:
+                history.push('/signin');
+                break;
+            default:
+        }
+    };
+
     return (
         <div className={classes.boxWrapper}>
             <div className={classes.bigBox}>
@@ -93,11 +114,38 @@ const HomePage = () => {
                     <p className={classes.tag}>Tag your theme/emotions here: </p>
                     <CustomChip />
                     <div className={classes.buttonsLayout}>
-                        <Link to={`/story`}>
-                            <Button size="large" className={classes.insideButton}>
+                        {user.isLoggedIn ? (
+                            <Button
+                                size="large"
+                                className={classes.insideButton}
+                                onClick={handleClick}
+                                name="new"
+                                value={1}
+                            >
                                 New Story
                             </Button>
-                        </Link>
+                        ) : (
+                            <div>
+                                <Button
+                                    size="large"
+                                    className={classes.insideButton}
+                                    onClick={handleClick}
+                                    name="new"
+                                    value={2}
+                                >
+                                    Register
+                                </Button>
+                                <Button
+                                    size="large"
+                                    className={classes.insideButton}
+                                    onClick={handleClick}
+                                    name="new"
+                                    value={3}
+                                >
+                                    Login
+                                </Button>
+                            </div>
+                        )}
                         <CustomModal parentClasses={classes} />
                     </div>
                 </div>

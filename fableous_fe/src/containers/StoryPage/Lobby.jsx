@@ -4,7 +4,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import ListItemText from '@material-ui/core/ListItemText';
 import TextField from '@material-ui/core/TextField';
 import React, { useEffect, useState } from 'react';
-
+import Background from '../../assets/icons/background.png';
+import Character from '../../assets/icons/character.png';
+import Story from '../../assets/icons/story.png';
+import Hub from '../../assets/icons/hub.png';
 import Role from '../../constant/role';
 
 const useStyles = makeStyles(() => ({
@@ -77,7 +80,58 @@ const useStyles = makeStyles(() => ({
         backgroundColor: '#F6F1D3',
     },
     success: {
-        backgroundColor: '#89c143',
+        backgroundColor: '#F6F1D3',
+    },
+    divider: {
+        borderRadius: '5px',
+        borderTop: '2px solid #bbb',
+        width: '90%',
+    },
+    pageButton: {
+        background: '#3f51b5',
+        width: '30px',
+        height: '30px',
+        borderRadius: '30%',
+        margin: '2px 2px 2px 6px',
+        border: '0',
+        color: 'white',
+        '&:hover': {
+            background: '#3f94b5',
+        },
+    },
+}));
+
+const buttonRoleUseStyles = makeStyles(() => ({
+    container: {
+        display: 'flex',
+        margin: '1rem 0',
+    },
+
+    wrapper: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        color: '#F6F1D3',
+    },
+
+    button: {
+        width: '50px',
+        height: '50px',
+        background: 'red',
+        textDecoration: 'none',
+        textAlign: 'center',
+        margin: '4px 1rem',
+        borderRadius: '50%',
+        cursor: 'pointer',
+        padding: '10px',
+        '&:hover': {
+            opacity: '0.7',
+        },
+    },
+    image: {
+        width: '26px',
+        height: '26px',
     },
 }));
 
@@ -114,35 +168,44 @@ const ArtistForm = ({ socket, isReady, name }) => {
 };
 
 const RoleSelect = ({ socket, isReady, selectedRole }) => {
-    const clickHandler = (event) => {
+    const clickHandler = (val) => {
         if (socket) {
-            socket.send(
-                JSON.stringify({ command: 'draw.lobby.playerState', key: 'role', value: parseInt(event.target.value) })
-            );
+            socket.send(JSON.stringify({ command: 'draw.lobby.playerState', key: 'role', value: parseInt(val) }));
         }
     };
+    const buttonClass = buttonRoleUseStyles();
     return (
-        <div>
+        <div className={buttonClass.container}>
             {[
-                { text: 'Background', value: 1 },
-                { text: 'Character', value: 2 },
-                { text: 'Story', value: 3 },
-                { text: 'Hub', value: 4 },
+                { text: 'Background', value: 1, image: Background, color: '#067A00' },
+                { text: 'Character', value: 2, image: Character, color: '#00CEE6', selected: '#0093A3' },
+                { text: 'Story', value: 3, image: Story, color: '#FA9600', selected: '#E08700' },
+                { text: 'Hub', value: 4, image: Hub, color: '#E71D36', selected: '#000000' },
             ].map((button, index) => (
-                <button
-                    onClick={clickHandler}
-                    value={button.value}
-                    key={index}
-                    disabled={selectedRole === button.value || isReady}
-                >
+                <div className={buttonClass.wrapper}>
+                    <button
+                        className={buttonClass.button}
+                        onClick={() => clickHandler(button.value)}
+                        value={button.value}
+                        key={index}
+                        disabled={selectedRole === button.value || isReady}
+                        style={{
+                            background: button.color,
+                            borderStyle: selectedRole === button.value || isReady ? 'solid' : 'none',
+                            borderColor: button.selected,
+                        }}
+                    >
+                        <img className={buttonClass.image} src={button.image} alt={button.text} />
+                    </button>
                     {button.text}
-                </button>
+                </div>
             ))}
         </div>
     );
 };
 
 const PageForm = ({ socket, pageCount }) => {
+    const classes = useStyles();
     const changePageCount = (event) => {
         const value = event.target.value === 'inc' ? pageCount + 1 : pageCount - 1;
         if (value >= 2 && value <= 3) {
@@ -158,10 +221,10 @@ const PageForm = ({ socket, pageCount }) => {
     return (
         <div>
             <span>Page count: {pageCount}</span>
-            <button value="inc" onClick={changePageCount}>
+            <button value="inc" onClick={changePageCount} className={classes.pageButton}>
                 +
             </button>
-            <button value="dec" onClick={changePageCount}>
+            <button value="dec" onClick={changePageCount} className={classes.pageButton}>
                 -
             </button>
         </div>
@@ -187,7 +250,6 @@ const Lobby = ({ socket, changeState, roomCode, setPlayerState }) => {
                     setPlayerState(message['data']['self']);
                     break;
                 default:
-                    console.error('Unknown WS message');
             }
         };
     }
@@ -199,6 +261,7 @@ const Lobby = ({ socket, changeState, roomCode, setPlayerState }) => {
                     <Box className={classes.roomCode}>
                         <h1 className={classes.roomCode}>Room Code {roomCode}</h1>
                     </Box>
+                    <hr className={classes.divider} />
                     <Container className={classes.boxContainer}>
                         <Box className={classes.box}>
                             <h2>Your Name: {lobbyState.self.name}</h2>

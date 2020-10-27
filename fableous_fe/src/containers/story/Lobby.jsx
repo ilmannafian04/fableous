@@ -4,10 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import ListItemText from '@material-ui/core/ListItemText';
 import TextField from '@material-ui/core/TextField';
 import React, { useEffect, useState } from 'react';
-import Background from '../../assets/icons/background.png';
-import Character from '../../assets/icons/character.png';
-import Story from '../../assets/icons/story.png';
-import Hub from '../../assets/icons/hub.png';
+
 import Role from '../../constant/role';
 
 const useStyles = makeStyles(() => ({
@@ -80,46 +77,7 @@ const useStyles = makeStyles(() => ({
         backgroundColor: '#F6F1D3',
     },
     success: {
-        backgroundColor: '#F6F1D3',
-    },
-    divider: {
-        borderRadius: '5px',
-        borderTop: '2px solid #bbb',
-        width: '90%',
-    },
-}));
-
-const buttonRoleUseStyles = makeStyles(() => ({
-    container: {
-        display: 'flex',
-        margin: '1rem 0',
-    },
-
-    wrapper: {
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        color: '#F6F1D3',
-    },
-
-    button: {
-        width: '50px',
-        height: '50px',
-        background: 'red',
-        textDecoration: 'none',
-        textAlign: 'center',
-        margin: '4px 1rem',
-        borderRadius: '50%',
-        cursor: 'pointer',
-        padding: '10px',
-        '&:hover': {
-            opacity: '0.7',
-        },
-    },
-    image: {
-        width: '26px',
-        height: '26px',
+        backgroundColor: '#89c143',
     },
 }));
 
@@ -138,7 +96,7 @@ const ArtistForm = ({ socket, isReady, name }) => {
     const submitHandler = (event) => {
         event.preventDefault();
         if (socket) {
-            socket.send(JSON.stringify({ command: 'draw.lobby.playerState', key: 'name', value: newName }));
+            socket.send(JSON.stringify({ command: 'draw.lobby.name', name: newName }));
         }
     };
     return (
@@ -156,87 +114,43 @@ const ArtistForm = ({ socket, isReady, name }) => {
 };
 
 const RoleSelect = ({ socket, isReady, selectedRole }) => {
-    const clickHandler = (val) => {
+    const clickHandler = (event) => {
         if (socket) {
-            socket.send(JSON.stringify({ command: 'draw.lobby.playerState', key: 'role', value: parseInt(val) }));
+            socket.send(JSON.stringify({ command: 'draw.lobby.role', role: event.target.value }));
         }
     };
-    const buttonClass = buttonRoleUseStyles();
     return (
-        <div className={buttonClass.container}>
+        <div>
             {[
-                { text: 'Background', value: 1, image: Background, color: '#067A00' },
-                { text: 'Character', value: 2, image: Character, color: '#00CEE6', selected: '#0093A3' },
-                { text: 'Story', value: 3, image: Story, color: '#FA9600', selected: '#E08700' },
-                { text: 'Hub', value: 4, image: Hub, color: '#E71D36', selected: '#000000' },
+                { text: 'Background', value: 1 },
+                { text: 'Character', value: 2 },
+                { text: 'Story', value: 3 },
+                { text: 'Hub', value: 4 },
             ].map((button, index) => (
-                <div className={buttonClass.wrapper}>
-                    <button
-                        className={buttonClass.button}
-                        onClick={() => clickHandler(button.value)}
-                        value={button.value}
-                        key={index}
-                        disabled={selectedRole === button.value || isReady}
-                        style={{
-                            background: button.color,
-                            borderStyle: selectedRole === button.value || isReady ? 'solid' : 'none',
-                            borderColor: button.selected,
-                        }}
-                    >
-                        <img className={buttonClass.image} src={button.image} alt={button.text} />
-                    </button>
+                <button
+                    onClick={clickHandler}
+                    value={button.value}
+                    key={index}
+                    disabled={selectedRole === button.value || isReady}
+                >
                     {button.text}
-                </div>
+                </button>
             ))}
         </div>
     );
 };
 
-const PageForm = ({ socket, pageCount }) => {
-    const changePageCount = (event) => {
-        const value = event.target.value === 'inc' ? pageCount + 1 : pageCount - 1;
-        if (value >= 2 && value <= 3) {
-            socket.send(
-                JSON.stringify({
-                    command: 'draw.lobby.lobbyState',
-                    key: 'page_count',
-                    value: value,
-                })
-            );
-        }
-    };
-    return (
-        <div>
-            <span>Page count: {pageCount}</span>
-            <button value="inc" onClick={changePageCount}>
-                +
-            </button>
-            <button value="dec" onClick={changePageCount}>
-                -
-            </button>
-        </div>
-    );
-};
-
-const Lobby = ({ socket, changeState, roomCode, setPlayerState }) => {
-    const [lobbyState, setLobbyState] = useState({
-        players: [],
-        self: { name: 'Fableous', role: 0, isReady: false },
-        pageCount: 2,
-    });
+const Lobby = ({ socket, changeState, roomCode }) => {
+    const [lobbyState, setLobbyState] = useState({ players: [], self: { name: 'Fableous', role: 0, isReady: false } });
     const classes = useStyles();
     if (socket) {
         socket.onmessage = (event) => {
             const message = JSON.parse(event.data);
-            switch (message['type']) {
-                case 'lobbyState':
-                    setLobbyState(message['data']);
-                    break;
-                case 'storyState':
-                    changeState(message['data']['state']);
-                    setPlayerState(message['data']['self']);
-                    break;
-                default:
+            if (message['state'] === 0) {
+                delete message['state'];
+                setLobbyState(message);
+            } else {
+                changeState(message['state']);
             }
         };
     }
@@ -248,7 +162,6 @@ const Lobby = ({ socket, changeState, roomCode, setPlayerState }) => {
                     <Box className={classes.roomCode}>
                         <h1 className={classes.roomCode}>Room Code {roomCode}</h1>
                     </Box>
-                    <hr className={classes.divider} />
                     <Container className={classes.boxContainer}>
                         <Box className={classes.box}>
                             <h2>Your Name: {lobbyState.self.name}</h2>
@@ -259,7 +172,6 @@ const Lobby = ({ socket, changeState, roomCode, setPlayerState }) => {
                                 isReady={lobbyState.self.isReady}
                                 selectedRole={lobbyState.self.role}
                             />
-                            <PageForm socket={socket} pageCount={lobbyState.pageCount} />
                         </Box>
                         <Box className={classes.box}>
                             <h2 className={classes.smallTitle}>Team</h2>
@@ -287,9 +199,8 @@ const Lobby = ({ socket, changeState, roomCode, setPlayerState }) => {
                             onClick={() =>
                                 socket.send(
                                     JSON.stringify({
-                                        command: 'draw.lobby.playerState',
-                                        key: 'isReady',
-                                        value: !lobbyState.self.isReady,
+                                        command: 'draw.lobby.isReady',
+                                        isReady: !lobbyState.self.isReady,
                                     })
                                 )
                             }

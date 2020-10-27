@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 
 import { baseUrl, httpProtocol } from './constant/url';
-import App from './containers/App/App';
+import App from './containers/App';
 
 axios.defaults.baseURL = baseUrl(httpProtocol);
 

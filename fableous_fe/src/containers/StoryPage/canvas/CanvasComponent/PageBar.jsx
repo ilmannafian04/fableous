@@ -1,12 +1,15 @@
-import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Toolbar from '@material-ui/core/Toolbar';
-import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+
+import React from 'react';
+import { useRecoilValue } from 'recoil';
+
+import storyAtom from '../../../../atom/storyAtom';
 
 const useStyles = makeStyles((theme) => ({
     text: {
@@ -41,7 +44,8 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function BottomAppBar(props) {
+export default function BottomAppBar() {
+    const storyState = useRecoilValue(storyAtom);
     const classes = useStyles();
 
     return (
@@ -50,19 +54,15 @@ export default function BottomAppBar(props) {
             <AppBar color="primary" className={classes.appBar}>
                 <Toolbar>
                     <Button className={classes.button}>
-                        <IconButton color="inherit">
-                            <ArrowBackIosIcon />
-                        </IconButton>
+                        <ArrowBackIosIcon />
                         Previous Page
                     </Button>
                     <div className={classes.grow} />
-                    <Button className={classes.button}>Page {props.page}</Button>
+                    <Button className={classes.button}>Page {storyState.pageCount}</Button>
                     <div className={classes.grow} />
                     <Button className={classes.button}>
                         Next Page
-                        <IconButton color="inherit">
-                            <ArrowForwardIosIcon />
-                        </IconButton>
+                        <ArrowForwardIosIcon />
                     </Button>
                 </Toolbar>
             </AppBar>

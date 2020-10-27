@@ -11,6 +11,8 @@ import { calculateScale } from '../../../helper/CanvasHelperFunctions/calculateS
 import { normalizePoint } from '../../../helper/CanvasHelperFunctions/normalizePoint';
 import useWindowSize from '../../../utils/hooks/useWindowSize';
 import SideBar from './CanvasComponent/SideBar';
+import { useRecoilValue } from 'recoil';
+import socketAtom from '../../../atom/socketAtom';
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -20,7 +22,8 @@ const useStyles = makeStyles(() =>
     })
 );
 
-const CanvasDraw = ({ socket }) => {
+const CanvasDraw = () => {
+    const socket = useRecoilValue(socketAtom);
     const classes = useStyles();
     // Window Size
     const { width, height } = useWindowSize();

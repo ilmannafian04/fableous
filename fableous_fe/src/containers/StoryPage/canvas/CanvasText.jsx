@@ -9,8 +9,12 @@ import { DEFAULT_HEIGHT_CANVAS, DEFAULT_WIDTH_CANVAS } from '../../../constant/S
 import { calculateHeightBasedOnRatio } from '../../../helper/CanvasHelperFunctions/calculateHeightBasedOnRatio';
 import useWindowSize from '../../../utils/hooks/useWindowSize';
 import SideBar from './CanvasComponent/SideBar';
+import { useRecoilValue } from 'recoil';
+import socketAtom from '../../../atom/socketAtom';
 
-function CanvasText({ socket }) {
+function CanvasText() {
+    const socket = useRecoilValue(socketAtom);
+
     // Window Size
     const { width, height } = useWindowSize();
 

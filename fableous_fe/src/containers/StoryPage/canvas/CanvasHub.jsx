@@ -233,24 +233,24 @@ function CanvasHub({ socket }) {
         }
     };
 
-    const downloadURI = (uri, name) => {
-        let link = document.createElement('a');
-        link.download = name;
-        link.href = uri;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    };
+    // const downloadURI = (uri, name) => {
+    //     let link = document.createElement('a');
+    //     link.download = name;
+    //     link.href = uri;
+    //     document.body.appendChild(link);
+    //     link.click();
+    //     document.body.removeChild(link);
+    // };
 
-    const saveAsImage = () => {
-        const dataurl = stageRef.current.toDataURL({
-            pixelRatio: 2,
-        });
-        downloadURI(dataurl, 'test.png');
-    };
+    // const saveAsImage = () => {
+    //     const dataurl = stageRef.current.toDataURL({
+    //         pixelRatio: 2,
+    //     });
+    //     console.log(dataurl);
+    //     downloadURI(dataurl, 'test.png');
+    // };
     return (
         <div ref={headerRef} style={{ width: '100%', height: '100%', background: 'orange' }}>
-            <button onClick={() => saveAsImage()}>SAVE IMAGE</button>
             <Stage width={availSpace.width} height={availSpace.height} ref={stageRef}>
                 <Layer ref={backgroundLayerRef}>
                     <Image

@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function BottomBar({ changeFn }) {
+export default function BottomBar({ changeFn, page }) {
     const classes = useStyles();
 
     return (
@@ -51,7 +51,7 @@ export default function BottomBar({ changeFn }) {
                         Previous Page
                     </Button>
                     <div className={classes.grow} />
-                    <Button className={classes.button}>Page </Button>
+                    <Button className={classes.button}>Page {page}</Button>
                     <div className={classes.grow} />
                     <Button className={classes.button} name="next" onClick={() => changeFn(true)}>
                         Next Page

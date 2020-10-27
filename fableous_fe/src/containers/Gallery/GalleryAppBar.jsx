@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -33,6 +34,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function GalleryAppBar() {
     const classes = useStyles();
+    const history = useHistory();
 
     return (
         <div className={classes.root}>
@@ -42,8 +44,14 @@ export default function GalleryAppBar() {
                         My Bookshelf
                     </Typography>
                     <div className={classes.button}>
-                        <span role="img" aria-label="emoji">
-                            📚 🏠
+                        <span
+                            role="img"
+                            aria-label="emoji"
+                            onClick={() => {
+                                history.push('/');
+                            }}
+                        >
+                            🏠
                         </span>
                         {/*<IconButton className={classes.icon} style={{ color: '#FFFFFF' }}>*/}
                         {/*    <QuestionAnswerIcon />*/}

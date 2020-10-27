@@ -152,14 +152,14 @@ const HomePage = () => {
                 </div>
             </div>
             <div className={classes.paddingLayout} />
-            <Button size="large" className={classes.menuButton}>
-                <span role="img" aria-labelledby="books">
-                    📚
-                </span>{' '}
-                CLASS LIBRARY
-            </Button>
             <div className={classes.paddingLayout} />
-            <Button size="large" className={classes.menuButton}>
+            <Button
+                size="large"
+                className={classes.menuButton}
+                onClick={() => {
+                    history.push('/gallery');
+                }}
+            >
                 <span role="img" aria-labelledby="book">
                     📓
                 </span>{' '}

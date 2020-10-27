@@ -122,10 +122,11 @@ class DrawingConsumer(AsyncJsonWebsocketConsumer):
                                                                        'page': story_state['current_page']})
             story_state['current_page'] = story_state['current_page'] + 1
             await self.save_story_state(story_state)
+        await self.channel_layer.group_send(self.room_group_name, {'type': 'story.finish'})
 
     async def page_loop(self):
         story_state = await self.get_story_state()
-        for time_left in range(3 * 60, -1, -1):
+        for time_left in range(3 * 5, -1, -1):
             await self.channel_layer.group_send(self.room_group_name, {'type': 'draw.draw_state',
                                                                        'time_left': time_left,
                                                                        'story_state': story_state})
@@ -175,6 +176,9 @@ class DrawingConsumer(AsyncJsonWebsocketConsumer):
         await self.send_json({'type': 'changePage',
                               'data': {'page': event['page'],
                                        'id': event['id']}})
+
+    async def story_finish(self, _):
+        await self.send_json({'type': 'finish'})
 
     @staticmethod
     async def get_json_state(key):

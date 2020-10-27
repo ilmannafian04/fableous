@@ -37,6 +37,8 @@ const StoryPage = () => {
                     setStoryState((prev) => {
                         return { ...prev, state: message.data.state };
                     });
+                } else if (message.type === 'finish') {
+                    history.push('/');
                 }
             };
             sock.addEventListener('message', rootHandler);

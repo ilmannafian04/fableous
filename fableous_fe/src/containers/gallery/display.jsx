@@ -61,7 +61,7 @@ const Display = () => {
                     alt="story"
                 />
             </div>
-            <BottomBar changeFn={changePage} />
+            <BottomBar changeFn={changePage} page={currentPage + 1} />
         </div>
     );
 };

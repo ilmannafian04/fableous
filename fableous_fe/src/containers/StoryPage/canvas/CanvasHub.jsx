@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Konva from 'konva';
-import { Stage, Layer, Text, Image } from 'react-konva';
+import { Image, Layer, Stage, Text } from 'react-konva';
 
 import useWindowSize from '../../../utils/hooks/useWindowSize';
 import { calculateHeightBasedOnRatio } from '../../../helper/CanvasHelperFunctions/calculateHeightBasedOnRatio';
@@ -8,6 +8,7 @@ import { DEFAULT_HEIGHT_CANVAS, DEFAULT_WIDTH_CANVAS } from '../../../constant/S
 import { normalizePoint } from '../../../helper/CanvasHelperFunctions/normalizePoint';
 import { useRecoilValue } from 'recoil';
 import socketAtom from '../../../atom/socketAtom';
+import Axios from 'axios';
 
 function CanvasHub() {
     const socket = useRecoilValue(socketAtom);
@@ -86,7 +87,6 @@ function CanvasHub() {
     useEffect(() => {
         const hubHandler = (event) => {
             const message = JSON.parse(event.data);
-            console.log(message);
             switch (message['type']) {
                 case 'newStroke':
                     message['data']['strokes'].forEach((drawing) =>
@@ -114,18 +114,35 @@ function CanvasHub() {
         };
     });
 
+    useEffect(() => {
+        const renderHandler = (event) => {
+            const message = JSON.parse(event.data);
+            if (message.type === 'changePage') {
+                const data = new FormData();
+                const dataurl = stageRef.current.toDataURL({
+                    pixelRatio: 2,
+                });
+                data.append('image', dataurl);
+                data.append('story', `${message.data.id}`);
+                data.append('page', `${message.data.page}`);
+                Axios.post('/api/story/uploadpage', data).catch((error) => console.error(error));
+            }
+        };
+        if (socket) socket.addEventListener('message', renderHandler);
+        return () => {
+            if (socket) socket.removeEventListener('message', renderHandler);
+        };
+    });
+
     const processText = (data) => {
         if (data['text_node']['action'] === 'create_text') {
             createTextNode(data['text_node']['text_id']);
         } else if (data['text_node']['action'] === 'update_text_position') {
             updateTextNodePosition(data['text_node']);
-            console.log(data);
         } else if (data['text_node']['action'] === 'update_text_transform') {
             updateTextNodeTransform(data['text_node']);
-            console.log(data);
         } else if (data['text_node']['action'] === 'update_text_attribute') {
             updateTextNodeAttributes(data['text_node']);
-            console.log(data);
         } else if (data['text_node']['action'] === 'delete_text') {
         }
     };

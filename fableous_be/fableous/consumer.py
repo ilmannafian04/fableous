@@ -117,6 +117,9 @@ class DrawingConsumer(AsyncJsonWebsocketConsumer):
         story_state = await self.get_story_state()
         for _ in range(story_state['page_count']):
             await self.page_loop()
+            await self.channel_layer.group_send(self.room_group_name, {'type': 'story.change_page',
+                                                                       'id': story_state['story_id'],
+                                                                       'page': story_state['current_page']})
             story_state['current_page'] = story_state['current_page'] + 1
             await self.save_story_state(story_state)
 
@@ -167,6 +170,11 @@ class DrawingConsumer(AsyncJsonWebsocketConsumer):
             await self.send_json(content={'type': 'text',
                                           'data': {'text_node': event['data'],
                                                    'layer': event['layer']}})
+
+    async def story_change_page(self, event):
+        await self.send_json({'type': 'changePage',
+                              'data': {'page': event['page'],
+                                       'id': event['id']}})
 
     @staticmethod
     async def get_json_state(key):

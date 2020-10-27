@@ -84,15 +84,27 @@ def upload_story_page(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def gallery(request):
-    stories = Story.objects.filter(owner=request.user)
-    result = []
-    for story in stories:
+    if 'id' in request.GET:
         try:
-            thumbnail = StoryPage.objects.get(story=story, page=1)
-            result.append({'id': story.id,
-                           'title': story.title,
-                           'thumbnail': thumbnail.image.url})
-        except StoryPage.DoesNotExist:
-            result.append({'id': story.id,
-                           'title': story.title})
-    return Response(result)
+            story = Story.objects.get(id=request.GET['id'])
+        except Story.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        result = {'pages': []}
+        pages = StoryPage.objects.filter(story=story)
+        for page in pages:
+            result['pages'].append({'page': page.page,
+                                    'url': page.image.url})
+        return Response(result)
+    else:
+        stories = Story.objects.filter(owner=request.user)
+        result = []
+        for story in stories:
+            try:
+                thumbnail = StoryPage.objects.get(story=story, page=1)
+                result.append({'id': story.id,
+                               'title': story.title,
+                               'thumbnail': thumbnail.image.url})
+            except StoryPage.DoesNotExist:
+                result.append({'id': story.id,
+                               'title': story.title})
+        return Response(result)

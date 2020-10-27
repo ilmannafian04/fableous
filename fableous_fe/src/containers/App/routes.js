@@ -3,8 +3,9 @@ import StoryPage from '../StoryPage/StoryPage';
 import SignUp from '../authentication/SignUp';
 import SignIn from '../authentication/SignIn';
 import CanvasHub from '../StoryPage/canvas/CanvasHub';
-import Gallery from '../Gallery/Gallery';
 import HomePage from '../HomePage/HomePage';
+import Display from '../gallery/display';
+import Gallery from '../gallery/Gallery';
 
 export const routes = [
     {
@@ -46,5 +47,10 @@ export const routes = [
         component: SignIn,
         exact: true,
         path: '/signin',
+    },
+    {
+        component: Display,
+        exact: true,
+        path: '/gallery/:storyId',
     },
 ];

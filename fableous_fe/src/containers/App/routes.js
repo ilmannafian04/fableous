@@ -2,6 +2,7 @@ import CanvasText from '../CanvasText/CanvasText';
 import HomePage from '../HomePage/HomePage';
 import StoryPage from '../StoryPage/StoryPage';
 import CanvasHub from '../CanvasHub/CanvasHub';
+import Gallery from '../Gallery/Gallery';
 
 export const routes = [
     {
@@ -28,5 +29,10 @@ export const routes = [
         component: CanvasHub,
         exact: true,
         path: '/hub',
+    },
+    {
+        component: Gallery,
+        exact: true,
+        path: '/gallery',
     },
 ];

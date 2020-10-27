@@ -101,6 +101,8 @@ const HomePage = () => {
                 return;
             case 3:
                 history.push('/signin');
+                break;
+            default:
         }
     };
 

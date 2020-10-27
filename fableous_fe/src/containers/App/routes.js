@@ -1,9 +1,9 @@
-import CanvasText from '../CanvasText/CanvasText';
+import CanvasText from '../StoryPage/canvas/CanvasText';
 import HomePage from '../HomePage/HomePage';
 import StoryPage from '../StoryPage/StoryPage';
-import CanvasHub from '../CanvasHub/CanvasHub';
 import SignUp from '../authentication/SignUp';
 import SignIn from '../authentication/SignIn';
+import CanvasHub from '../StoryPage/canvas/CanvasHub';
 
 export const routes = [
     {

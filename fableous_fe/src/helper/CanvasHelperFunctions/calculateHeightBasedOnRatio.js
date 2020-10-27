@@ -1,4 +1,4 @@
-import {HEIGHT_RATIO, WIDTH_RATIO} from "../../constants/ScreenRatio";
+import { HEIGHT_RATIO, WIDTH_RATIO } from '../../constant/ScreenRatio';
 
 export const calculateHeightBasedOnRatio = (ref) => {
     const width = ref.offsetWidth;

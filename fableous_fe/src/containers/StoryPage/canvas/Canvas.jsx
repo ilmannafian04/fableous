@@ -8,6 +8,9 @@ import CanvasHub from './CanvasHub';
 import CanvasText from './CanvasText';
 import useWindowSize from '../../../utils/hooks/useWindowSize';
 import ScreenRotate from './CanvasComponent/screenRotate';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import storyAtom from '../../../atom/storyAtom';
+import socketAtom from '../../../atom/socketAtom';
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -49,8 +52,9 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const Canvas = ({ socket, role }) => {
-    const [drawState, setDrawState] = useState({ timeLeft: 3 * 60, currentPage: 1, pageCount: 0 });
+const Canvas = () => {
+    const socket = useRecoilValue(socketAtom);
+    const [storyState, setStoryState] = useRecoilState(storyAtom);
     const classes = useStyles();
 
     // Window Size
@@ -69,17 +73,19 @@ const Canvas = ({ socket, role }) => {
         const drawStateHandler = (event) => {
             const message = JSON.parse(event.data);
             if (message['type'] === 'drawState') {
-                setDrawState(message['data']);
+                setStoryState((prev) => {
+                    return { ...prev, ...message['data'] };
+                });
             }
         };
         socket.addEventListener('message', drawStateHandler);
         return () => {
             socket.removeEventListener('message', drawStateHandler);
         };
-    }, [socket]);
+    }, [socket, setStoryState]);
 
     let displayedCanvas;
-    switch (role) {
+    switch (storyState.self.role) {
         case 1:
         case 2:
             displayedCanvas = <CanvasDraw socket={socket} />;
@@ -98,13 +104,8 @@ const Canvas = ({ socket, role }) => {
         <div className={classes.root}>
             <div className={classes.canvasWrapper}>{isPortrait ? <ScreenRotate /> : null}</div>
             {displayedCanvas}
-            <PageBar page={drawState.pageCount} />
+            <PageBar />
             <MenuAppBar />
-            {/*<div className={classes.timerBox}>*/}
-            {/*    <div className={classes.timer}>*/}
-            {/*        <h1>{secondsToMMSS(drawState.timeLeft)}</h1>*/}
-            {/*    </div>*/}
-            {/*</div>*/}
         </div>
     );
 };

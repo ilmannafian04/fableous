@@ -6,8 +6,11 @@ import useWindowSize from '../../../utils/hooks/useWindowSize';
 import { calculateHeightBasedOnRatio } from '../../../helper/CanvasHelperFunctions/calculateHeightBasedOnRatio';
 import { DEFAULT_HEIGHT_CANVAS, DEFAULT_WIDTH_CANVAS } from '../../../constant/ScreenRatio';
 import { normalizePoint } from '../../../helper/CanvasHelperFunctions/normalizePoint';
+import { useRecoilValue } from 'recoil';
+import socketAtom from '../../../atom/socketAtom';
 
-function CanvasHub({ socket }) {
+function CanvasHub() {
+    const socket = useRecoilValue(socketAtom);
     // Window Size
     const { width, height } = useWindowSize();
 

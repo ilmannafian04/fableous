@@ -23,11 +23,19 @@ const useStyles = makeStyles(() => ({
         width: '100vw',
         height: '100vh',
         backgroundColor: '#2E3138',
+        color: '#F6F1D3',
     },
     setButton: {
-        backgroundColor: '#2F3138',
-        color: 'white',
+        backgroundColor: '#61DBFB',
+        color: 'black',
         borderRadius: '50px',
+        margin: '0 1rem',
+        '&:disabled': {
+            opacity: '0.5',
+        },
+        '&:hover': {
+            opacity: '0.75',
+        },
     },
     paper: {
         display: 'flex',
@@ -82,10 +90,12 @@ const useStyles = makeStyles(() => ({
         justifyContent: 'Center',
     },
     listStyle: {
+        color: 'black',
         backgroundColor: '#F6F1D3',
     },
     success: {
-        backgroundColor: '#F6F1D3',
+        color: 'black',
+        backgroundColor: '#89C143',
     },
     divider: {
         borderRadius: '5px',
@@ -103,6 +113,17 @@ const useStyles = makeStyles(() => ({
         '&:hover': {
             background: '#3f94b5',
         },
+    },
+    formFlex: {
+        display: 'flex',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+    },
+    textField: {
+        backgroundColor: '#F6F1D3',
+        borderRadius: '5px',
+        padding: '0.25rem 0.5rem',
+        margin: '0.25rem',
     },
 }));
 
@@ -138,6 +159,9 @@ const buttonRoleUseStyles = makeStyles(() => ({
         width: '26px',
         height: '26px',
     },
+    disabledButton: {
+        backgroundColor: 'red',
+    },
 }));
 
 const nameValidator = (name) => {
@@ -161,11 +185,12 @@ const ArtistForm = () => {
         }
     };
     return (
-        <form onSubmit={submitHandler}>
+        <form onSubmit={submitHandler} className={classes.formFlex}>
             <TextField
                 value={newName}
                 onChange={(event) => setNewName(event.target.value)}
                 disabled={storyState.self.isReady}
+                className={classes.textField}
             />
             <Button
                 className={classes.setButton}
@@ -237,7 +262,8 @@ const PageForm = () => {
     };
     return (
         <div>
-            <span>Page count: {storyState.pageCount}</span>
+            <h3>Page count: </h3>
+            <h3> {storyState.pageCount} </h3>
             <button value="inc" onClick={changePageCount} className={classes.pageButton}>
                 +
             </button>
@@ -267,6 +293,7 @@ const Lobby = () => {
             if (socket) socket.removeEventListener('message', lobbyMessageHandler);
         };
     });
+
     return (
         <div className={classes.root}>
             <div className={classes.paper}>
@@ -279,8 +306,8 @@ const Lobby = () => {
                     <Container className={classes.boxContainer}>
                         <Box className={classes.box}>
                             <h2>Your Name: {storyState.self.name}</h2>
-                            <h3>Role: {Role[storyState.self.role]}</h3>
                             <ArtistForm isReady={storyState.self.isReady} name={storyState.self.name} />
+                            <h3>Role: {Role[storyState.self.role]}</h3>
                             <RoleSelect isReady={storyState.self.isReady} selectedRole={storyState.self.role} />
                             <PageForm pageCount={storyState.pageCount} />
                         </Box>

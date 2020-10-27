@@ -11,6 +11,8 @@ const storyAtom = atom({
             isReady: false,
         },
         players: [],
+        timeLeft: 0,
+        currentPage: 0,
     },
 });
 

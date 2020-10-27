@@ -1,7 +1,7 @@
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React, { useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 
 import Canvas from './canvas/Canvas';
 import Lobby from './Lobby';
@@ -19,7 +19,7 @@ const useStyles = makeStyles(() =>
 
 const StoryPage = () => {
     const setSocket = useSetRecoilState(socketAtom);
-    const storyState = useRecoilValue(storyAtom);
+    const [storyState, setStoryState] = useRecoilState(storyAtom);
     const { joinCode } = useParams();
     const history = useHistory();
     const classes = useStyles();
@@ -30,12 +30,20 @@ const StoryPage = () => {
                 setSocket(sock);
             };
             const backToHome = () => history.push('/');
-            const echoHandler = (event) => console.log(JSON.parse(event.data));
-            sock.addEventListener('message', echoHandler);
+            const rootHandler = (event) => {
+                const message = JSON.parse(event.data);
+                console.log(message);
+                if (message.type === 'storyState') {
+                    setStoryState((prev) => {
+                        return { ...prev, state: message.data.state };
+                    });
+                }
+            };
+            sock.addEventListener('message', rootHandler);
             sock.addEventListener('error', backToHome);
             sock.addEventListener('close', backToHome);
             return () => {
-                sock.removeEventListener('message', echoHandler);
+                sock.removeEventListener('message', rootHandler);
                 sock.removeEventListener('error', backToHome);
                 sock.removeEventListener('close', backToHome);
                 sock.close();

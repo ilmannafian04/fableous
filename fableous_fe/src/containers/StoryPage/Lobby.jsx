@@ -257,7 +257,9 @@ const Lobby = () => {
         const lobbyMessageHandler = (event) => {
             const message = JSON.parse(event.data);
             if (message.type === 'lobbyState') {
-                setStoryState(message.data);
+                setStoryState((prev) => {
+                    return { ...prev, ...message.data };
+                });
             }
         };
         if (socket) socket.addEventListener('message', lobbyMessageHandler);

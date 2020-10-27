@@ -115,6 +115,13 @@ function CanvasHub() {
     });
 
     useEffect(() => {
+        const destroyCanvas = () => {
+            if (stageRef) {
+                stageRef.current.destroyChildren();
+                stageRef.current.batchDraw();
+            }
+        };
+
         const renderHandler = (event) => {
             const message = JSON.parse(event.data);
             if (message.type === 'changePage') {
@@ -125,7 +132,11 @@ function CanvasHub() {
                 data.append('image', dataurl);
                 data.append('story', `${message.data.id}`);
                 data.append('page', `${message.data.page}`);
-                Axios.post('/api/story/uploadpage', data).catch((error) => console.error(error));
+                Axios.post('/api/story/uploadpage', data)
+                    .then(() => {
+                        destroyCanvas();
+                    })
+                    .catch((error) => console.error(error));
             }
         };
         if (socket) socket.addEventListener('message', renderHandler);
@@ -253,22 +264,6 @@ function CanvasHub() {
         }
     };
 
-    // const downloadURI = (uri, name) => {
-    //     let link = document.createElement('a');
-    //     link.download = name;
-    //     link.href = uri;
-    //     document.body.appendChild(link);
-    //     link.click();
-    //     document.body.removeChild(link);
-    // };
-
-    // const saveAsImage = () => {
-    //     const dataurl = stageRef.current.toDataURL({
-    //         pixelRatio: 2,
-    //     });
-    //     console.log(dataurl);
-    //     downloadURI(dataurl, 'test.png');
-    // };
     return (
         <div
             ref={headerRef}

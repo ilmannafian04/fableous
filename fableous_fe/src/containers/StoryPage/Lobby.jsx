@@ -80,7 +80,12 @@ const useStyles = makeStyles(() => ({
         backgroundColor: '#F6F1D3',
     },
     success: {
-        backgroundColor: '#89c143',
+        backgroundColor: '#F6F1D3',
+    },
+    divider: {
+        borderRadius: '5px',
+        borderTop: '2px solid #bbb',
+        width: '90%',
     },
 }));
 
@@ -243,6 +248,7 @@ const Lobby = ({ socket, changeState, roomCode, setPlayerState }) => {
                     <Box className={classes.roomCode}>
                         <h1 className={classes.roomCode}>Room Code {roomCode}</h1>
                     </Box>
+                    <hr className={classes.divider} />
                     <Container className={classes.boxContainer}>
                         <Box className={classes.box}>
                             <h2>Your Name: {lobbyState.self.name}</h2>

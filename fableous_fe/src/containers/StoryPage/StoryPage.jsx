@@ -49,7 +49,7 @@ const StoryPage = () => {
                 sock.close();
             };
         }
-    }, [joinCode, setSocket, history]);
+    }, [joinCode, setSocket, history, setStoryState]);
     let displayedComponent;
     switch (storyState.state) {
         case 0:

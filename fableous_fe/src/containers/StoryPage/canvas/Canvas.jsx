@@ -8,8 +8,9 @@ import CanvasHub from './CanvasHub';
 import CanvasText from './CanvasText';
 import useWindowSize from '../../../utils/hooks/useWindowSize';
 import ScreenRotate from './CanvasComponent/screenRotate';
-import { useSetRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import storyAtom from '../../../atom/storyAtom';
+import socketAtom from '../../../atom/socketAtom';
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -51,8 +52,9 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const Canvas = ({ socket, role }) => {
-    const setStoryState = useSetRecoilState(storyAtom);
+const Canvas = () => {
+    const socket = useRecoilValue(socketAtom);
+    const [storyState, setStoryState] = useRecoilState(storyAtom);
     const classes = useStyles();
 
     // Window Size
@@ -83,7 +85,7 @@ const Canvas = ({ socket, role }) => {
     }, [socket, setStoryState]);
 
     let displayedCanvas;
-    switch (role) {
+    switch (storyState.self.role) {
         case 1:
         case 2:
             displayedCanvas = <CanvasDraw socket={socket} />;

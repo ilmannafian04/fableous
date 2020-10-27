@@ -2,8 +2,10 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { secondsToMMSS } from '../../../../utils/formatting';
+import { useRecoilValue } from 'recoil';
+import storyAtom from '../../../../atom/storyAtom';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     root: {
         display: 'flex',
         alignItems: 'center',
@@ -64,7 +66,8 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function ScreenRotate({ timer }) {
+function ScreenRotate() {
+    const storyState = useRecoilValue(storyAtom);
     const classes = useStyles();
 
     return (
@@ -80,7 +83,7 @@ function ScreenRotate({ timer }) {
                     </Typography>
                     <div className={classes.timerBox}>
                         <div className={classes.timer}>
-                            <h1>{secondsToMMSS({ timer })}</h1>
+                            <h1>{secondsToMMSS(storyState.timeLeft)}</h1>
                         </div>
                     </div>
                 </div>

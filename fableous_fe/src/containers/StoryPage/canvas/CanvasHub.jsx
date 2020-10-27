@@ -250,7 +250,16 @@ function CanvasHub({ socket }) {
     //     downloadURI(dataurl, 'test.png');
     // };
     return (
-        <div ref={headerRef} style={{ width: '100%', height: '100%', background: 'orange' }}>
+        <div
+            ref={headerRef}
+            style={{
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+            }}
+        >
             <Stage width={availSpace.width} height={availSpace.height} ref={stageRef}>
                 <Layer ref={backgroundLayerRef}>
                     <Image

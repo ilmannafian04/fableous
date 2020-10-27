@@ -1,10 +1,10 @@
 import { Button, createStyles } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
-import { Link } from 'react-router-dom';
 
 import CustomChip from './CustomChip';
 import CustomModal from './CustomModal';
+import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -83,7 +83,7 @@ const useStyles = makeStyles(() =>
     })
 );
 
-const HomePage = () => {
+const Home = () => {
     const classes = useStyles();
     return (
         <div className={classes.boxWrapper}>
@@ -120,4 +120,4 @@ const HomePage = () => {
     );
 };
 
-export default HomePage;
+export default Home;

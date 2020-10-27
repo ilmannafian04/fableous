@@ -116,8 +116,10 @@ function CanvasHub() {
 
     useEffect(() => {
         const destroyCanvas = () => {
-            if (stageRef) {
-                stageRef.current.destroyChildren();
+            if (stageRef && contextCharacter && context) {
+                contextCharacter.clearRect(0, 0, 99999, 99999);
+                context.clearRect(0, 0, 99999, 99999);
+                setTextNodes([]);
                 stageRef.current.batchDraw();
             }
         };

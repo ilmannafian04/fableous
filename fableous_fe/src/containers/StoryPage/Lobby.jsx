@@ -107,7 +107,7 @@ const useStyles = makeStyles(() => ({
         width: '30px',
         height: '30px',
         borderRadius: '30%',
-        margin: '2px 2px 2px 6px',
+        margin: '2px 0.75rem 2px 0.75rem',
         border: '0',
         color: 'white',
         '&:hover': {
@@ -124,6 +124,18 @@ const useStyles = makeStyles(() => ({
         borderRadius: '5px',
         padding: '0.25rem 0.5rem',
         margin: '0.25rem',
+    },
+    pageCountWrapper: {
+        maxWidth: 120,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        margin: 0,
+    },
+    headerCount: {
+        fontSize: '1.5rem',
+        margin: '-0.5rem 0 0 0',
     },
 }));
 
@@ -262,14 +274,28 @@ const PageForm = () => {
     };
     return (
         <div>
-            <h3>Page count: </h3>
-            <h3> {storyState.pageCount} </h3>
-            <button value="inc" onClick={changePageCount} className={classes.pageButton}>
-                +
-            </button>
-            <button value="dec" onClick={changePageCount} className={classes.pageButton}>
-                -
-            </button>
+            <h3 style={{ style: '' }}>Page count: </h3>
+            <div className={classes.pageCountWrapper}>
+                <h3 className={classes.headerCount}> {storyState.pageCount} </h3>
+                <div>
+                    <button
+                        value="inc"
+                        onClick={changePageCount}
+                        className={classes.pageButton}
+                        style={{ backgroundColor: '#84be3a' }}
+                    >
+                        +
+                    </button>
+                    <button
+                        value="dec"
+                        onClick={changePageCount}
+                        className={classes.pageButton}
+                        style={{ backgroundColor: '#ce3432' }}
+                    >
+                        -
+                    </button>
+                </div>
+            </div>
         </div>
     );
 };

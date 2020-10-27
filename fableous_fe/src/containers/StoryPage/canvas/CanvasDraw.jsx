@@ -43,6 +43,7 @@ const CanvasDraw = () => {
 
     const imageRef = useRef();
     const stageRef = useRef();
+    const layerRef = useRef();
     const headerRef = useRef();
 
     const [messages, setMessages] = useState([]);
@@ -81,8 +82,8 @@ const CanvasDraw = () => {
 
     useEffect(() => {
         const destroyCanvas = () => {
-            if (stageRef) {
-                stageRef.current.destroyChildren();
+            if (context && stageRef) {
+                context.clearRect(0, 0, 99999, 99999);
                 stageRef.current.batchDraw();
             }
         };
@@ -189,7 +190,7 @@ const CanvasDraw = () => {
                     ref={stageRef}
                     className={classes.canvasStyle}
                 >
-                    <Layer>
+                    <Layer ref={layerRef}>
                         <Image
                             image={canvas}
                             width={availSpace.width}

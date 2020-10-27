@@ -5,9 +5,6 @@ import GalleryAppBar from './GalleryAppBar';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import ChipInput from 'material-ui-chip-input';
-import CardContent from '@material-ui/core/CardContent';
-import Typography from '@material-ui/core/Typography';
-import Card from '@material-ui/core/Card';
 import GalleryCard from '../../components/GalleryCard/GalleryCard';
 
 const useStyles = makeStyles((theme) => ({

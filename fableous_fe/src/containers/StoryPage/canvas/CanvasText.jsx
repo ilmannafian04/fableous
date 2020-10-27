@@ -85,17 +85,17 @@ function CanvasText() {
     }, [canvasIsReady, canvas]);
 
     useEffect(() => {
-        const destroyCanvas = () => {
+        const destroyNodes = () => {
             if (stageRef) {
-                stageRef.current.destroyChildren();
-                stageRef.current.batchDraw();
+                outsideTextPress();
+                setShapes([]);
             }
         };
 
         const renderHandler = (event) => {
             const message = JSON.parse(event.data);
             if (message.type === 'changePage') {
-                destroyCanvas();
+                destroyNodes();
             }
         };
 

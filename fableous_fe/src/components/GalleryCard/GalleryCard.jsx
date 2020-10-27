@@ -8,8 +8,9 @@ import Card from '@material-ui/core/Card';
 import { CardMedia } from '@material-ui/core';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import Test from '../../assets/test(2).png';
+import { useHistory } from 'react-router-dom';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     root: {
         maxWidth: 345,
     },
@@ -29,14 +30,20 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const GalleryCard = ({ title, imageURL }) => {
+const GalleryCard = ({ title, imageURL, id }) => {
     const classes = useStyles();
+    const history = useHistory();
     return (
         <Grid item xs={6} sm={3}>
-            <Card className={classes.root}>
+            <Card
+                className={classes.root}
+                onClick={() => {
+                    history.push(`/gallery/${id}`);
+                }}
+            >
                 <CardActionArea>
                     <CardMedia className={classes.media}>
-                        <img className={classes.image} src={Test} alt={title} />
+                        <img className={classes.image} src={imageURL ? imageURL : Test} alt={title} />
                     </CardMedia>
                     <CardContent>
                         <Typography

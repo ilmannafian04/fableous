@@ -1,13 +1,14 @@
-import React from 'react';
-
-import GalleryAppBar from './GalleryAppBar';
-
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
+import Axios from 'axios';
 import ChipInput from 'material-ui-chip-input';
-import GalleryCard from '../../components/GalleryCard/GalleryCard';
+import React, { useEffect, useState } from 'react';
 
-const useStyles = makeStyles((theme) => ({
+import GalleryAppBar from './GalleryAppBar';
+import GalleryCard from '../../components/GalleryCard/GalleryCard';
+import { baseUrl, httpProtocol } from '../../constant/url';
+
+const useStyles = makeStyles(() => ({
     root: {
         flexGrow: 1,
         paddingTop: '7rem',
@@ -24,7 +25,15 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Gallery = () => {
+    const [stories, setStories] = useState([]);
     const classes = useStyles();
+    useEffect(() => {
+        Axios.get('/api/gallery')
+            .then((response) => {
+                setStories(response.data);
+            })
+            .catch((error) => console.error(error));
+    }, []);
     return (
         <div className={classes.root}>
             <div className={classes.pad}>
@@ -32,16 +41,14 @@ const Gallery = () => {
                 <ChipInput fullWidth={true} placeholder={'Tag theme/emotion..'} alwaysShowPlaceholder={true} />
                 <div className={classes.cardContainer}>
                     <Grid container spacing={4}>
-                        {[
-                            { text: 'Sailey and Me' },
-                            { text: 'Brake my Heart' },
-                            { text: 'Wheel of Fortune' },
-                            { text: 'Fast & Furious 10' },
-                            { text: 'Rocking Engines!' },
-                        ].map((card) => (
-                            <GalleryCard title={card.text} />
+                        {stories.map((card, index) => (
+                            <GalleryCard
+                                title={card.title}
+                                imageURL={card.thumbnail ? `${baseUrl(httpProtocol)}${card.thumbnail}` : null}
+                                key={index}
+                                id={card.id}
+                            />
                         ))}
-                        <Grid container justify="flex-start"></Grid>
                     </Grid>
                 </div>
             </div>

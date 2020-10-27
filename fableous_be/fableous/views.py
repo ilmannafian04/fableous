@@ -79,3 +79,20 @@ def upload_story_page(request):
         return Response({'status': 'OK'})
     else:
         return Response('Missing value(s)', status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def gallery(request):
+    stories = Story.objects.filter(owner=request.user)
+    result = []
+    for story in stories:
+        try:
+            thumbnail = StoryPage.objects.get(story=story, page=1)
+            result.append({'id': story.id,
+                           'title': story.title,
+                           'thumbnail': thumbnail.image.url})
+        except StoryPage.DoesNotExist:
+            result.append({'id': story.id,
+                           'title': story.title})
+    return Response(result)

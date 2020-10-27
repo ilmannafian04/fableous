@@ -42,7 +42,9 @@ export default function GalleryAppBar() {
                         My Bookshelf
                     </Typography>
                     <div className={classes.button}>
-                        📚 🏠
+                        <span role="img" aria-label="emoji">
+                            📚 🏠
+                        </span>
                         {/*<IconButton className={classes.icon} style={{ color: '#FFFFFF' }}>*/}
                         {/*    <QuestionAnswerIcon />*/}
                         {/*</IconButton>*/}

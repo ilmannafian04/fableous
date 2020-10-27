@@ -3,7 +3,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Toolbar from '@material-ui/core/Toolbar';
-import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
@@ -39,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function BottomBar() {
+export default function BottomBar({ changeFn }) {
     const classes = useStyles();
 
     return (
@@ -47,20 +46,16 @@ export default function BottomBar() {
             <CssBaseline />
             <AppBar color="primary" className={classes.appBar}>
                 <Toolbar>
-                    <Button className={classes.button} name="prev">
-                        <IconButton color="inherit">
-                            <ArrowBackIosIcon />
-                        </IconButton>
+                    <Button className={classes.button} name="prev" onClick={() => changeFn()}>
+                        <ArrowBackIosIcon />
                         Previous Page
                     </Button>
                     <div className={classes.grow} />
                     <Button className={classes.button}>Page </Button>
                     <div className={classes.grow} />
-                    <Button className={classes.button} name="next">
+                    <Button className={classes.button} name="next" onClick={() => changeFn(true)}>
                         Next Page
-                        <IconButton color="inherit">
-                            <ArrowForwardIosIcon />
-                        </IconButton>
+                        <ArrowForwardIosIcon />
                     </Button>
                 </Toolbar>
             </AppBar>

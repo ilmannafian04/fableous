@@ -5,6 +5,7 @@ import SignIn from '../authentication/SignIn';
 import CanvasHub from '../StoryPage/canvas/CanvasHub';
 import HomePage from '../HomePage/HomePage';
 import Display from '../gallery/display';
+import Gallery from '../gallery/Gallery';
 
 export const routes = [
     {
@@ -50,6 +51,6 @@ export const routes = [
     {
         component: Display,
         exact: true,
-        path: '/gallery/:id',
+        path: '/gallery/:storyId',
     },
 ];

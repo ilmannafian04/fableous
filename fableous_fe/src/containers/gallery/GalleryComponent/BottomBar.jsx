@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
         top: 'auto',
         bottom: 0,
         backgroundColor: '#2F3138',
-        position: 'absolute',
+        position: 'relative',
     },
     grow: {
         flexGrow: 1,
@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function BottomBar(props) {
+export default function BottomBar() {
     const classes = useStyles();
 
     return (
@@ -47,16 +47,16 @@ export default function BottomBar(props) {
             <CssBaseline />
             <AppBar color="primary" className={classes.appBar}>
                 <Toolbar>
-                    <Button className={classes.button}>
+                    <Button className={classes.button} name="prev">
                         <IconButton color="inherit">
                             <ArrowBackIosIcon />
                         </IconButton>
                         Previous Page
                     </Button>
                     <div className={classes.grow} />
-                    <Button className={classes.button}>Page {props.page}</Button>
+                    <Button className={classes.button}>Page </Button>
                     <div className={classes.grow} />
-                    <Button className={classes.button}>
+                    <Button className={classes.button} name="next">
                         Next Page
                         <IconButton color="inherit">
                             <ArrowForwardIosIcon />

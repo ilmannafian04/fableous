@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
     },
 
     appBar: {
-        position: 'static',
+        position: 'relative',
         backgroundColor: '#2F3138',
     },
     icon: {

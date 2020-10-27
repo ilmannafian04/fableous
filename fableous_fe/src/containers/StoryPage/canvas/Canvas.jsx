@@ -3,20 +3,22 @@ import React, { useEffect, useState } from 'react';
 
 import MenuAppBar from './CanvasComponent/MenuAppBar';
 import PageBar from './CanvasComponent/PageBar';
-// import SideBar from './CanvasComponent/SideBar';
 import CanvasDraw from './CanvasDraw';
 import CanvasHub from './CanvasHub';
 import CanvasText from './CanvasText';
+import useWindowSize from '../../../utils/hooks/useWindowSize';
+import ScreenRotate from './CanvasComponent/screenRotate';
 
 const useStyles = makeStyles(() => ({
     root: {
         display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
         width: '100vw',
         height: '100vh',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        position: 'absolute',
+        backgroundColor: '#7030A2',
     },
-
     timer: {
         display: 'flex',
         width: '10rem',
@@ -33,18 +35,35 @@ const useStyles = makeStyles(() => ({
         marginRight: '3rem',
         marginTop: '2rem',
     },
-    // canvasWrapper: {
-    //     display: "flex",
-    //     justifyContent: "center",
-    //     alignItems: "center",
-    //     width: '100vw',
-    //     height: '100vh'
-    // }
+    canvasWrapper: {
+        display: 'flex',
+        zIndex: 1,
+        position: 'absolute',
+    },
+    canvasCentered: {
+        width: '100vw',
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
 }));
 
 const Canvas = ({ socket, role }) => {
     const [drawState, setDrawState] = useState({ timeLeft: 3 * 60, currentPage: 1, pageCount: 0 });
     const classes = useStyles();
+
+    // Window Size
+    const { width, height } = useWindowSize();
+    const [isPortrait, setIsPortrait] = useState(false);
+
+    useEffect(() => {
+        if (width < height) {
+            setIsPortrait(true);
+        } else {
+            setIsPortrait(false);
+        }
+    }, [width, height]);
 
     useEffect(() => {
         const drawStateHandler = (event) => {
@@ -77,11 +96,8 @@ const Canvas = ({ socket, role }) => {
     }
     return (
         <div className={classes.root}>
-            {/*<SideBar*/}
-            {/*    brushSize={setBrushSize}*/}
-            {/*    erase={{ mode: mode, setMode: setMode }}*/}
-            {/*    brushColor={{ color: color, setColor: setColor }}*/}
-            {/*/>*/}
+            <div className={classes.canvasWrapper}>{isPortrait ? <ScreenRotate /> : null}</div>
+            {displayedCanvas}
             <PageBar page={drawState.pageCount} />
             <MenuAppBar />
             {/*<div className={classes.timerBox}>*/}
@@ -89,7 +105,6 @@ const Canvas = ({ socket, role }) => {
             {/*        <h1>{secondsToMMSS(drawState.timeLeft)}</h1>*/}
             {/*    </div>*/}
             {/*</div>*/}
-            {displayedCanvas}
         </div>
     );
 };

@@ -1,5 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Transformer } from 'react-konva';
+import React, { useEffect, useState } from 'react';
 
 function TextAreaComponent({
     position,
@@ -64,7 +63,7 @@ function TextAreaComponent({
                     onChange={() => handleExpandText()}
                     onKeyUp={() => saveText()}
                     rows={1}
-                ></textarea>
+                />
             </div>
         </React.Fragment>
     );

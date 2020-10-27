@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 const AutoTextAreaComponent = (props) => {
     const textAreaRef = useRef(null);
@@ -49,7 +49,7 @@ const AutoTextAreaComponent = (props) => {
             }}
         >
             <textarea
-                onKeyDown={(event) => onChangeHandler}
+                onKeyDown={onChangeHandler}
                 ref={textAreaRef}
                 style={styles}
                 defaultValue={props.selectedShape.text}

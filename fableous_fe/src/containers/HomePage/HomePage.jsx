@@ -94,7 +94,7 @@ const HomePage = () => {
     const handleClick = (event) => {
         switch (parseInt(event.currentTarget.value)) {
             case 1:
-                Axios.get('/api/createsession')
+                Axios.post('/api/createsession')
                     .then((response) => history.push(`/story/${response.data.roomCode}`))
                     .catch((error) => console.error(error));
                 return;

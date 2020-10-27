@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -13,7 +15,7 @@ class Story(models.Model):
 
 
 def upload_to_path(instance, filename):
-    return f'story/{instance.story.id}/{instance.page}.{filename.split(".")[-1]}'
+    return f'story/{instance.story.id}/{uuid4()}.{filename.split(".")[-1]}'
 
 
 class StoryPage(models.Model):

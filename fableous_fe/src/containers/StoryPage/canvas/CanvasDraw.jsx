@@ -79,16 +79,26 @@ const CanvasDraw = () => {
         }
     }, [canvasIsReady, canvas]);
 
-    // useEffect(() => {
-    //     // const socket = new WebSocket('ws://127.0.0.1:8000/ws/drawing/lol/');
-    //     // socket.onopen = () => {
-    //     //     setSocketIsOpen(true);
-    //     // };
-    //     // socket.onclose = () => setSocketIsOpen(false);
-    //     // socket.onerror = () => setSocketIsOpen(false);
-    //     // setSocket(socket);
-    //     // return () => socket.close();
-    // }, []);
+    useEffect(() => {
+        const destroyCanvas = () => {
+            if (stageRef) {
+                stageRef.current.destroyChildren();
+                stageRef.current.batchDraw();
+            }
+        };
+
+        const renderHandler = (event) => {
+            const message = JSON.parse(event.data);
+            if (message.type === 'changePage') {
+                destroyCanvas();
+            }
+        };
+
+        if (socket) socket.addEventListener('message', renderHandler);
+        return () => {
+            if (socket) socket.removeEventListener('message', renderHandler);
+        };
+    });
 
     const onPressDownHandler = () => {
         const currentPosition = imageRef.current.getStage().getPointerPosition();
@@ -163,7 +173,16 @@ const CanvasDraw = () => {
                 erase={{ mode: mode, setMode: setMode }}
                 brushColor={{ color: color, setColor: setColor }}
             />
-            <div ref={headerRef} style={{ width: '100%', height: '100%' }}>
+            <div
+                ref={headerRef}
+                style={{
+                    width: '100%',
+                    height: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                }}
+            >
                 <Stage
                     width={availSpace.width}
                     height={availSpace.height}

@@ -85,6 +85,27 @@ function CanvasText() {
     }, [canvasIsReady, canvas]);
 
     useEffect(() => {
+        const destroyCanvas = () => {
+            if (stageRef) {
+                stageRef.current.destroyChildren();
+                stageRef.current.batchDraw();
+            }
+        };
+
+        const renderHandler = (event) => {
+            const message = JSON.parse(event.data);
+            if (message.type === 'changePage') {
+                destroyCanvas();
+            }
+        };
+
+        if (socket) socket.addEventListener('message', renderHandler);
+        return () => {
+            if (socket) socket.removeEventListener('message', renderHandler);
+        };
+    });
+
+    useEffect(() => {
         if (selectedShape) {
             const selectedNode = stageRef.current.findOne('#' + selectedShape.text_id);
             selectedNode.show();

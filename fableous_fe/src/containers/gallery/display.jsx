@@ -1,42 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import BottomBar from './GalleryComponent/BottomBar';
-import { makeStyles } from '@material-ui/core/styles';
-import GalleryAppBar from './GalleryAppBar';
+import { Box } from '@material-ui/core';
 import Axios from 'axios';
+import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { baseUrl, httpProtocol } from '../../constant/url';
 
-const useStyles = makeStyles(() => ({
-    background: {
-        backgroundColor: '#7030A2',
-        height: '100vh',
-        width: '100vw',
-        overflowY: 'scroll',
-    },
-    content: {
-        display: 'flex',
-        height: '100%',
-        width: '100%',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    img: {
-        height: '100%',
-        width: '100%',
-        objectFit: 'scale-down',
-    },
-    imgWrapper: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-}));
+import BottomBar from './GalleryComponent/BottomBar';
+import GalleryAppBar from './GalleryAppBar';
+import { baseUrl, httpProtocol } from '../../constant/url';
 
 const Display = () => {
     const [pages, setPages] = useState([]);
     const [currentPage, setCurrentPage] = useState(0);
-    const classes = useStyles();
     const { storyId } = useParams();
+    const displayRef = useRef(null);
+    const [imageSize, setImageSize] = useState({ h: 0, w: 0 });
     useEffect(() => {
         Axios.get(`/api/gallery?id=${storyId}`).then((response) => {
             setPages(response.data.pages);
@@ -51,18 +27,37 @@ const Display = () => {
         }
         setCurrentPage(next);
     };
+    useEffect(() => {
+        if (displayRef.current) {
+            if (displayRef.current.parentNode.clientWidth / 16 > displayRef.current.parentNode.clientHeight / 9) {
+                setImageSize({
+                    h: displayRef.current.parentNode.clientHeight,
+                    w: (displayRef.current.parentNode.clientHeight / 9) * 16,
+                });
+            } else {
+                setImageSize({
+                    h: (displayRef.current.parentNode.clientWidth / 16) * 9,
+                    w: displayRef.current.parentNode.clientWidth,
+                });
+            }
+        }
+    }, [displayRef]);
     return (
-        <div className={classes.background}>
+        <Box display="flex" flexDirection="column" height="100vh">
             <GalleryAppBar />
-            <div className={classes.content}>
+            <Box flexGrow={1} display="flex" alignItems="center" widht="100vw" justifyContent="center">
                 <img
-                    className={classes.img}
+                    ref={displayRef}
                     src={pages.length > 0 ? `${baseUrl(httpProtocol)}${pages[currentPage].url}` : null}
                     alt="story"
+                    style={{
+                        width: imageSize.w,
+                        height: imageSize.h,
+                    }}
                 />
-            </div>
+            </Box>
             <BottomBar changeFn={changePage} page={currentPage + 1} />
-        </div>
+        </Box>
     );
 };
 

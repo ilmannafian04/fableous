@@ -58,7 +58,7 @@ export default function BottomAppBar() {
                         Previous Page
                     </Button>
                     <div className={classes.grow} />
-                    <Button className={classes.button}>Page {storyState.pageCount}</Button>
+                    <Button className={classes.button}>Page {storyState.currentPage}</Button>
                     <div className={classes.grow} />
                     <Button className={classes.button}>
                         Next Page

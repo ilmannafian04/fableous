@@ -6,12 +6,6 @@ import Typography from '@material-ui/core/Typography';
 import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
-    root: {
-        flexGrow: 1,
-        position: 'absolute',
-        top: 0,
-        left: 0,
-    },
     menuButton: {
         marginRight: theme.spacing(2),
     },
@@ -20,8 +14,6 @@ const useStyles = makeStyles((theme) => ({
     },
 
     appBar: {
-        height: '100px',
-        justifyContent: 'center',
         backgroundColor: '#2F3138',
     },
     icon: {
@@ -37,34 +29,24 @@ export default function GalleryAppBar() {
     const history = useHistory();
 
     return (
-        <div className={classes.root}>
-            <AppBar className={classes.appBar}>
-                <Toolbar>
-                    <Typography variant="h4" className={classes.title} align={'left'}>
-                        My Bookshelf
-                    </Typography>
-                    <div className={classes.button}>
-                        <span
-                            role="img"
-                            aria-label="emoji"
-                            onClick={() => {
-                                history.push('/');
-                            }}
-                        >
-                            🏠
-                        </span>
-                        {/*<IconButton className={classes.icon} style={{ color: '#FFFFFF' }}>*/}
-                        {/*    <QuestionAnswerIcon />*/}
-                        {/*</IconButton>*/}
-                        {/*<IconButton className={classes.icon} style={{ color: '#FFFFFF' }}>*/}
-                        {/*    <SettingsIcon />*/}
-                        {/*</IconButton>*/}
-                        {/*<IconButton className={classes.icon} style={{ color: '#FFFFFF' }}>*/}
-                        {/*    <HomeIcon />*/}
-                        {/*</IconButton>*/}
-                    </div>
-                </Toolbar>
-            </AppBar>
-        </div>
+        <AppBar className={classes.appBar} position="sticky">
+            <Toolbar>
+                <Typography variant="h4" className={classes.title} align={'left'}>
+                    My Bookshelf
+                </Typography>
+                <div className={classes.button}>
+                    <span
+                        role="img"
+                        aria-label="emoji"
+                        onClick={() => {
+                            history.push('/');
+                        }}
+                        style={{ cursor: 'pointer' }}
+                    >
+                        🏠
+                    </span>
+                </div>
+            </Toolbar>
+        </AppBar>
     );
 }

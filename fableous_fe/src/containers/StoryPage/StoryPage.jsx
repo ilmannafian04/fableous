@@ -7,7 +7,7 @@ import Canvas from './canvas/Canvas';
 import Lobby from './Lobby';
 import { baseUrl, wsProtocol } from '../../constant/url';
 import socketAtom from '../../atom/socketAtom';
-import storyAtom from '../../atom/storyAtom';
+import storyAtom, { storyDefault } from '../../atom/storyAtom';
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -32,7 +32,6 @@ const StoryPage = () => {
             const backToHome = () => history.push('/');
             const rootHandler = (event) => {
                 const message = JSON.parse(event.data);
-                console.log(message);
                 if (message.type === 'storyState') {
                     setStoryState((prev) => {
                         return { ...prev, state: message.data.state };
@@ -53,6 +52,11 @@ const StoryPage = () => {
         }
     }, [joinCode, setSocket, history, setStoryState]);
     let displayedComponent;
+    useEffect(() => {
+        return () => {
+            setStoryState(storyDefault);
+        };
+    }, [setStoryState]);
     switch (storyState.state) {
         case 0:
             displayedComponent = <Lobby />;

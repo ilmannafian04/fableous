@@ -126,7 +126,7 @@ class DrawingConsumer(AsyncJsonWebsocketConsumer):
 
     async def page_loop(self):
         story_state = await self.get_story_state()
-        for time_left in range(3 * 5, -1, -1):
+        for time_left in range(3 * 60, -1, -1):
             await self.channel_layer.group_send(self.room_group_name, {'type': 'draw.draw_state',
                                                                        'time_left': time_left,
                                                                        'story_state': story_state})

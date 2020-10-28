@@ -1,7 +1,6 @@
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Axios from 'axios';
-import ChipInput from 'material-ui-chip-input';
 import React, { useEffect, useState } from 'react';
 
 import GalleryAppBar from './GalleryAppBar';
@@ -11,7 +10,6 @@ import { baseUrl, httpProtocol } from '../../constant/url';
 const useStyles = makeStyles(() => ({
     root: {
         flexGrow: 1,
-        paddingTop: '7rem',
     },
     title: {
         textAlign: 'center',
@@ -35,24 +33,25 @@ const Gallery = () => {
             .catch((error) => console.error(error));
     }, []);
     return (
-        <div className={classes.root}>
-            <div className={classes.pad}>
-                <GalleryAppBar />
-                <ChipInput fullWidth={true} placeholder={'Tag theme/emotion..'} alwaysShowPlaceholder={true} />
-                <div className={classes.cardContainer}>
-                    <Grid container spacing={4}>
-                        {stories.map((card, index) => (
-                            <GalleryCard
-                                title={card.title}
-                                imageURL={card.thumbnail ? `${baseUrl(httpProtocol)}${card.thumbnail}` : null}
-                                key={index}
-                                id={card.id}
-                            />
-                        ))}
-                    </Grid>
+        <>
+            <GalleryAppBar />
+            <div className={classes.root}>
+                <div className={classes.pad}>
+                    <div className={classes.cardContainer}>
+                        <Grid container spacing={4}>
+                            {stories.map((card, index) => (
+                                <GalleryCard
+                                    title={card.title}
+                                    imageURL={card.thumbnail ? `${baseUrl(httpProtocol)}${card.thumbnail}` : null}
+                                    key={index}
+                                    id={card.id}
+                                />
+                            ))}
+                        </Grid>
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 

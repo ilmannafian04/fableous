@@ -1,13 +1,12 @@
 import { Button, createStyles } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import React from 'react';
-
-import CustomChip from './CustomChip';
+import React, { useState } from 'react';
 import CustomModal from './CustomModal';
 import userAtom from '../../atom/userAtom';
 import { useRecoilValue } from 'recoil';
 import { useHistory } from 'react-router-dom';
 import Axios from 'axios';
+import TextField from '@material-ui/core/TextField';
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -89,18 +88,23 @@ const useStyles = makeStyles(() =>
 const HomePage = () => {
     const classes = useStyles();
     const user = useRecoilValue(userAtom);
+    const [title, setTitle] = useState('');
     const history = useHistory();
 
     const handleClick = (event) => {
         switch (parseInt(event.currentTarget.value)) {
             case 1:
-                Axios.post('/api/createsession')
-                    .then((response) => history.push(`/story/${response.data.roomCode}`))
-                    .catch((error) => console.error(error));
-                return;
+                if (title.length > 0) {
+                    const data = new FormData();
+                    data.append('title', title);
+                    Axios.post(`/api/createsession`, data)
+                        .then((response) => history.push(`/story/${response.data.roomCode}`))
+                        .catch((error) => console.error(error));
+                }
+                break;
             case 2:
                 history.push('/signup');
-                return;
+                break;
             case 3:
                 history.push('/signin');
                 break;
@@ -112,8 +116,20 @@ const HomePage = () => {
             <div className={classes.bigBox}>
                 <div className={classes.smallBox}>
                     <h1 className={classes.title}>Fableous</h1>
-                    <p className={classes.tag}>Tag your theme/emotions here: </p>
-                    <CustomChip />
+                    <p className={classes.tag}>Story title: </p>
+                    <TextField
+                        style={{
+                            background: '#f6f1d3',
+                            borderRadius: 29,
+                            height: 50,
+                            disableUnderline: true,
+                        }}
+                        variant="outlined"
+                        value={title}
+                        onChange={(event) => {
+                            setTitle(event.target.value);
+                        }}
+                    />
                     <div className={classes.buttonsLayout}>
                         {user.isLoggedIn ? (
                             <Button

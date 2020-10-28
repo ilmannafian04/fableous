@@ -4,9 +4,11 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
-import SettingsIcon from '@material-ui/icons/Settings';
 import HomeIcon from '@material-ui/icons/Home';
-import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
+import { useHistory } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
+import storyAtom from '../../../../atom/storyAtom';
+import { secondsToMMSS } from '../../../../utils/formatting';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -34,6 +36,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function MenuAppBar() {
     const classes = useStyles();
+    const history = useHistory();
+    const storyState = useRecoilValue(storyAtom);
 
     return (
         <div className={classes.root}>
@@ -42,14 +46,13 @@ export default function MenuAppBar() {
                     <Typography variant="h4" className={classes.title} align={'left'}>
                         Crabbing In the Disco
                     </Typography>
+                    <Typography>Time: {secondsToMMSS(storyState.timeLeft)}</Typography>
                     <div>
-                        <IconButton className={classes.icon} style={{ color: '#FFFFFF' }}>
-                            <QuestionAnswerIcon />
-                        </IconButton>
-                        <IconButton className={classes.icon} style={{ color: '#FFFFFF' }}>
-                            <SettingsIcon />
-                        </IconButton>
-                        <IconButton className={classes.icon} style={{ color: '#FFFFFF' }}>
+                        <IconButton
+                            className={classes.icon}
+                            style={{ color: '#FFFFFF' }}
+                            onClick={() => history.push('/')}
+                        >
                             <HomeIcon />
                         </IconButton>
                     </div>

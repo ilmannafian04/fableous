@@ -204,7 +204,6 @@ function CanvasText() {
                     width: '100%',
                     height: '100%',
                     overflow: 'hidden',
-                    background: 'yellow',
                     display: 'inline-block',
                 }}
             >

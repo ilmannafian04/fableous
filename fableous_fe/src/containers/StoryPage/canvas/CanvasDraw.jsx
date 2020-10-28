@@ -1,4 +1,3 @@
-import { createStyles, makeStyles } from '@material-ui/core/styles';
 import produce from 'immer';
 import Konva from 'konva';
 import React, { useEffect, useRef, useState } from 'react';
@@ -14,17 +13,8 @@ import SideBar from './CanvasComponent/SideBar';
 import { useRecoilValue } from 'recoil';
 import socketAtom from '../../../atom/socketAtom';
 
-const useStyles = makeStyles(() =>
-    createStyles({
-        canvasStyle: {
-            background: 'purple',
-        },
-    })
-);
-
 const CanvasDraw = () => {
     const socket = useRecoilValue(socketAtom);
-    const classes = useStyles();
     // Window Size
     const { width, height } = useWindowSize();
 
@@ -184,12 +174,7 @@ const CanvasDraw = () => {
                     justifyContent: 'center',
                 }}
             >
-                <Stage
-                    width={availSpace.width}
-                    height={availSpace.height}
-                    ref={stageRef}
-                    className={classes.canvasStyle}
-                >
+                <Stage width={availSpace.width} height={availSpace.height} ref={stageRef}>
                     <Layer ref={layerRef}>
                         <Image
                             image={canvas}

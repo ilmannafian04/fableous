@@ -20,7 +20,6 @@ const useStyles = makeStyles(() => ({
         alignItems: 'center',
         justifyContent: 'flex-start',
         position: 'absolute',
-        backgroundColor: '#7030A2',
     },
     timer: {
         display: 'flex',
@@ -88,13 +87,13 @@ const Canvas = () => {
     switch (storyState.self.role) {
         case 1:
         case 2:
-            displayedCanvas = <CanvasDraw socket={socket} />;
+            displayedCanvas = <CanvasDraw />;
             break;
         case 3:
-            displayedCanvas = <CanvasText socket={socket} />;
+            displayedCanvas = <CanvasText />;
             break;
         case 4:
-            displayedCanvas = <CanvasHub socket={socket} />;
+            displayedCanvas = <CanvasHub />;
             break;
         default:
             displayedCanvas = <h1>Uh oh</h1>;

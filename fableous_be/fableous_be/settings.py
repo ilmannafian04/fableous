@@ -37,7 +37,6 @@ SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('ENV') == 'DEVELOPMENT'
-print(DEBUG)
 ALLOWED_HOSTS = ['127.0.0.1',
                  'localhost',
                  'todo-team-name.uqcloud.net',

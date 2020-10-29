@@ -13,10 +13,8 @@ import Role from '../../../../constant/role';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        flexGrow: 1,
-        position: 'absolute',
-        top: 0,
-        left: 0,
+        height: '100px',
+        width: '100%',
     },
     menuButton: {
         marginRight: theme.spacing(2),
@@ -26,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
     },
 
     appBar: {
+        width: '100%',
         height: '100px',
         justifyContent: 'center',
         backgroundColor: '#2F3138',

@@ -45,7 +45,6 @@ const CanvasDraw = () => {
     useEffect(() => {
         if (headerRef.current) {
             const totalScale = calculateScale(headerRef.current);
-            console.log(headerRef.current.offsetWidth, headerRef.current.offsetHeight);
             const availableSpaceBasedOnRatio = calculateHeightBasedOnRatio(headerRef.current);
             setScale(totalScale);
             setAvailSpace(availableSpaceBasedOnRatio);
@@ -95,7 +94,6 @@ const CanvasDraw = () => {
     const onPressDownHandler = () => {
         const currentPosition = imageRef.current.getStage().getPointerPosition();
         setIsPainting(true);
-
         context.lineWidth = brushSize;
         context.lineJoin = 'round';
         context.lineCap = 'round';
@@ -119,7 +117,6 @@ const CanvasDraw = () => {
             context.strokeStyle = color;
 
             localPos = normalizePoint(prevPointer, scale, headerRef.current);
-
             context.moveTo(localPos.x, localPos.y);
 
             localPos = normalizePoint(nextPointer, scale, headerRef.current);

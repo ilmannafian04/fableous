@@ -15,6 +15,7 @@ import socketAtom from '../../../atom/socketAtom';
 const useStyles = makeStyles(() => ({
     root: {
         display: 'flex',
+        flexDirection: 'column',
         width: '100vw',
         height: '100vh',
         justifyContent: 'center',
@@ -112,10 +113,9 @@ const Canvas = () => {
             <div className={classes.canvasWrapper} style={{ display: isPortrait ? 'inline-block' : 'none' }}>
                 {isPortrait ? <ScreenRotate /> : null}
             </div>
-            <div className={classes.displayWrapper}>{displayedCanvas}</div>
-
-            <PageBar />
             <MenuAppBar />
+            <div className={classes.displayWrapper}>{displayedCanvas}</div>
+            <PageBar />
         </div>
     );
 };

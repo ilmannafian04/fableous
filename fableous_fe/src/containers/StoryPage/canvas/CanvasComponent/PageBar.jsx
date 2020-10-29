@@ -27,6 +27,7 @@ const useStyles = makeStyles((theme) => ({
     appBar: {
         top: 'auto',
         bottom: 0,
+        width: '100%',
         height: '100px',
         justifyContent: 'center',
         backgroundColor: '#2F3138',

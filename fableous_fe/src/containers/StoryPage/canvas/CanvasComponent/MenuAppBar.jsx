@@ -9,6 +9,7 @@ import { useHistory } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import storyAtom from '../../../../atom/storyAtom';
 import { secondsToMMSS } from '../../../../utils/formatting';
+import Role from '../../../../constant/role';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -44,7 +45,7 @@ export default function MenuAppBar() {
             <AppBar className={classes.appBar}>
                 <Toolbar>
                     <Typography variant="h4" className={classes.title} align={'left'}>
-                        Crabbing In the Disco
+                        Role: {Role[storyState.self.role]}
                     </Typography>
                     <Typography>Time: {secondsToMMSS(storyState.timeLeft)}</Typography>
                     <div>

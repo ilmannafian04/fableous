@@ -116,20 +116,20 @@ const HomePage = () => {
             <div className={classes.bigBox}>
                 <div className={classes.smallBox}>
                     <h1 className={classes.title}>Fableous</h1>
-                    <p className={classes.tag}>Story title: </p>
                     <TextField
                         style={{
-                            background: '#f6f1d3',
-                            borderRadius: 29,
-                            height: 50,
+                            backgroundColor: '#f6f1d3',
+                            color: 'black',
                             disableUnderline: true,
                         }}
-                        variant="outlined"
+                        label="Story Title"
+                        variant="filled"
                         value={title}
                         onChange={(event) => {
                             setTitle(event.target.value);
                         }}
                     />
+
                     <div className={classes.buttonsLayout}>
                         {user.isLoggedIn ? (
                             <Button

@@ -53,17 +53,9 @@ export default function BottomAppBar() {
             <CssBaseline />
             <AppBar color="primary" className={classes.appBar}>
                 <Toolbar>
-                    <Button className={classes.button}>
-                        <ArrowBackIosIcon />
-                        Previous Page
-                    </Button>
                     <div className={classes.grow} />
                     <Button className={classes.button}>Page {storyState.currentPage}</Button>
                     <div className={classes.grow} />
-                    <Button className={classes.button}>
-                        Next Page
-                        <ArrowForwardIosIcon />
-                    </Button>
                 </Toolbar>
             </AppBar>
         </React.Fragment>

@@ -45,6 +45,7 @@ const CanvasDraw = () => {
     useEffect(() => {
         if (headerRef.current) {
             const totalScale = calculateScale(headerRef.current);
+            console.log(headerRef.current.offsetWidth, headerRef.current.offsetHeight);
             const availableSpaceBasedOnRatio = calculateHeightBasedOnRatio(headerRef.current);
             setScale(totalScale);
             setAvailSpace(availableSpaceBasedOnRatio);
@@ -172,30 +173,33 @@ const CanvasDraw = () => {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
+                    backgroundColor: '#2e3138',
                 }}
             >
-                <Stage width={availSpace.width} height={availSpace.height} ref={stageRef}>
-                    <Layer ref={layerRef}>
-                        <Image
-                            image={canvas}
-                            width={availSpace.width}
-                            height={availSpace.height}
-                            ref={imageRef}
-                            stroke={'black'}
-                            onMouseDown={onPressDownHandler}
-                            onMouseMove={onMoveHandler}
-                            onTouchStart={() => {
-                                onPressDownHandler();
-                                setIsPainting(true);
-                            }}
-                            onTouchMove={onMoveHandler}
-                            onTouchEnd={endDrawing}
-                            onMouseUp={endDrawing}
-                            onMouseLeave={endDrawing}
-                            listening={true}
-                        />
-                    </Layer>
-                </Stage>
+                <div style={{ backgroundColor: 'white' }}>
+                    <Stage width={availSpace.width} height={availSpace.height} ref={stageRef}>
+                        <Layer ref={layerRef}>
+                            <Image
+                                image={canvas}
+                                width={availSpace.width}
+                                height={availSpace.height}
+                                ref={imageRef}
+                                stroke={'black'}
+                                onMouseDown={onPressDownHandler}
+                                onMouseMove={onMoveHandler}
+                                onTouchStart={() => {
+                                    onPressDownHandler();
+                                    setIsPainting(true);
+                                }}
+                                onTouchMove={onMoveHandler}
+                                onTouchEnd={endDrawing}
+                                onMouseUp={endDrawing}
+                                onMouseLeave={endDrawing}
+                                listening={true}
+                            />
+                        </Layer>
+                    </Stage>
+                </div>
 
                 <Heartbeat
                     heartbeatInterval={200}

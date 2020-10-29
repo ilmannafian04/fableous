@@ -275,44 +275,47 @@ function CanvasHub() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                backgroundColor: '#2e3138',
             }}
         >
-            <Stage width={availSpace.width} height={availSpace.height} ref={stageRef}>
-                <Layer ref={backgroundLayerRef}>
-                    <Image
-                        image={canvas}
-                        width={availSpace.width}
-                        height={availSpace.height}
-                        ref={imageBackgroundRef}
-                    />
-                </Layer>
-                <Layer ref={characterLayerRef}>
-                    <Image
-                        image={canvasCharacter}
-                        width={availSpace.width}
-                        height={availSpace.height}
-                        ref={imageCharacterRef}
-                    />
-                </Layer>
-                <Layer ref={textLayerRef}>
-                    {textNodes
-                        ? textNodes.map((textAttr, i) => (
-                              <Text
-                                  key={i}
-                                  id={textAttr.text_id}
-                                  text={textAttr.text}
-                                  x={textAttr.x}
-                                  y={textAttr.y}
-                                  fontSize={textAttr.fontSize}
-                                  draggable={false}
-                                  width={textAttr.width}
-                                  keepRatio={true}
-                                  padding={3}
-                              />
-                          ))
-                        : null}
-                </Layer>
-            </Stage>
+            <div style={{ backgroundColor: 'white' }}>
+                <Stage width={availSpace.width} height={availSpace.height} ref={stageRef}>
+                    <Layer ref={backgroundLayerRef}>
+                        <Image
+                            image={canvas}
+                            width={availSpace.width}
+                            height={availSpace.height}
+                            ref={imageBackgroundRef}
+                        />
+                    </Layer>
+                    <Layer ref={characterLayerRef}>
+                        <Image
+                            image={canvasCharacter}
+                            width={availSpace.width}
+                            height={availSpace.height}
+                            ref={imageCharacterRef}
+                        />
+                    </Layer>
+                    <Layer ref={textLayerRef}>
+                        {textNodes
+                            ? textNodes.map((textAttr, i) => (
+                                  <Text
+                                      key={i}
+                                      id={textAttr.text_id}
+                                      text={textAttr.text}
+                                      x={textAttr.x}
+                                      y={textAttr.y}
+                                      fontSize={textAttr.fontSize}
+                                      draggable={false}
+                                      width={textAttr.width}
+                                      keepRatio={true}
+                                      padding={3}
+                                  />
+                              ))
+                            : null}
+                    </Layer>
+                </Stage>
+            </div>
         </div>
     );
 }

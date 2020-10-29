@@ -33,6 +33,7 @@ const CustomChipInput = () => {
                 input: classes.chipInputInput,
                 chip: classes.chip,
             }}
+            required
         />
     );
 };

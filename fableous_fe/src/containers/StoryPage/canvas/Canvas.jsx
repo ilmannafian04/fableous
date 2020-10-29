@@ -17,8 +17,13 @@ const useStyles = makeStyles(() => ({
         display: 'flex',
         width: '100vw',
         height: '100vh',
+        justifyContent: 'center',
         alignItems: 'center',
-        justifyContent: 'flex-start',
+        backgroundColor: '#2e3138',
+    },
+    canvasWrapper: {
+        display: 'flex',
+        zIndex: 10000,
         position: 'absolute',
     },
     timer: {
@@ -37,17 +42,20 @@ const useStyles = makeStyles(() => ({
         marginRight: '3rem',
         marginTop: '2rem',
     },
-    canvasWrapper: {
-        display: 'flex',
-        zIndex: 1,
-        position: 'absolute',
-    },
     canvasCentered: {
         width: '100vw',
         height: '100vh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    displayWrapper: {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        background: 'white',
     },
 }));
 
@@ -101,8 +109,11 @@ const Canvas = () => {
     }
     return (
         <div className={classes.root}>
-            <div className={classes.canvasWrapper}>{isPortrait ? <ScreenRotate /> : null}</div>
-            {displayedCanvas}
+            <div className={classes.canvasWrapper} style={{ display: isPortrait ? 'inline-block' : 'none' }}>
+                {isPortrait ? <ScreenRotate /> : null}
+            </div>
+            <div className={classes.displayWrapper}>{displayedCanvas}</div>
+
             <PageBar />
             <MenuAppBar />
         </div>

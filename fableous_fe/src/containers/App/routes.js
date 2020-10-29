@@ -6,6 +6,7 @@ import CanvasHub from '../StoryPage/canvas/CanvasHub';
 import HomePage from '../HomePage/HomePage';
 import Display from '../Gallery/display';
 import Gallery from '../Gallery/Gallery';
+import Canvas from '../StoryPage/canvas/Canvas';
 
 export const routes = [
     {
@@ -52,5 +53,10 @@ export const routes = [
         component: Display,
         exact: true,
         path: '/gallery/:storyId',
+    },
+    {
+        component: Canvas,
+        exact: true,
+        path: '/test',
     },
 ];

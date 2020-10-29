@@ -41,7 +41,7 @@ export default function MenuAppBar() {
 
     return (
         <div className={classes.root}>
-            <AppBar className={classes.appBar}>
+            <AppBar className={classes.appBar} position="sticky">
                 <Toolbar>
                     <Typography variant="h4" className={classes.title} align={'left'}>
                         Role: {Role[storyState.self.role]}

@@ -1,10 +1,7 @@
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
-import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 
 import React from 'react';
 import { useRecoilValue } from 'recoil';
@@ -25,13 +22,9 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.background.paper,
     },
     appBar: {
-        top: 'auto',
-        bottom: 0,
         width: '100%',
-        height: '100px',
-        justifyContent: 'center',
+        // height: '100px',
         backgroundColor: '#2F3138',
-        position: 'absolute',
     },
     grow: {
         flexGrow: 1,
@@ -51,8 +44,7 @@ export default function BottomAppBar() {
 
     return (
         <React.Fragment>
-            <CssBaseline />
-            <AppBar color="primary" className={classes.appBar}>
+            <AppBar color="primary" className={classes.appBar} position="sticky">
                 <Toolbar>
                     <div className={classes.grow} />
                     <Button className={classes.button}>Page {storyState.currentPage}</Button>

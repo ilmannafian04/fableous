@@ -11,6 +11,7 @@ import ScreenRotate from './CanvasComponent/screenRotate';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import storyAtom from '../../../atom/storyAtom';
 import socketAtom from '../../../atom/socketAtom';
+import { Box } from '@material-ui/core';
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -109,14 +110,16 @@ const Canvas = () => {
             break;
     }
     return (
-        <div className={classes.root}>
+        <Box display="flex" flexDirection="column" height="100vh" width="100vw" margin="0">
             <div className={classes.canvasWrapper} style={{ display: isPortrait ? 'inline-block' : 'none' }}>
                 {isPortrait ? <ScreenRotate /> : null}
             </div>
             <MenuAppBar />
-            <div className={classes.displayWrapper}>{displayedCanvas}</div>
+            <Box flexGrow={1} display="flex" alignItems="center" justifyContent="center">
+                {displayedCanvas}
+            </Box>
             <PageBar />
-        </div>
+        </Box>
     );
 };
 

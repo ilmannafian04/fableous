@@ -9,9 +9,9 @@ import { calculateHeightBasedOnRatio } from '../../../helper/CanvasHelperFunctio
 import { calculateScale } from '../../../helper/CanvasHelperFunctions/calculateScale';
 import { normalizePoint } from '../../../helper/CanvasHelperFunctions/normalizePoint';
 import useWindowSize from '../../../utils/hooks/useWindowSize';
-import SideBar from './CanvasComponent/SideBar';
 import { useRecoilValue } from 'recoil';
 import socketAtom from '../../../atom/socketAtom';
+import SideBar from './CanvasComponent/SideBar';
 
 const CanvasDraw = () => {
     const socket = useRecoilValue(socketAtom);
@@ -116,11 +116,9 @@ const CanvasDraw = () => {
             context.beginPath();
             context.strokeStyle = color;
 
-            localPos = normalizePoint(prevPointer, scale, headerRef.current);
+            localPos = normalizePoint(prevPointer, scale);
             context.moveTo(localPos.x, localPos.y);
-
-            localPos = normalizePoint(nextPointer, scale, headerRef.current);
-
+            localPos = normalizePoint(nextPointer, scale);
             context.lineTo(localPos.x, localPos.y);
             context.closePath();
             context.stroke();
@@ -138,8 +136,10 @@ const CanvasDraw = () => {
             setMessages(
                 produce(messages, (draft) => {
                     draft.push({
-                        start: lastPointerPosition,
-                        stop: { x: x, y: y },
+                        start: normalizePoint(lastPointerPosition, scale),
+                        stop: normalizePoint({ x, y }, scale),
+                        // start: lastPointerPosition,
+                        // stop: { x, y },
                         color: color,
                         size: brushSize,
                         mode: mode,
@@ -154,7 +154,6 @@ const CanvasDraw = () => {
             setIsPainting(false);
         }
     };
-
     return (
         <React.Fragment>
             <SideBar

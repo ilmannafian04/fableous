@@ -207,6 +207,7 @@ function CanvasText() {
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
+                    backgroundColor: '#2e3138',
                 }}
             >
                 <div style={{ backgroundColor: 'white' }}>

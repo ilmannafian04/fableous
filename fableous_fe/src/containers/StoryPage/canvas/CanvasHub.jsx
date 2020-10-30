@@ -70,6 +70,16 @@ function CanvasHub() {
             setScale2(calculateScale(headerRef.current));
             setAvailSpace(availableSpaceBasedOnRatio);
         }
+        if (textNodes) {
+            let tempTextArray = [...textNodes];
+            tempTextArray.forEach((textNode) => {
+                textNode.x = textNode.default_x * (scale / textNode.textScale);
+                textNode.y = textNode.default_y * (scale / textNode.textScale);
+                textNode.width = textNode.default_width * (scale / textNode.textScale);
+            });
+
+            setTextNodes(tempTextArray);
+        }
         stageRef.current.batchDraw();
     }, [width, height, scale]);
 
@@ -159,7 +169,7 @@ function CanvasHub() {
             text: 'Type Here',
             x: 160,
             y: 90,
-            fontSize: 40 * scale,
+            fontSize: 40,
             draggable: true,
             width: 180,
             height: 40,
@@ -298,7 +308,7 @@ function CanvasHub() {
                                       text={textAttr.text}
                                       x={textAttr.x}
                                       y={textAttr.y}
-                                      fontSize={textAttr.fontSize}
+                                      fontSize={textAttr.fontSize * scale}
                                       draggable={false}
                                       width={textAttr.width}
                                       keepRatio={true}

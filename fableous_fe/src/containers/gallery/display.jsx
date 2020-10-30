@@ -29,15 +29,15 @@ const Display = () => {
     };
     useEffect(() => {
         if (displayRef.current) {
-            if (displayRef.current.parentNode.clientWidth / 16 > displayRef.current.parentNode.clientHeight / 9) {
+            if (displayRef.current.offsetWidth / 16 > displayRef.current.offsetHeight / 9) {
                 setImageSize({
-                    h: displayRef.current.parentNode.clientHeight,
-                    w: (displayRef.current.parentNode.clientHeight / 9) * 16,
+                    h: displayRef.current.offsetHeight,
+                    w: (displayRef.current.offsetHeight / 9) * 16,
                 });
             } else {
                 setImageSize({
-                    h: (displayRef.current.parentNode.clientWidth / 16) * 9,
-                    w: displayRef.current.parentNode.clientWidth,
+                    h: (displayRef.current.offsetWidth / 16) * 9,
+                    w: displayRef.current.offsetWidth,
                 });
             }
         }
@@ -45,16 +45,17 @@ const Display = () => {
     return (
         <Box display="flex" flexDirection="column" height="100vh">
             <GalleryAppBar />
-            <Box flexGrow={1} display="flex" alignItems="center" widht="100vw" justifyContent="center">
-                <img
-                    ref={displayRef}
-                    src={pages.length > 0 ? `${baseUrl(httpProtocol)}${pages[currentPage].url}` : null}
-                    alt="story"
-                    style={{
-                        width: imageSize.w,
-                        height: imageSize.h,
-                    }}
-                />
+            <Box flexGrow={1} display="flex" alignItems="center" widht="100vw" justifyContent="center" ref={displayRef}>
+                {pages.length > 0 ? (
+                    <img
+                        src={pages.length > 0 ? `${baseUrl(httpProtocol)}${pages[currentPage].url}` : null}
+                        alt="story"
+                        style={{
+                            width: imageSize.w,
+                            height: imageSize.h,
+                        }}
+                    />
+                ) : null}
             </Box>
             <BottomBar changeFn={changePage} page={currentPage + 1} />
         </Box>

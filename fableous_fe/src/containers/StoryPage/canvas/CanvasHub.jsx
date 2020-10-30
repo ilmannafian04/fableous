@@ -81,6 +81,7 @@ function CanvasHub() {
             setTextNodes(tempTextArray);
         }
         stageRef.current.batchDraw();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [width, height, scale]);
 
     useEffect(() => {

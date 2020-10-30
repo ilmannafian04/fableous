@@ -7,7 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
 import { CardMedia } from '@material-ui/core';
 import CardActionArea from '@material-ui/core/CardActionArea';
-import Test from '../../assets/test(2).png';
+import Test from '../../assets/placeholder.png';
 import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles(() => ({

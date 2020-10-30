@@ -74,6 +74,7 @@ const useStyles = makeStyles(() =>
             backgroundColor: '#7030A2',
             color: 'white',
             borderRadius: '50px',
+            marginBottom: '2rem',
         },
         paddingLayout: {
             paddingTop: '2rem',
@@ -181,6 +182,18 @@ const HomePage = () => {
                 </span>{' '}
                 MY BOOKSHELF
             </Button>
+            {user.isLoggedIn ? (
+                <Button
+                    size="large"
+                    className={classes.menuButton}
+                    onClick={() => {
+                        window.localStorage.clear();
+                        window.location.reload();
+                    }}
+                >
+                    Logout
+                </Button>
+            ) : null}
         </div>
     );
 };

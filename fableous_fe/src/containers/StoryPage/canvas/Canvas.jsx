@@ -87,9 +87,9 @@ const Canvas = () => {
                 });
             }
         };
-        socket.addEventListener('message', drawStateHandler);
+        if (socket) socket.addEventListener('message', drawStateHandler);
         return () => {
-            socket.removeEventListener('message', drawStateHandler);
+            if (socket) socket.removeEventListener('message', drawStateHandler);
         };
     }, [socket, setStoryState]);
 

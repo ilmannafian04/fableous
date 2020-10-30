@@ -190,9 +190,6 @@ const ArtistForm = () => {
     const storyState = useRecoilValue(storyAtom);
     const socket = useRecoilValue(socketAtom);
     const classes = useStyles();
-    useEffect(() => {
-        setNewName(storyState.self.name);
-    }, [storyState]);
     const submitHandler = (event) => {
         event.preventDefault();
         if (socket) {

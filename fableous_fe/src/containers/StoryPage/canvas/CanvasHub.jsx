@@ -247,8 +247,10 @@ function CanvasHub() {
                 contextCharacter.lineWidth = size;
                 contextCharacter.strokeStyle = color;
                 localPos = normalizePoint(prevPointer, scale);
+                localPos = normalizePoint(localPos, scale2);
                 contextCharacter.moveTo(localPos.x, localPos.y);
                 localPos = normalizePoint(nextPointer, scale);
+                localPos = normalizePoint(localPos, scale2);
                 contextCharacter.lineTo(localPos.x, localPos.y);
                 contextCharacter.closePath();
                 contextCharacter.stroke();

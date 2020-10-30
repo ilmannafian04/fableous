@@ -1,5 +1,11 @@
 # Fableous Front-end
 
+## Requirements
+
+This application require the following in order to run:
+
+- [Node JS](https://nodejs.org/)
+
 ## Running the application
 
 Clone repo
@@ -22,4 +28,9 @@ Running application in development mode
 
 ```shell script
 npm start
+```
+
+Creating a production build. The build artifact will be in the `build` folder
+```shell script
+npm run build
 ```

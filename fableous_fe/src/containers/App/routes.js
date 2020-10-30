@@ -4,8 +4,8 @@ import SignUp from '../authentication/SignUp';
 import SignIn from '../authentication/SignIn';
 import CanvasHub from '../StoryPage/canvas/CanvasHub';
 import HomePage from '../HomePage/HomePage';
-import Display from '../temp/display';
-import Gallery from '../temp/Gallery';
+import Display from '../gallery/display';
+import Gallery from '../gallery/Gallery';
 import Canvas from '../StoryPage/canvas/Canvas';
 
 export const routes = [

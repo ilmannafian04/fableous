@@ -9,13 +9,12 @@ import { useHistory } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import storyAtom from '../../../../atom/storyAtom';
 import { secondsToMMSS } from '../../../../utils/formatting';
+import Role from '../../../../constant/role';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        flexGrow: 1,
-        position: 'absolute',
-        top: 0,
-        left: 0,
+        height: '100px',
+        width: '100%',
     },
     menuButton: {
         marginRight: theme.spacing(2),
@@ -25,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
     },
 
     appBar: {
+        width: '100%',
         height: '100px',
         justifyContent: 'center',
         backgroundColor: '#2F3138',
@@ -41,10 +41,10 @@ export default function MenuAppBar() {
 
     return (
         <div className={classes.root}>
-            <AppBar className={classes.appBar}>
+            <AppBar className={classes.appBar} position="sticky">
                 <Toolbar>
                     <Typography variant="h4" className={classes.title} align={'left'}>
-                        Crabbing In the Disco
+                        Role: {Role[storyState.self.role]}
                     </Typography>
                     <Typography>Time: {secondsToMMSS(storyState.timeLeft)}</Typography>
                     <div>

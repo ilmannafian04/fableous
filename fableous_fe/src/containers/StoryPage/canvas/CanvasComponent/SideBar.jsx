@@ -9,15 +9,10 @@ import TitleIcon from '@material-ui/icons/Title';
 import VolumeUpIcon from '@material-ui/icons/VolumeUp';
 import React, { useState } from 'react';
 import Toolbrush from './Toolbrush';
+import storyAtom from '../../../../atom/storyAtom';
+import { useRecoilValue } from 'recoil';
 
 const useStyles = makeStyles((theme) => ({
-    root: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        position: 'sticky',
-        zIndex: 1,
-        left: '0%',
-    },
     appBar: {
         zIndex: theme.zIndex.drawer - 1,
     },
@@ -52,7 +47,14 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: '20%',
     },
     sidebarWrapper: {
-        marginTop: '50%',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        zIndex: 9999,
     },
     iconWrapper: {
         display: 'flex',
@@ -63,6 +65,7 @@ export default function ClippedDrawer({ brushColor, erase, brushSize, createText
     const classes = useStyles();
 
     const [isOpen, setOpen] = useState(false);
+    const user = useRecoilValue(storyAtom);
     const clickHandler = () => {
         setOpen(true);
         erase.setMode('brush');
@@ -74,29 +77,41 @@ export default function ClippedDrawer({ brushColor, erase, brushSize, createText
     };
 
     return (
-        <div>
+        <div className={classes.sidebarWrapper}>
             <div className={classes.iconWrapper}>
                 <List className={classes.List}>
-                    <ListItem button onClick={clickHandler}>
-                        <ListItemIcon>
-                            <BrushIcon className={classes.icons} />
-                        </ListItemIcon>
-                    </ListItem>
-                    <ListItem button onClick={eraserHandler}>
-                        <ListItemIcon>
-                            <Icon icon={eraserIcon} className={classes.icons} />
-                        </ListItemIcon>
-                    </ListItem>
-                    <ListItem button>
-                        <ListItemIcon>
-                            <TitleIcon className={classes.icons} onClick={() => createTextNode()} />
-                        </ListItemIcon>
-                    </ListItem>
-                    <ListItem button>
-                        <ListItemIcon>
-                            <VolumeUpIcon className={classes.icons} />
-                        </ListItemIcon>
-                    </ListItem>
+                    {user.self.role !== 3 ? (
+                        <div>
+                            <ListItem button onClick={clickHandler}>
+                                <ListItemIcon>
+                                    <BrushIcon className={classes.icons} />
+                                </ListItemIcon>
+                            </ListItem>
+                            <ListItem button onClick={eraserHandler}>
+                                <ListItemIcon>
+                                    <Icon icon={eraserIcon} className={classes.icons} />
+                                </ListItemIcon>
+                            </ListItem>
+                            <ListItem button>
+                                <ListItemIcon>
+                                    <TitleIcon className={classes.icons} onClick={() => createTextNode()} />
+                                </ListItemIcon>
+                            </ListItem>
+                            <ListItem button>
+                                <ListItemIcon>
+                                    <VolumeUpIcon className={classes.icons} />
+                                </ListItemIcon>
+                            </ListItem>
+                        </div>
+                    ) : (
+                        <div>
+                            <ListItem button>
+                                <ListItemIcon>
+                                    <TitleIcon className={classes.icons} onClick={() => createTextNode()} />
+                                </ListItemIcon>
+                            </ListItem>
+                        </div>
+                    )}
                 </List>
                 {isOpen ? <Toolbrush brushSize={brushSize} brushColor={brushColor} closeDrawer={setOpen} /> : null}
             </div>

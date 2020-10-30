@@ -166,6 +166,9 @@ const buttonRoleUseStyles = makeStyles(() => ({
         '&:hover': {
             opacity: '0.7',
         },
+        '&:disabled': {
+            opacity: '0.35',
+        },
     },
     image: {
         width: '26px',
@@ -187,9 +190,6 @@ const ArtistForm = () => {
     const storyState = useRecoilValue(storyAtom);
     const socket = useRecoilValue(socketAtom);
     const classes = useStyles();
-    useEffect(() => {
-        setNewName(storyState.self.name);
-    }, [storyState]);
     const submitHandler = (event) => {
         event.preventDefault();
         if (socket) {
@@ -229,9 +229,9 @@ const RoleSelect = () => {
     return (
         <div className={buttonClass.container}>
             {[
-                { text: 'Background', value: 1, image: Background, color: '#067A00' },
-                { text: 'Character', value: 2, image: Character, color: '#00CEE6', selected: '#0093A3' },
-                { text: 'Story', value: 3, image: Story, color: '#FA9600', selected: '#E08700' },
+                { text: 'Background', value: 1, image: Background, color: '#067A00', selected: '#000000' },
+                { text: 'Character', value: 2, image: Character, color: '#00CEE6', selected: '#000000' },
+                { text: 'Story', value: 3, image: Story, color: '#FA9600', selected: '#000000' },
                 { text: 'Hub', value: 4, image: Hub, color: '#E71D36', selected: '#000000' },
             ].map((button, index) => (
                 <div className={buttonClass.wrapper} key={index}>
@@ -239,12 +239,12 @@ const RoleSelect = () => {
                         className={buttonClass.button}
                         onClick={() => clickHandler(button.value)}
                         value={button.value}
-                        disabled={storyState.self.role === button.value || storyState.self.isReady}
+                        disabled={storyState.self.role !== button.value && storyState.self.isReady}
                         style={{
                             background: button.color,
-                            borderStyle:
-                                storyState.self.role === button.value || storyState.self.isReady ? 'solid' : 'none',
+                            borderStyle: storyState.self.role === button.value ? 'solid' : 'none',
                             borderColor: button.selected,
+                            borderWidth: 3,
                         }}
                     >
                         <img className={buttonClass.image} src={button.image} alt={button.text} />

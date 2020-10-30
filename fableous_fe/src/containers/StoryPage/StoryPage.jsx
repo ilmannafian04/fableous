@@ -1,4 +1,3 @@
-import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React, { useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { useRecoilState, useSetRecoilState } from 'recoil';
@@ -9,20 +8,11 @@ import { baseUrl, wsProtocol } from '../../constant/url';
 import socketAtom from '../../atom/socketAtom';
 import storyAtom, { storyDefault } from '../../atom/storyAtom';
 
-const useStyles = makeStyles(() =>
-    createStyles({
-        drawingSessionContainer: {
-            width: '720px',
-        },
-    })
-);
-
 const StoryPage = () => {
     const setSocket = useSetRecoilState(socketAtom);
     const [storyState, setStoryState] = useRecoilState(storyAtom);
     const { joinCode } = useParams();
     const history = useHistory();
-    const classes = useStyles();
     useEffect(() => {
         if (joinCode) {
             const sock = new WebSocket(`${baseUrl(wsProtocol)}/ws/drawing/${joinCode}/`);
@@ -67,7 +57,7 @@ const StoryPage = () => {
         default:
             displayedComponent = <Lobby />;
     }
-    return <div className={classes.drawingSessionContainer}>{displayedComponent}</div>;
+    return <div>{displayedComponent}</div>;
 };
 
 export default StoryPage;

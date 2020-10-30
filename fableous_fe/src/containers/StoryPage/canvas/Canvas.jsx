@@ -11,14 +11,21 @@ import ScreenRotate from './CanvasComponent/screenRotate';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import storyAtom from '../../../atom/storyAtom';
 import socketAtom from '../../../atom/socketAtom';
+import { Box } from '@material-ui/core';
 
 const useStyles = makeStyles(() => ({
     root: {
         display: 'flex',
+        flexDirection: 'column',
         width: '100vw',
         height: '100vh',
+        justifyContent: 'center',
         alignItems: 'center',
-        justifyContent: 'flex-start',
+        backgroundColor: '#2e3138',
+    },
+    canvasWrapper: {
+        display: 'flex',
+        zIndex: 10000,
         position: 'absolute',
     },
     timer: {
@@ -37,17 +44,20 @@ const useStyles = makeStyles(() => ({
         marginRight: '3rem',
         marginTop: '2rem',
     },
-    canvasWrapper: {
-        display: 'flex',
-        zIndex: 1,
-        position: 'absolute',
-    },
     canvasCentered: {
         width: '100vw',
         height: '100vh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    displayWrapper: {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        background: 'white',
     },
 }));
 
@@ -77,9 +87,9 @@ const Canvas = () => {
                 });
             }
         };
-        socket.addEventListener('message', drawStateHandler);
+        if (socket) socket.addEventListener('message', drawStateHandler);
         return () => {
-            socket.removeEventListener('message', drawStateHandler);
+            if (socket) socket.removeEventListener('message', drawStateHandler);
         };
     }, [socket, setStoryState]);
 
@@ -100,12 +110,16 @@ const Canvas = () => {
             break;
     }
     return (
-        <div className={classes.root}>
-            <div className={classes.canvasWrapper}>{isPortrait ? <ScreenRotate /> : null}</div>
-            {displayedCanvas}
-            <PageBar />
+        <Box display="flex" flexDirection="column" height="100vh" width="100vw" margin="0">
+            <div className={classes.canvasWrapper} style={{ display: isPortrait ? 'inline-block' : 'none' }}>
+                {isPortrait ? <ScreenRotate /> : null}
+            </div>
             <MenuAppBar />
-        </div>
+            <Box flexGrow={1} display="flex" alignItems="center" justifyContent="center">
+                {displayedCanvas}
+            </Box>
+            <PageBar />
+        </Box>
     );
 };
 

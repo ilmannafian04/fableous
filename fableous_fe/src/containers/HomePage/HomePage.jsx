@@ -74,6 +74,7 @@ const useStyles = makeStyles(() =>
             backgroundColor: '#7030A2',
             color: 'white',
             borderRadius: '50px',
+            marginBottom: '2rem',
         },
         paddingLayout: {
             paddingTop: '2rem',
@@ -116,20 +117,20 @@ const HomePage = () => {
             <div className={classes.bigBox}>
                 <div className={classes.smallBox}>
                     <h1 className={classes.title}>Fableous</h1>
-                    <p className={classes.tag}>Story title: </p>
                     <TextField
                         style={{
-                            background: '#f6f1d3',
-                            borderRadius: 29,
-                            height: 50,
+                            backgroundColor: '#f6f1d3',
+                            color: 'black',
                             disableUnderline: true,
                         }}
-                        variant="outlined"
+                        label="Story Title"
+                        variant="filled"
                         value={title}
                         onChange={(event) => {
                             setTitle(event.target.value);
                         }}
                     />
+
                     <div className={classes.buttonsLayout}>
                         {user.isLoggedIn ? (
                             <Button
@@ -181,6 +182,18 @@ const HomePage = () => {
                 </span>{' '}
                 MY BOOKSHELF
             </Button>
+            {user.isLoggedIn ? (
+                <Button
+                    size="large"
+                    className={classes.menuButton}
+                    onClick={() => {
+                        window.localStorage.clear();
+                        window.location.reload();
+                    }}
+                >
+                    Logout
+                </Button>
+            ) : null}
         </div>
     );
 };

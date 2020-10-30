@@ -9,6 +9,7 @@ import { normalizePoint } from '../../../helper/CanvasHelperFunctions/normalizeP
 import { useRecoilValue } from 'recoil';
 import socketAtom from '../../../atom/socketAtom';
 import Axios from 'axios';
+import { calculateScale, calculateScaleHub } from '../../../helper/CanvasHelperFunctions/calculateScale';
 
 function CanvasHub() {
     const socket = useRecoilValue(socketAtom);
@@ -30,6 +31,7 @@ function CanvasHub() {
 
     // Context States
     const [scale, setScale] = useState(1);
+    const [scale2, setScale2] = useState(1);
     const imageBackgroundRef = useRef();
     const imageCharacterRef = useRef();
     const backgroundLayerRef = useRef();
@@ -62,9 +64,10 @@ function CanvasHub() {
 
     useEffect(() => {
         if (headerRef.current) {
-            const totalScale = headerRef.current.offsetWidth / DEFAULT_WIDTH_CANVAS;
+            const totalScale = calculateScaleHub(headerRef.current);
             const availableSpaceBasedOnRatio = calculateHeightBasedOnRatio(headerRef.current);
             setScale(totalScale);
+            setScale2(calculateScale(headerRef.current));
             setAvailSpace(availableSpaceBasedOnRatio);
         }
         stageRef.current.batchDraw();
@@ -75,21 +78,11 @@ function CanvasHub() {
     }, [textNodes]);
 
     useEffect(() => {
-        if (headerRef.current) {
-            const totalScale = headerRef.current.offsetWidth / DEFAULT_WIDTH_CANVAS;
-            const availableSpaceBasedOnRatio = calculateHeightBasedOnRatio(headerRef.current);
-            setScale(totalScale);
-            setAvailSpace(availableSpaceBasedOnRatio);
-        }
-        stageRef.current.batchDraw();
-    }, [width, height, scale]);
-
-    useEffect(() => {
         const hubHandler = (event) => {
             const message = JSON.parse(event.data);
             switch (message['type']) {
                 case 'newStroke':
-                    message['data']['strokes'].forEach((drawing) =>
+                    message['data']['strokes'].forEach((drawing) => {
                         draw(
                             message['data']['layer'],
                             drawing.start,
@@ -97,8 +90,8 @@ function CanvasHub() {
                             drawing.size,
                             drawing.color,
                             drawing.mode
-                        )
-                    );
+                        );
+                    });
                     break;
                 case 'text':
                     processText(message['data']);
@@ -217,10 +210,8 @@ function CanvasHub() {
 
     const draw = (layer, prevPointer, nextPointer, size, color, mode) => {
         if (context && contextCharacter) {
-            let image;
             let localPos;
             if (layer === 1) {
-                image = imageBackgroundRef.current;
                 context.lineJoin = 'round';
                 context.lineCap = 'round';
 
@@ -234,14 +225,15 @@ function CanvasHub() {
                 context.beginPath();
                 context.lineWidth = size;
                 context.strokeStyle = color;
-                localPos = normalizePoint(prevPointer, scale, image);
+                localPos = normalizePoint(prevPointer, scale);
+                localPos = normalizePoint(localPos, scale2);
                 context.moveTo(localPos.x, localPos.y);
-                localPos = normalizePoint(nextPointer, scale, image);
+                localPos = normalizePoint(nextPointer, scale);
+                localPos = normalizePoint(localPos, scale2);
                 context.lineTo(localPos.x, localPos.y);
                 context.closePath();
                 context.stroke();
             } else if (layer === 2) {
-                image = imageCharacterRef.current;
                 contextCharacter.lineJoin = 'round';
                 contextCharacter.lineCap = 'round';
 
@@ -254,9 +246,9 @@ function CanvasHub() {
                 contextCharacter.beginPath();
                 contextCharacter.lineWidth = size;
                 contextCharacter.strokeStyle = color;
-                localPos = normalizePoint(prevPointer, scale, image);
+                localPos = normalizePoint(prevPointer, scale);
                 contextCharacter.moveTo(localPos.x, localPos.y);
-                localPos = normalizePoint(nextPointer, scale, image);
+                localPos = normalizePoint(nextPointer, scale);
                 contextCharacter.lineTo(localPos.x, localPos.y);
                 contextCharacter.closePath();
                 contextCharacter.stroke();
@@ -265,7 +257,6 @@ function CanvasHub() {
             stageRef.current.batchDraw();
         }
     };
-
     return (
         <div
             ref={headerRef}
@@ -275,44 +266,47 @@ function CanvasHub() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                backgroundColor: '#2e3138',
             }}
         >
-            <Stage width={availSpace.width} height={availSpace.height} ref={stageRef}>
-                <Layer ref={backgroundLayerRef}>
-                    <Image
-                        image={canvas}
-                        width={availSpace.width}
-                        height={availSpace.height}
-                        ref={imageBackgroundRef}
-                    />
-                </Layer>
-                <Layer ref={characterLayerRef}>
-                    <Image
-                        image={canvasCharacter}
-                        width={availSpace.width}
-                        height={availSpace.height}
-                        ref={imageCharacterRef}
-                    />
-                </Layer>
-                <Layer ref={textLayerRef}>
-                    {textNodes
-                        ? textNodes.map((textAttr, i) => (
-                              <Text
-                                  key={i}
-                                  id={textAttr.text_id}
-                                  text={textAttr.text}
-                                  x={textAttr.x}
-                                  y={textAttr.y}
-                                  fontSize={textAttr.fontSize}
-                                  draggable={false}
-                                  width={textAttr.width}
-                                  keepRatio={true}
-                                  padding={3}
-                              />
-                          ))
-                        : null}
-                </Layer>
-            </Stage>
+            <div style={{ backgroundColor: 'white' }}>
+                <Stage width={availSpace.width} height={availSpace.height} ref={stageRef}>
+                    <Layer ref={backgroundLayerRef}>
+                        <Image
+                            image={canvas}
+                            width={availSpace.width}
+                            height={availSpace.height}
+                            ref={imageBackgroundRef}
+                        />
+                    </Layer>
+                    <Layer ref={characterLayerRef}>
+                        <Image
+                            image={canvasCharacter}
+                            width={availSpace.width}
+                            height={availSpace.height}
+                            ref={imageCharacterRef}
+                        />
+                    </Layer>
+                    <Layer ref={textLayerRef}>
+                        {textNodes
+                            ? textNodes.map((textAttr, i) => (
+                                  <Text
+                                      key={i}
+                                      id={textAttr.text_id}
+                                      text={textAttr.text}
+                                      x={textAttr.x}
+                                      y={textAttr.y}
+                                      fontSize={textAttr.fontSize}
+                                      draggable={false}
+                                      width={textAttr.width}
+                                      keepRatio={true}
+                                      padding={3}
+                                  />
+                              ))
+                            : null}
+                    </Layer>
+                </Stage>
+            </div>
         </div>
     );
 }

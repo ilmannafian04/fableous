@@ -1,8 +1,17 @@
-import { DEFAULT_WIDTH_CANVAS } from '../../constant/ScreenRatio';
+import { DEFAULT_CANVAS_SIZE } from '../../constant/ScreenRatio';
 
 export const calculateScale = (ref) => {
-    let parentWidth = ref.offsetWidth;
-    const numerator = parentWidth > DEFAULT_WIDTH_CANVAS ? parentWidth : DEFAULT_WIDTH_CANVAS;
-    const denominator = parentWidth > DEFAULT_WIDTH_CANVAS ? DEFAULT_WIDTH_CANVAS : parentWidth;
-    return numerator / denominator;
+    if (ref.offsetHeight / 9 > ref.offsetWidth / 16) {
+        return DEFAULT_CANVAS_SIZE.width / ref.offsetWidth;
+    } else {
+        return DEFAULT_CANVAS_SIZE.height / ref.offsetHeight;
+    }
+};
+
+export const calculateScaleHub = (ref) => {
+    if (ref.offsetHeight / 9 > ref.offsetWidth / 16) {
+        return ref.offsetWidth / DEFAULT_CANVAS_SIZE.width;
+    } else {
+        return ref.offsetHeight / DEFAULT_CANVAS_SIZE.height;
+    }
 };
